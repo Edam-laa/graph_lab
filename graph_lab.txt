@@ -1,0 +1,82 @@
+graph_lab/
+│
+├── app/                        # Main application package
+│   ├── __init__.py
+│   │
+│   ├── core/                  # Core logic (graph structure)
+│   │   ├── __init__.py
+│   │   └── graph.py
+│   │
+│   ├── algorithms/            # All algorithms grouped by category
+│   │   ├── __init__.py
+│   │   │
+│   │   ├── shortest_path/
+│   │   │   ├── __init__.py
+│   │   │   ├── dijkstra.py
+│   │   │   └── bellman_ford.py
+│   │   │
+│   │   ├── spanning_tree/
+│   │   │   ├── __init__.py
+│   │   │   ├── kruskal.py
+│   │   │   └── prim.py
+│   │   │
+│   │   ├── connectivity/
+│   │   │   ├── __init__.py
+│   │   │   ├── connected_components.py
+│   │   │   └── strongly_connected.py
+│   │   │
+│   │   ├── eulerian/
+│   │   │   ├── __init__.py
+│   │   │   └── eulerian_path.py
+│   │   │
+│   │   └── coloring/
+│   │       ├── __init__.py
+│   │       └── welsh_powell.py
+│   │
+│   ├── services/              # Logic that connects algorithms to UI
+│   │   ├── __init__.py
+│   │   └── graph_service.py
+│   │
+│   ├── controllers/           # Handles user actions (UI → logic)
+│   │   ├── __init__.py
+│   │   └── main_controller.py
+│   │
+│   ├── ui/                    # Interface layer
+│   │   ├── __init__.py
+│   │   │
+│   │   ├── windows/
+│   │   │   └── main_window.py
+│   │   │
+│   │   ├── components/
+│   │   │   ├── graph_view.py
+│   │   │   ├── control_panel.py
+│   │   │   └── result_panel.py
+│   │   │
+│   │   └── styles/            # (optional) UI styling
+│   │
+│   ├── utils/                 # Helpers
+│   │   ├── __init__.py
+│   │   ├── file_loader.py
+│   │   └── validators.py
+│
+├── tests/                     # Tests separated from app
+│   ├── __init__.py
+│   │
+│   ├── algorithms/
+│   │   ├── test_dijkstra.py
+│   │   ├── test_kruskal.py
+│   │   └── tous les alogo...
+│   │
+│   ├── core/
+│   │   └── test_graph.py
+│
+├── data/                      # Sample graphs
+│   ├── graph1.json
+│   └── graph2.txt
+│
+├── docs/                      # Documentation (optional but impressive)
+│   └── architecture.md
+│
+├── main.py                    # Entry point
+├── requirements.txt
+└── README.md
