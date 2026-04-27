@@ -1,143 +1,72 @@
-import time
+import json
 
 class Graph:
-    def __init__(self, directed=False):
-        self.directed = directed
-        self.adj_matrix = []
-        self.inc_matrix = []
-        self.num_vertices = 0
+    def __init__(self, json_file):
+        self.nodes = []
+        self.node_index = {}   # Map node -> index
+        self.matrix = []
+        self.directed = False
 
-    # ---------------------------
-    # INITIALISATION DU GRAPHE
-    # ---------------------------
-    def load_from_adjacency_matrix(self, matrix):
-        self.adj_matrix = matrix
-        self.num_vertices = len(matrix)
-        self._build_incidence_matrix()
+        self._load_from_json(json_file)
+        self._build_matrix()
 
-    # ---------------------------
-    # MATRICE D’INCIDENCE
-    # ---------------------------
-    def _build_incidence_matrix(self):
-        edges = []
-        n = self.num_vertices
+    def _load_from_json(self, json_file):
+        with open(json_file, 'r') as f:
+            data = json.load(f)
 
+        self.nodes = data.get("nodes", [])
+        self.edges = data.get("edges", [])
+        self.directed = data.get("directed", False)
+
+        # Create index mapping
+        self.node_index = {node: i for i, node in enumerate(self.nodes)}
+
+    def _build_matrix(self):
+        n = len(self.nodes)
+
+        # Initialize matrix with infinity (no edge)
+        self.matrix = [[float('inf')] * n for _ in range(n)]
+
+        # Distance to self = 0
         for i in range(n):
-            for j in range(n):
-                if self.adj_matrix[i][j] != 0:
-                    if self.directed or i < j:
-                        edges.append((i, j))
+            self.matrix[i][i] = 0
 
-        self.inc_matrix = [[0 for _ in range(len(edges))] for _ in range(n)]
+        # Fill matrix
+        for edge in self.edges:
+            u = edge["from"]
+            v = edge["to"]
+            w = edge.get("weight", 1)
 
-        for k, (u, v) in enumerate(edges):
-            if self.directed:
-                self.inc_matrix[u][k] = -1
-                self.inc_matrix[v][k] = 1
-            else:
-                self.inc_matrix[u][k] = 1
-                self.inc_matrix[v][k] = 1
+            i = self.node_index[u]
+            j = self.node_index[v]
 
-    # ---------------------------
-    # AFFICHAGE
-    # ---------------------------
-    def display_adjacency_matrix(self):
-        print("Matrice d’adjacence :")
-        for row in self.adj_matrix:
-            print(row)
+            self.matrix[i][j] = w
 
-    def display_incidence_matrix(self):
-        print("Matrice d’incidence :")
-        for row in self.inc_matrix:
-            print(row)
+            if not self.directed:
+                self.matrix[j][i] = w
 
-    # ---------------------------
-    # COMPATIBILITÉ DES ALGOS
-    # ---------------------------
-    def available_algorithms(self):
-        algos = []
+    def display(self):
+        print("Adjacency Matrix:")
+        print("   ", "  ".join(self.nodes))
+        for i, row in enumerate(self.matrix):
+            print(self.nodes[i], row)
 
-        if self._has_positive_weights():
-            algos.append("Dijkstra")
+    def get_weight(self, u, v):
+        i = self.node_index[u]
+        j = self.node_index[v]
+        return self.matrix[i][j]
 
+    def add_edge(self, u, v, weight=1):
+        i = self.node_index[u]
+        j = self.node_index[v]
+
+        self.matrix[i][j] = weight
         if not self.directed:
-            algos.append("Prim")
-            algos.append("Kruskal")
+            self.matrix[j][i] = weight
 
-        algos.append("Bellman-Ford")  # toujours valide
-
-        return algos
-
-    def _has_positive_weights(self):
-        for row in self.adj_matrix:
-            for w in row:
-                if w < 0:
-                    return False
-        return True
-
-    # ---------------------------
-    # DIJKSTRA
-    # ---------------------------
-    def dijkstra(self, start):
-        import heapq
-
-        n = self.num_vertices
-        dist = [float('inf')] * n
-        dist[start] = 0
-
-        pq = [(0, start)]
-
-        while pq:
-            d, u = heapq.heappop(pq)
-
-            if d > dist[u]:
-                continue
-
-            for v in range(n):
-                weight = self.adj_matrix[u][v]
-                if weight != 0:
-                    new_d = d + weight
-                    if new_d < dist[v]:
-                        dist[v] = new_d
-                        heapq.heappush(pq, (new_d, v))
-
-        return dist
-
-    # ---------------------------
-    # ÉVALUATION TEMPS + COMPLEXITÉ
-    # ---------------------------
-    def evaluate_algorithm(self, algo_name, *args):
-        start_time = time.time()
-
-        if algo_name == "Dijkstra":
-            result = self.dijkstra(*args)
-            complexity = "O(V^2 log V) (matrice)"
-
-        else:
-            return None, "Algorithme non implémenté"
-
-        end_time = time.time()
-        exec_time = end_time - start_time
-
-        return {
-            "result": result,
-            "execution_time": exec_time,
-            "complexity": complexity
-        }
-
-    # ---------------------------
-    # AFFICHAGE RÉSULTATS
-    # ---------------------------
-    def display_results(self, evaluation):
-        print("Résultat :", evaluation["result"])
-        print("Temps d’exécution :", evaluation["execution_time"], "secondes")
-        print("Complexité :", evaluation["complexity"])
-
-
-graph = [
-    [0, 2, 0, 6],
-    [2, 0, 3, 8],
-    [0, 3, 0, 0],
-    [6, 8, 0, 0]
-]
-g=Graph()
+    def __str__(self):
+        result = "Adjacency Matrix:\n"
+        result += "   " + "  ".join(self.nodes) + "\n"
+        for i, row in enumerate(self.matrix):
+            result += f"{self.nodes[i]} {row}\n"
+        return result
