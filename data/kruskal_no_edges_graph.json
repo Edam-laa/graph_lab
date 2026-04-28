@@ -1,0 +1,5 @@
+{
+  "nodes": ["A", "B", "C"],
+  "edges": [],
+  "directed": false
+}
