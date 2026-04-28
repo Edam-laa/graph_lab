@@ -1,0 +1,8 @@
+{
+  "nodes": ["A", "B", "C"],
+  "edges": [
+    {"from": "A", "to": "B", "weight": 3},
+    {"from": "B", "to": "C", "weight": 4}
+  ],
+  "directed": true
+}
