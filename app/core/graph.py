@@ -1,4 +1,4 @@
-import time
+'''import time
 
 class Graph:
     def __init__(self, directed=False):
@@ -140,4 +140,146 @@ graph = [
     [0, 3, 0, 0],
     [6, 8, 0, 0]
 ]
-g=Graph()
+g=Graph()'''
+class Graph:
+    def __init__(self, directed=False):
+        self.directed = directed
+        self.nodes = set()
+	# {node: [(neighbor, weight, capacity)]}
+        self.adj_list = {}
+
+    # ---------------------------
+    # ADD NODES & EDGES
+    # ---------------------------
+    def add_node(self, node):
+        if node not in self.nodes:
+            self.nodes.add(node)
+            self.adj_list[node] = []
+
+    def add_edge(self, u, v, weight=1,capacity=None):
+        self.add_node(u)
+        self.add_node(v)
+
+        self.adj_list[u].append((v, weight,capacity))
+
+        if not self.directed:
+            self.adj_list[v].append((u, weight,capacity))
+
+    # ---------------------------
+    # ACCESS METHODS
+    # ---------------------------
+    def get_neighbors(self, node):
+        return self.adj_list.get(node, [])
+
+    def get_nodes(self):
+        return sorted(self.nodes)
+
+    def get_edges(self):
+        edges = []
+        seen = set()
+        for u in self.adj_list:
+            for v, w,c in self.adj_list[u]:
+                edge=(u, v, w,c)
+                reverse=(v, u, w,c)
+                if self.directed or reverse not in seen:
+                    edges.append(edge)
+                    seen.add(edge)
+        return edges
+
+    # ---------------------------
+    # VALIDATION HELPERS
+    # ---------------------------
+    def has_negative_weights(self):
+        for u in self.adj_list:
+            for v, w,c in self.adj_list[u]:
+                if w < 0:
+                    return True
+        return False
+
+    def is_weighted(self):
+        for u in self.adj_list:
+            for v, w,c in self.adj_list[u]:
+                if w != 1:
+                    return True
+        return False
+    def has_capacity(self):
+        for u in self.adj_list:
+            for v, _, c in self.adj_list[u]:
+                if c is not None:
+                    return True
+        return False
+    def degree(self, node):
+        return len(self.adj_list.get(node, []))    
+'''  "graph": {
+    "nodes": ["A", "B", "C"],
+    "edges": [
+      {
+        "id": "e1",
+        "from": "A",
+        "to": "B",
+        "weight": 1,
+        "capacity": null
+      }
+    ],
+    "directed": true,
+    "metadata": {
+      "name": "Example Graph",
+      "description": "Any graph type",
+      "allow_negative_weights": false
+    }
+  },
+
+  "algorithm": {
+    "name": "dijkstra",
+    "category": "shortest_path",
+
+    "params": {
+      "source": "A",
+      "target": "C",
+      "start": null,
+      "end": null,
+      "k": null
+    },
+
+    "constraints_check": {
+      "requires_positive_weights": true,
+      "requires_connected": false,
+      "requires_dag": false
+    }
+  },
+
+  "execution": {
+    "execution_time": null,
+    "complexity": null
+  },
+  "result": {
+    "type": null,
+
+    "distances": {},
+    "path": [],
+    "paths": {},
+
+    "mst_edges": [],
+    "components": [],
+    "cycles": [],
+
+    "eulerian_path": [],
+    "eulerian_circuit": [],
+
+    "coloring": {
+      "node_colors": {},
+      "edge_colors": {}
+    },
+
+    "max_flow": null,
+
+    "steps": []
+  },
+
+  "options": {
+    "return_path": true,
+    "return_steps": true,
+    "measure_time": true,
+    "visualize": true
+  }
+}  '''
