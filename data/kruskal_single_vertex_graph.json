@@ -1,5 +1,53 @@
 {
-  "nodes": ["A"],
-  "edges": [],
-  "directed": false
+  "graph": {
+    "nodes": [
+      "A"
+    ],
+    "edges": [],
+    "directed": false,
+    "metadata": {
+      "name": "Kruskal Single Vertex Graph",
+      "description": "Graph from kruskal_single_vertex_graph.json",
+      "allow_negative_weights": false
+    }
+  },
+  "algorithm": {
+    "name": "",
+    "category": "",
+    "params": {},
+    "constraints_check": {
+      "requires_positive_weights": true,
+      "requires_connected": false,
+      "requires_dag": false
+    }
+  },
+  "execution": {
+    "execution_time": null,
+    "complexity": null,
+    "status": "not_started",
+    "message": ""
+  },
+  "result": {
+    "type": null,
+    "distances": {},
+    "path": [],
+    "paths": {},
+    "mst_edges": [],
+    "components": [],
+    "cycles": [],
+    "eulerian_path": [],
+    "eulerian_circuit": [],
+    "coloring": {
+      "node_colors": {},
+      "edge_colors": {}
+    },
+    "max_flow": null,
+    "steps": []
+  },
+  "options": {
+    "return_path": true,
+    "return_steps": true,
+    "measure_time": true,
+    "visualize": false
+  }
 }
