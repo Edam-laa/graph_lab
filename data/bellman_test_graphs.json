@@ -1,0 +1,176 @@
+{
+  "graphs": {
+    "simple": {
+      "nodes": ["A", "B", "C"],
+      "edges": [
+        {"id": "e1", "from": "A", "to": "B", "weight": 1, "capacity": null},
+        {"id": "e2", "from": "B", "to": "C", "weight": 2, "capacity": null}
+      ],
+      "directed": true,
+      "metadata": {
+        "name": "Bellman Simple Graph",
+        "description": "Shared Bellman-Ford simple graph",
+        "allow_negative_weights": false
+      }
+    },
+    "multiple_paths": {
+      "nodes": ["A", "B", "C", "D"],
+      "edges": [
+        {"id": "e1", "from": "A", "to": "B", "weight": 2, "capacity": null},
+        {"id": "e2", "from": "A", "to": "C", "weight": 1, "capacity": null},
+        {"id": "e3", "from": "C", "to": "B", "weight": 0, "capacity": null},
+        {"id": "e4", "from": "B", "to": "D", "weight": 1, "capacity": null},
+        {"id": "e5", "from": "C", "to": "D", "weight": 10, "capacity": null}
+      ],
+      "directed": true,
+      "metadata": {
+        "name": "Bellman Multiple Paths Graph",
+        "description": "Graph with a negative edge but no negative cycle",
+        "allow_negative_weights": false
+      }
+    },
+    "directed": {
+      "nodes": ["A", "B", "C"],
+      "edges": [
+        {"id": "e1", "from": "A", "to": "B", "weight": 1, "capacity": null},
+        {"id": "e2", "from": "B", "to": "C", "weight": 2, "capacity": null}
+      ],
+      "directed": true,
+      "metadata": {
+        "name": "Bellman Directed Graph",
+        "description": "Direction-sensitive Bellman-Ford graph",
+        "allow_negative_weights": false
+      }
+    },
+    "undirected": {
+      "nodes": ["A", "B", "C"],
+      "edges": [
+        {"id": "e1", "from": "A", "to": "B", "weight": 1, "capacity": null},
+        {"id": "e2", "from": "B", "to": "C", "weight": 2, "capacity": null}
+      ],
+      "directed": false,
+      "metadata": {
+        "name": "Bellman Undirected Graph",
+        "description": "Undirected Bellman-Ford baseline",
+        "allow_negative_weights": false
+      }
+    },
+    "negative_weights": {
+      "nodes": ["A", "B", "C"],
+      "edges": [
+        {"id": "e1", "from": "A", "to": "B", "weight": 1, "capacity": null},
+        {"id": "e2", "from": "B", "to": "C", "weight": -2, "capacity": null}
+      ],
+      "directed": true,
+      "metadata": {
+        "name": "Negative Weights Graph",
+        "description": "Valid negative weights without a negative cycle",
+        "allow_negative_weights": true
+      }
+    },
+    "mixed_weights": {
+      "nodes": ["A", "B", "C", "D"],
+      "edges": [
+        {"id": "e1", "from": "A", "to": "B", "weight": 2, "capacity": null},
+        {"id": "e2", "from": "B", "to": "C", "weight": -1, "capacity": null},
+        {"id": "e3", "from": "C", "to": "D", "weight": 4, "capacity": null},
+        {"id": "e4", "from": "A", "to": "D", "weight": 10, "capacity": null}
+      ],
+      "directed": true,
+      "metadata": {
+        "name": "Bellman Mixed Weights Graph",
+        "description": "Positive and negative weights together",
+        "allow_negative_weights": true
+      }
+    },
+    "sum_weights": {
+      "nodes": ["A", "B", "C"],
+      "edges": [
+        {"id": "e1", "from": "A", "to": "B", "weight": 3, "capacity": null},
+        {"id": "e2", "from": "B", "to": "C", "weight": 4, "capacity": null}
+      ],
+      "directed": true,
+      "metadata": {
+        "name": "Bellman Sum Weights Graph",
+        "description": "Path cost equals the sum of edge weights",
+        "allow_negative_weights": false
+      }
+    },
+    "negative_cycle": {
+      "nodes": ["A", "B", "C", "D"],
+      "edges": [
+        {"id": "e1", "from": "A", "to": "B", "weight": 1, "capacity": null},
+        {"id": "e2", "from": "B", "to": "C", "weight": -3, "capacity": null},
+        {"id": "e3", "from": "C", "to": "A", "weight": 1, "capacity": null},
+        {"id": "e4", "from": "C", "to": "D", "weight": 2, "capacity": null}
+      ],
+      "directed": true,
+      "metadata": {
+        "name": "Bellman Negative Cycle Graph",
+        "description": "Negative cycle must be detected",
+        "allow_negative_weights": true
+      }
+    },
+    "normal_cycle": {
+      "nodes": ["A", "B", "C", "D"],
+      "edges": [
+        {"id": "e1", "from": "A", "to": "B", "weight": 1, "capacity": null},
+        {"id": "e2", "from": "B", "to": "C", "weight": 1, "capacity": null},
+        {"id": "e3", "from": "C", "to": "A", "weight": 1, "capacity": null},
+        {"id": "e4", "from": "C", "to": "D", "weight": 2, "capacity": null}
+      ],
+      "directed": true,
+      "metadata": {
+        "name": "Bellman Normal Cycle Graph",
+        "description": "Cycle without negative weight",
+        "allow_negative_weights": false
+      }
+    },
+    "single_vertex": {
+      "nodes": ["A"],
+      "edges": [],
+      "directed": true,
+      "metadata": {
+        "name": "Bellman Single Vertex Graph",
+        "description": "Single vertex graph",
+        "allow_negative_weights": false
+      }
+    },
+    "disconnected": {
+      "nodes": ["A", "B", "C", "D"],
+      "edges": [
+        {"id": "e1", "from": "A", "to": "B", "weight": 1, "capacity": null},
+        {"id": "e2", "from": "B", "to": "C", "weight": 2, "capacity": null}
+      ],
+      "directed": true,
+      "metadata": {
+        "name": "Disconnected Graph",
+        "description": "Destination remains unreachable from the source",
+        "allow_negative_weights": false
+      }
+    },
+    "zero_weights": {
+      "nodes": ["A", "B", "C"],
+      "edges": [
+        {"id": "e1", "from": "A", "to": "B", "weight": 0, "capacity": null},
+        {"id": "e2", "from": "B", "to": "C", "weight": 0, "capacity": null}
+      ],
+      "directed": true,
+      "metadata": {
+        "name": "Bellman Zero Weights Graph",
+        "description": "Zero weights remain valid",
+        "allow_negative_weights": false
+      }
+    },
+    "empty": {
+      "nodes": [],
+      "edges": [],
+      "directed": true,
+      "metadata": {
+        "name": "Empty Graph",
+        "description": "Empty graph used for validation",
+        "allow_negative_weights": false
+      }
+    }
+  }
+}

@@ -1,0 +1,174 @@
+{
+  "graphs": {
+    "simple": {
+      "nodes": ["A", "B", "C"],
+      "edges": [
+        {"id": "e1", "from": "A", "to": "B", "weight": 1, "capacity": null},
+        {"id": "e2", "from": "B", "to": "C", "weight": 2, "capacity": null},
+        {"id": "e3", "from": "A", "to": "C", "weight": 5, "capacity": null}
+      ],
+      "directed": false,
+      "metadata": {
+        "name": "Kruskal Simple Graph",
+        "description": "Simple MST baseline",
+        "allow_negative_weights": false
+      }
+    },
+    "choice": {
+      "nodes": ["A", "B", "C", "D"],
+      "edges": [
+        {"id": "e1", "from": "A", "to": "B", "weight": 4, "capacity": null},
+        {"id": "e2", "from": "A", "to": "C", "weight": 1, "capacity": null},
+        {"id": "e3", "from": "C", "to": "B", "weight": 2, "capacity": null},
+        {"id": "e4", "from": "B", "to": "D", "weight": 1, "capacity": null},
+        {"id": "e5", "from": "C", "to": "D", "weight": 5, "capacity": null}
+      ],
+      "directed": false,
+      "metadata": {
+        "name": "Kruskal Choice Graph",
+        "description": "Several candidate MST edges exist",
+        "allow_negative_weights": false
+      }
+    },
+    "min_cost": {
+      "nodes": ["A", "B", "C", "D"],
+      "edges": [
+        {"id": "e1", "from": "A", "to": "B", "weight": 1, "capacity": null},
+        {"id": "e2", "from": "B", "to": "C", "weight": 2, "capacity": null},
+        {"id": "e3", "from": "C", "to": "D", "weight": 1, "capacity": null},
+        {"id": "e4", "from": "D", "to": "E", "weight": 2, "capacity": null},
+        {"id": "e5", "from": "A", "to": "E", "weight": 10, "capacity": null},
+        {"id": "e6", "from": "B", "to": "D", "weight": 7, "capacity": null}
+      ],
+      "directed": false,
+      "metadata": {
+        "name": "Kruskal Min Cost Graph",
+        "description": "Global minimum MST cost case",
+        "allow_negative_weights": false
+      }
+    },
+    "negative_weights": {
+      "nodes": ["A", "B", "C", "D"],
+      "edges": [
+        {"id": "e1", "from": "A", "to": "B", "weight": -2, "capacity": null},
+        {"id": "e2", "from": "A", "to": "C", "weight": 1, "capacity": null},
+        {"id": "e3", "from": "C", "to": "B", "weight": 4, "capacity": null},
+        {"id": "e4", "from": "B", "to": "D", "weight": 3, "capacity": null}
+      ],
+      "directed": false,
+      "metadata": {
+        "name": "Kruskal Negative Weights Graph",
+        "description": "Negative edge weights are allowed in MST",
+        "allow_negative_weights": true
+      }
+    },
+    "cycle": {
+      "nodes": ["A", "B", "C", "D"],
+      "edges": [
+        {"id": "e1", "from": "A", "to": "B", "weight": 1, "capacity": null},
+        {"id": "e2", "from": "B", "to": "C", "weight": 1, "capacity": null},
+        {"id": "e3", "from": "C", "to": "D", "weight": 1, "capacity": null},
+        {"id": "e4", "from": "D", "to": "A", "weight": 1, "capacity": null},
+        {"id": "e5", "from": "A", "to": "C", "weight": 2, "capacity": null}
+      ],
+      "directed": false,
+      "metadata": {
+        "name": "Kruskal Cycle Graph",
+        "description": "Cycle edges must be skipped",
+        "allow_negative_weights": false
+      }
+    },
+    "unsorted_edges": {
+      "nodes": ["A", "B", "C", "D"],
+      "edges": [
+        {"id": "e1", "from": "A", "to": "B", "weight": 3, "capacity": null},
+        {"id": "e2", "from": "B", "to": "C", "weight": 1, "capacity": null},
+        {"id": "e3", "from": "C", "to": "D", "weight": 2, "capacity": null},
+        {"id": "e4", "from": "A", "to": "D", "weight": 10, "capacity": null}
+      ],
+      "directed": false,
+      "metadata": {
+        "name": "Kruskal Unsorted Edges Graph",
+        "description": "Input order should not matter",
+        "allow_negative_weights": false
+      }
+    },
+    "disconnected": {
+      "nodes": ["A", "B", "C", "D"],
+      "edges": [
+        {"id": "e1", "from": "A", "to": "B", "weight": 1, "capacity": null},
+        {"id": "e2", "from": "B", "to": "C", "weight": 2, "capacity": null}
+      ],
+      "directed": false,
+      "metadata": {
+        "name": "Disconnected Graph",
+        "description": "Kruskal should return a forest",
+        "allow_negative_weights": false
+      }
+    },
+    "single_vertex": {
+      "nodes": ["A"],
+      "edges": [],
+      "directed": false,
+      "metadata": {
+        "name": "Kruskal Single Vertex Graph",
+        "description": "Single vertex MST case",
+        "allow_negative_weights": false
+      }
+    },
+    "no_edges": {
+      "nodes": ["A", "B", "C"],
+      "edges": [],
+      "directed": false,
+      "metadata": {
+        "name": "Kruskal No Edges Graph",
+        "description": "No edges means empty forest",
+        "allow_negative_weights": false
+      }
+    },
+    "duplicate_edges": {
+      "nodes": ["A", "B", "C"],
+      "edges": [
+        {"id": "e1", "from": "A", "to": "B", "weight": 5, "capacity": null},
+        {"id": "e2", "from": "A", "to": "B", "weight": 1, "capacity": null},
+        {"id": "e3", "from": "B", "to": "C", "weight": 2, "capacity": null}
+      ],
+      "directed": false,
+      "metadata": {
+        "name": "Kruskal Duplicate Edges Graph",
+        "description": "Duplicate edges should not break MST selection",
+        "allow_negative_weights": false
+      }
+    },
+    "self_loop": {
+      "nodes": ["A", "B", "C"],
+      "edges": [
+        {"id": "e1", "from": "A", "to": "A", "weight": 10, "capacity": null},
+        {"id": "e2", "from": "A", "to": "B", "weight": 1, "capacity": null},
+        {"id": "e3", "from": "B", "to": "C", "weight": 3, "capacity": null}
+      ],
+      "directed": false,
+      "metadata": {
+        "name": "Kruskal Self Loop Graph",
+        "description": "Self loops must be ignored",
+        "allow_negative_weights": false
+      }
+    },
+    "equal_weights": {
+      "nodes": ["A", "B", "C", "D"],
+      "edges": [
+        {"id": "e1", "from": "A", "to": "B", "weight": 1, "capacity": null},
+        {"id": "e2", "from": "B", "to": "C", "weight": 1, "capacity": null},
+        {"id": "e3", "from": "C", "to": "D", "weight": 1, "capacity": null},
+        {"id": "e4", "from": "D", "to": "A", "weight": 1, "capacity": null},
+        {"id": "e5", "from": "A", "to": "C", "weight": 1, "capacity": null}
+      ],
+      "directed": false,
+      "metadata": {
+        "name": "Kruskal Equal Weights Graph",
+        "description": "Equal-weight graph stresses tie breaking",
+        "allow_negative_weights": false
+      }
+    }
+  }
+}
