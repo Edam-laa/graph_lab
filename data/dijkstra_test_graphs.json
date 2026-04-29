@@ -1,0 +1,276 @@
+{
+  "graphs": {
+    "simple": {
+      "nodes": ["A", "B", "C"],
+      "edges": [
+        {"id": "e1", "from": "A", "to": "B", "weight": 1, "capacity": null},
+        {"id": "e2", "from": "B", "to": "C", "weight": 2, "capacity": null}
+      ],
+      "directed": true,
+      "metadata": {
+        "name": "Simple Graph",
+        "description": "Basic directed graph for Dijkstra",
+        "allow_negative_weights": false
+      }
+    },
+    "multiple_paths": {
+      "nodes": ["A", "B", "C", "D"],
+      "edges": [
+        {"id": "e1", "from": "A", "to": "B", "weight": 1, "capacity": null},
+        {"id": "e2", "from": "A", "to": "C", "weight": 1, "capacity": null},
+        {"id": "e3", "from": "B", "to": "D", "weight": 5, "capacity": null},
+        {"id": "e4", "from": "C", "to": "D", "weight": 2, "capacity": null}
+      ],
+      "directed": true,
+      "metadata": {
+        "name": "Multiple Paths Graph",
+        "description": "Shortest path must be selected among several candidates",
+        "allow_negative_weights": false
+      }
+    },
+    "tie_breaking": {
+      "nodes": ["A", "B", "C", "D"],
+      "edges": [
+        {"id": "e1", "from": "A", "to": "C", "weight": 1, "capacity": null},
+        {"id": "e2", "from": "A", "to": "B", "weight": 1, "capacity": null},
+        {"id": "e3", "from": "C", "to": "D", "weight": 2, "capacity": null},
+        {"id": "e4", "from": "B", "to": "D", "weight": 2, "capacity": null}
+      ],
+      "directed": true,
+      "metadata": {
+        "name": "Tie Breaking Graph",
+        "description": "Two equal-cost shortest paths to the same target",
+        "allow_negative_weights": false
+      }
+    },
+    "multi_edges": {
+      "nodes": ["A", "B", "C"],
+      "edges": [
+        {"id": "e1", "from": "A", "to": "B", "weight": 10, "capacity": null},
+        {"id": "e2", "from": "A", "to": "B", "weight": 2, "capacity": null},
+        {"id": "e3", "from": "B", "to": "C", "weight": 1, "capacity": null}
+      ],
+      "directed": true,
+      "metadata": {
+        "name": "Multi Edge Graph",
+        "description": "Parallel edges between the same nodes",
+        "allow_negative_weights": false
+      }
+    },
+    "self_loop": {
+      "nodes": ["A", "B", "C"],
+      "edges": [
+        {"id": "e1", "from": "A", "to": "A", "weight": 5, "capacity": null},
+        {"id": "e2", "from": "A", "to": "B", "weight": 1, "capacity": null},
+        {"id": "e3", "from": "B", "to": "C", "weight": 1, "capacity": null}
+      ],
+      "directed": true,
+      "metadata": {
+        "name": "Self Loop Graph",
+        "description": "Self-loop must not change the source distance",
+        "allow_negative_weights": false
+      }
+    },
+    "large_weights": {
+      "nodes": ["A", "B", "C"],
+      "edges": [
+        {"id": "e1", "from": "A", "to": "B", "weight": 1000000000, "capacity": null},
+        {"id": "e2", "from": "B", "to": "C", "weight": 1000000000, "capacity": null},
+        {"id": "e3", "from": "A", "to": "C", "weight": 2000000001, "capacity": null}
+      ],
+      "directed": true,
+      "metadata": {
+        "name": "Large Weights Graph",
+        "description": "Tests stability with very large positive weights",
+        "allow_negative_weights": false
+      }
+    },
+    "star_hub": {
+      "nodes": ["A", "Hub", "B", "C", "D", "E", "F"],
+      "edges": [
+        {"id": "e1", "from": "A", "to": "Hub", "weight": 1, "capacity": null},
+        {"id": "e2", "from": "Hub", "to": "B", "weight": 2, "capacity": null},
+        {"id": "e3", "from": "Hub", "to": "C", "weight": 3, "capacity": null},
+        {"id": "e4", "from": "Hub", "to": "D", "weight": 4, "capacity": null},
+        {"id": "e5", "from": "Hub", "to": "E", "weight": 5, "capacity": null},
+        {"id": "e6", "from": "Hub", "to": "F", "weight": 6, "capacity": null}
+      ],
+      "directed": true,
+      "metadata": {
+        "name": "Star Hub Graph",
+        "description": "Asymmetric graph centered on one hub node",
+        "allow_negative_weights": false
+      }
+    },
+    "relaxation_order": {
+      "nodes": ["A", "B", "C"],
+      "edges": [
+        {"id": "e1", "from": "A", "to": "B", "weight": 1, "capacity": null},
+        {"id": "e2", "from": "A", "to": "C", "weight": 4, "capacity": null},
+        {"id": "e3", "from": "B", "to": "C", "weight": 1, "capacity": null}
+      ],
+      "directed": true,
+      "metadata": {
+        "name": "Relaxation Order Graph",
+        "description": "C must be improved after exploring B",
+        "allow_negative_weights": false
+      }
+    },
+    "dead_nodes": {
+      "nodes": ["A", "B", "C", "X", "Y", "Z"],
+      "edges": [
+        {"id": "e1", "from": "A", "to": "B", "weight": 1, "capacity": null},
+        {"id": "e2", "from": "B", "to": "C", "weight": 2, "capacity": null},
+        {"id": "e3", "from": "X", "to": "Y", "weight": 4, "capacity": null},
+        {"id": "e4", "from": "Y", "to": "Z", "weight": 5, "capacity": null}
+      ],
+      "directed": true,
+      "metadata": {
+        "name": "Dead Nodes Graph",
+        "description": "Unreachable subgraph must be ignored from the source",
+        "allow_negative_weights": false
+      }
+    },
+    "indirect_vs_direct": {
+      "nodes": ["A", "B", "C"],
+      "edges": [
+        {"id": "e1", "from": "A", "to": "B", "weight": 2, "capacity": null},
+        {"id": "e2", "from": "A", "to": "C", "weight": 10, "capacity": null},
+        {"id": "e3", "from": "C", "to": "B", "weight": 1, "capacity": null}
+      ],
+      "directed": true,
+      "metadata": {
+        "name": "Indirect vs Direct Graph",
+        "description": "Direct path remains better than a longer indirect route",
+        "allow_negative_weights": false
+      }
+    },
+    "directed": {
+      "nodes": ["A", "B", "C"],
+      "edges": [
+        {"id": "e1", "from": "A", "to": "B", "weight": 1, "capacity": null},
+        {"id": "e2", "from": "B", "to": "C", "weight": 2, "capacity": null}
+      ],
+      "directed": true,
+      "metadata": {
+        "name": "Directed Graph",
+        "description": "Edge direction must be respected",
+        "allow_negative_weights": false
+      }
+    },
+    "undirected": {
+      "nodes": ["A", "B", "C"],
+      "edges": [
+        {"id": "e1", "from": "A", "to": "B", "weight": 1, "capacity": null},
+        {"id": "e2", "from": "B", "to": "C", "weight": 2, "capacity": null}
+      ],
+      "directed": false,
+      "metadata": {
+        "name": "Undirected Graph",
+        "description": "Undirected shortest path baseline",
+        "allow_negative_weights": false
+      }
+    },
+    "sum_weights": {
+      "nodes": ["A", "B", "C"],
+      "edges": [
+        {"id": "e1", "from": "A", "to": "B", "weight": 3, "capacity": null},
+        {"id": "e2", "from": "B", "to": "C", "weight": 4, "capacity": null}
+      ],
+      "directed": true,
+      "metadata": {
+        "name": "Sum Weights Graph",
+        "description": "Path cost is the sum of all traversed edge weights",
+        "allow_negative_weights": false
+      }
+    },
+    "single_vertex": {
+      "nodes": ["A"],
+      "edges": [],
+      "directed": true,
+      "metadata": {
+        "name": "Single Vertex Graph",
+        "description": "Graph with one isolated vertex",
+        "allow_negative_weights": false
+      }
+    },
+    "disconnected": {
+      "nodes": ["A", "B", "C", "D"],
+      "edges": [
+        {"id": "e1", "from": "A", "to": "B", "weight": 1, "capacity": null},
+        {"id": "e2", "from": "B", "to": "C", "weight": 2, "capacity": null}
+      ],
+      "directed": true,
+      "metadata": {
+        "name": "Disconnected Graph",
+        "description": "Destination remains unreachable from the source",
+        "allow_negative_weights": false
+      }
+    },
+    "valid_no_path": {
+      "nodes": ["A", "B", "C", "D"],
+      "edges": [
+        {"id": "e1", "from": "A", "to": "B", "weight": 1, "capacity": null},
+        {"id": "e2", "from": "B", "to": "C", "weight": 2, "capacity": null},
+        {"id": "e3", "from": "C", "to": "A", "weight": 1, "capacity": null}
+      ],
+      "directed": true,
+      "metadata": {
+        "name": "Valid Graph Without Path",
+        "description": "Graph is valid but no route exists to the isolated node",
+        "allow_negative_weights": false
+      }
+    },
+    "cycle": {
+      "nodes": ["A", "B", "C", "D"],
+      "edges": [
+        {"id": "e1", "from": "A", "to": "B", "weight": 1, "capacity": null},
+        {"id": "e2", "from": "B", "to": "C", "weight": 1, "capacity": null},
+        {"id": "e3", "from": "C", "to": "A", "weight": 1, "capacity": null},
+        {"id": "e4", "from": "C", "to": "D", "weight": 1, "capacity": null}
+      ],
+      "directed": true,
+      "metadata": {
+        "name": "Cycle Graph",
+        "description": "Cycle must not create an infinite loop",
+        "allow_negative_weights": false
+      }
+    },
+    "zero_weights": {
+      "nodes": ["A", "B", "C"],
+      "edges": [
+        {"id": "e1", "from": "A", "to": "B", "weight": 0, "capacity": null},
+        {"id": "e2", "from": "B", "to": "C", "weight": 0, "capacity": null}
+      ],
+      "directed": true,
+      "metadata": {
+        "name": "Zero Weights Graph",
+        "description": "Zero-weight edges remain valid for Dijkstra",
+        "allow_negative_weights": false
+      }
+    },
+    "negative_weights": {
+      "nodes": ["A", "B", "C"],
+      "edges": [
+        {"id": "e1", "from": "A", "to": "B", "weight": -1, "capacity": null},
+        {"id": "e2", "from": "B", "to": "C", "weight": 2, "capacity": null}
+      ],
+      "directed": true,
+      "metadata": {
+        "name": "Negative Weights Graph",
+        "description": "Dijkstra must reject negative weights",
+        "allow_negative_weights": true
+      }
+    },
+    "empty": {
+      "nodes": [],
+      "edges": [],
+      "directed": true,
+      "metadata": {
+        "name": "Empty Graph",
+        "description": "Empty graph used for validation",
+        "allow_negative_weights": false
+      }
+    }
+  }
+}

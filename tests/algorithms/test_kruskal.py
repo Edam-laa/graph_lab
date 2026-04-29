@@ -1,15 +1,56 @@
+"""
+Kruskal Algorithm Test Suite
+
+NOTES FOR DEVELOPMENT TEAM:
+============================
+1. TEST FIXTURES CONSOLIDATION
+   - All test cases consolidated in data/kruskal_test_graphs.json
+   - Individual kruskal_*.json files have been removed
+   - Format: {"graphs": {"case_name": {...graph_data...}, ...}}
+
+2. ADAPTER PATTERN
+   - load_kruskal_graph(case_name) adapter function:
+     * Loads collection JSON
+     * Extracts named test case
+     * Wraps as {"graph": ...} for app/utils/file_loader.py
+     * Returns Graph object via load_graph_from_json()
+   - Original loader remains UNMODIFIED and immutable
+
+3. ADDING NEW TEST CASES
+   - Add entries to data/kruskal_test_graphs.json under "graphs" key
+   - Use: graph = load_kruskal_graph("case_name")
+
+4. NOTE: Implementation (kruskal.py) is currently empty
+   - Tests will fail until algorithm is implemented
+   - Adapter infrastructure is ready for implementation
+"""
+
 import json
 from pathlib import Path
 
 from app.algorithms.spanning_tree import kruskal as kruskal_module
+from app.utils.file_loader import load_graph_from_json
 
 
 DATA_DIR = Path(__file__).resolve().parents[2] / "data"
+KRUSKAL_CASES_FILE = DATA_DIR / "kruskal_test_graphs.json"
 
 
-def load_graph(path):
-	with (DATA_DIR / Path(path).name).open(encoding="utf-8") as handle:
-		return json.load(handle)
+def load_kruskal_graph(case_name):
+	"""Load a Kruskal test case from the consolidated collection.
+	
+	Args:
+		case_name (str): Name of the test case in kruskal_test_graphs.json
+		
+	Returns:
+		Graph: Loaded and validated graph object
+	"""
+	with open(KRUSKAL_CASES_FILE, "r", encoding="utf-8") as f:
+		collection = json.load(f)
+	
+	graph_data = collection["graphs"][case_name]
+	wrapped = {"graph": graph_data}
+	return load_graph_from_json(wrapped)
 
 
 def _extract_edges(result):
@@ -65,7 +106,7 @@ def _contains_cycle(nodes, edges):
 
 
 def test_kruskal_simple_graph():
-	graph = load_graph("data/kruskal_simple_graph.json")
+	graph = load_kruskal_graph("simple")
 	result = kruskal_module.kruskal(graph)
 
 	assert _extract_total_weight(result) == 3
@@ -73,7 +114,7 @@ def test_kruskal_simple_graph():
 
 
 def test_kruskal_multiple_choices_global_min_cost():
-	graph = load_graph("data/kruskal_choice_graph.json")
+	graph = load_kruskal_graph("choice")
 	result = kruskal_module.kruskal(graph)
 
 	assert _extract_total_weight(result) == 4
@@ -81,7 +122,7 @@ def test_kruskal_multiple_choices_global_min_cost():
 
 
 def test_kruskal_undirected_standard_case():
-	graph = load_graph("data/undirected_graph.json")
+	graph = load_kruskal_graph("simple")
 	result = kruskal_module.kruskal(graph)
 
 	assert _extract_total_weight(result) == 3
@@ -89,7 +130,7 @@ def test_kruskal_undirected_standard_case():
 
 
 def test_kruskal_result_is_tree_without_cycles_and_n_minus_one_edges():
-	graph = load_graph("data/kruskal_choice_graph.json")
+	graph = load_kruskal_graph("choice")
 	result = kruskal_module.kruskal(graph)
 
 	edges = _extract_edges(result)
@@ -98,14 +139,14 @@ def test_kruskal_result_is_tree_without_cycles_and_n_minus_one_edges():
 
 
 def test_kruskal_total_weight_is_minimal():
-	graph = load_graph("data/kruskal_min_cost_graph.json")
+	graph = load_kruskal_graph("min_cost")
 	result = kruskal_module.kruskal(graph)
 
 	assert _extract_total_weight(result) == 6
 
 
 def test_kruskal_negative_weights_are_supported():
-	graph = load_graph("data/kruskal_negative_weights_graph.json")
+	graph = load_kruskal_graph("negative_weights")
 	result = kruskal_module.kruskal(graph)
 
 	assert _extract_total_weight(result) == 1
@@ -113,7 +154,7 @@ def test_kruskal_negative_weights_are_supported():
 
 
 def test_kruskal_cycles_are_avoided():
-	graph = load_graph("data/kruskal_cycle_graph.json")
+	graph = load_kruskal_graph("cycle")
 	result = kruskal_module.kruskal(graph)
 
 	edges = _extract_edges(result)
@@ -122,14 +163,14 @@ def test_kruskal_cycles_are_avoided():
 
 
 def test_kruskal_unsorted_edges_input_still_works():
-	graph = load_graph("data/kruskal_unsorted_edges_graph.json")
+	graph = load_kruskal_graph("unsorted_edges")
 	result = kruskal_module.kruskal(graph)
 
 	assert _extract_total_weight(result) == 6
 
 
 def test_kruskal_disconnected_graph_returns_forest():
-	graph = load_graph("data/disconnected_graph.json")
+	graph = load_kruskal_graph("disconnected")
 	result = kruskal_module.kruskal(graph)
 
 	edges = _extract_edges(result)
@@ -139,7 +180,7 @@ def test_kruskal_disconnected_graph_returns_forest():
 
 
 def test_kruskal_single_vertex_graph():
-	graph = load_graph("data/kruskal_single_vertex_graph.json")
+	graph = load_kruskal_graph("single_vertex")
 	result = kruskal_module.kruskal(graph)
 
 	assert _extract_total_weight(result) == 0
@@ -147,7 +188,7 @@ def test_kruskal_single_vertex_graph():
 
 
 def test_kruskal_graph_without_edges():
-	graph = load_graph("data/kruskal_no_edges_graph.json")
+	graph = load_kruskal_graph("no_edges")
 	result = kruskal_module.kruskal(graph)
 
 	assert _extract_total_weight(result) == 0
@@ -155,7 +196,7 @@ def test_kruskal_graph_without_edges():
 
 
 def test_kruskal_duplicate_edges():
-	graph = load_graph("data/kruskal_duplicate_edges_graph.json")
+	graph = load_kruskal_graph("duplicate_edges")
 	result = kruskal_module.kruskal(graph)
 
 	assert _extract_total_weight(result) == 3
@@ -163,7 +204,7 @@ def test_kruskal_duplicate_edges():
 
 
 def test_kruskal_self_loops_are_ignored():
-	graph = load_graph("data/kruskal_self_loop_graph.json")
+	graph = load_kruskal_graph("self_loop")
 	result = kruskal_module.kruskal(graph)
 
 	assert _extract_total_weight(result) == 4
@@ -171,7 +212,7 @@ def test_kruskal_self_loops_are_ignored():
 
 
 def test_kruskal_equal_weights():
-	graph = load_graph("data/kruskal_equal_weights_graph.json")
+	graph = load_kruskal_graph("equal_weights")
 	result = kruskal_module.kruskal(graph)
 
 	assert _extract_total_weight(result) == 3
@@ -179,7 +220,7 @@ def test_kruskal_equal_weights():
 
 
 def test_kruskal_output_structure_is_coherent():
-	graph = load_graph("data/kruskal_simple_graph.json")
+	graph = load_kruskal_graph("simple")
 	result = kruskal_module.kruskal(graph)
 
 	assert isinstance(result, dict)
