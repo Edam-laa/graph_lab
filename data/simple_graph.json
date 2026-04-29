@@ -26,7 +26,7 @@
   },
 
   "algorithm": {
-    "name": "dijkstra",
+    "name": "welsh_powell",
     "category": "shortest_path",
     "params": {
       "source": "A",

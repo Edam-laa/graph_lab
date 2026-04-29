@@ -151,6 +151,7 @@ class Graph:
     # ---------------------------
     # ADD NODES & EDGES
     # ---------------------------
+
     def add_node(self, node):
         if node not in self.nodes:
             self.nodes.add(node)
@@ -170,7 +171,24 @@ class Graph:
     # ---------------------------
     def get_neighbors(self, node):
         return self.adj_list.get(node, [])
-
+    def get_all_adjacent(self, node):
+        """
+        Returns all nodes connected to this node, 
+        ignoring direction. Crucial for Welsh-Powell.
+        """
+        adjacent = set()
+        # Outgoing
+        for v, w, c in self.adj_list.get(node, []):
+            adjacent.add(v)
+        
+        # Incoming (We have to scan the whole graph)
+        if self.directed:
+            for u in self.adj_list:
+                for v, w, c in self.adj_list[u]:
+                    if v == node:
+                        adjacent.add(u)
+        
+        return list(adjacent)
     def get_nodes(self):
         return sorted(self.nodes)
 
