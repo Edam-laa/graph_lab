@@ -1,40 +1,32 @@
 {
   "graph": {
-    "nodes": ["A", "B", "C"],
+    "nodes": ["S", "A", "B", "T"],
     "edges": [
-      {
-        "id": "e1",
-        "from": "A",
-        "to": "B",
-        "weight": 1,
-        "capacity": null
-      },
-      {
-        "id": "e2",
-        "from": "B",
-        "to": "C",
-        "weight": 2,
-        "capacity": null
-      }
+      {"from": "S", "to": "A", "capacity": 10},
+      {"from": "S", "to": "B", "capacity": 5},
+      {"from": "A", "to": "B", "capacity": 15},
+      {"from": "A", "to": "T", "capacity": 10},
+      {"from": "B", "to": "T", "capacity": 10}
     ],
     "directed": true,
     "metadata": {
-      "name": "Simple Graph",
-      "description": "A basic directed graph for testing",
-      "allow_negative_weights": false
+      "name": "",
+      "description": "",
+      "allow_negative_weights": true
     }
   },
 
   "algorithm": {
-    "name": "dijkstra",
-    "category": "shortest_path",
+    "name": "ford_fulkerson",
+    "category": "max_flow",
     "params": {
-      "source": "A",
-      "target": "C"
+      "source": "S",
+      "sink": "T"
     },
     "constraints_check": {
-      "requires_positive_weights": true,
-      "requires_connected": false,
+      "requires_positive_weights": false,
+      "requires_positive_capacity": true,
+      "requires_connected": true,
       "requires_dag": false
     }
   },
@@ -43,7 +35,8 @@
     "execution_time": null,
     "complexity": null,
     "status": "not_started",
-    "message": ""
+    "message": "",
+    "warnings": []
   },
 
   "result": {
@@ -60,7 +53,24 @@
       "node_colors": {},
       "edge_colors": {}
     },
-    "max_flow": null,
+    "flow": {
+      "value": null,
+      "augmenting_paths": [],
+      "edge_flows": {}
+    },
+    "traversal": {
+      "order": [],
+      "tree_edges": []
+    },
+    "graph_properties": {
+      "is_connected": null,
+      "is_strongly_connected": null,
+      "is_tree": null,
+      "is_bipartite": null,
+      "is_eulerian": null,
+      "has_cycle": null,
+      "is_weighted": null
+    },
     "steps": []
   },
 
