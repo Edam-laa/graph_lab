@@ -46,19 +46,6 @@ def execute_algorithm(json_data):
             }
 
             complexity = "O((V + E) log V)"
-        elif algo_name == "welsh_powell":
-            result = welsh_powell(graph)
-
-            output = {
-                "type": "coloring",
-                "coloring": {
-                    "node_colors": result["node_colors"],
-                    "edge_colors": {}
-                },
-                "steps": result["steps"]
-            }
-
-            complexity = "O(V^2)"
         elif algo_name == "bellman_ford":
             source = params["source"]
             result = bellman_ford(graph, source)
@@ -68,46 +55,6 @@ def execute_algorithm(json_data):
                 "steps": result["steps"]
             }
             complexity = "O(V * E)"
-        elif algo_name == "kruskal":
-            result = kruskal(graph)
-            output = {
-                "type": "mst",
-                "mst_edges": result["mst_edges"],
-                "steps": result["steps"]
-            }
-            complexity = "O(E log E)"
-        elif algo_name == "connected_components":
-            result = connected_components(graph)
-            output = {
-                "type": "connectivity",
-                "components": result["components"],
-                "steps": result["steps"]
-            }
-            complexity = "O(V + E)"
-        elif algo_name == "strongly_connected":
-            result = strongly_connected_components(graph)
-            output = {
-                "type": "strongly_connected",
-                "components": result["components"],
-                "steps": result["steps"]
-            }
-            complexity = "O(V + E)"
-        elif algo_name == "eulerian_path":
-            result = eulerian_path(graph)
-            output = {
-                "type": "eulerian_path",
-                "eulerian_path": result["path"],
-                "steps": result["steps"]
-            }
-            complexity = "O(E)"
-        elif algo_name == "prim":
-            result = prim(graph)
-            output = {
-                "type": "mst",
-                "mst_edges": result["mst_edges"],
-                "steps": result["steps"]
-            }
-            complexity = "O(E log V)"
         elif algo_name == "bellman":
             source = params["source"]
             target = params.get("target")
