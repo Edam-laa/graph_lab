@@ -120,10 +120,6 @@ class Graph:
     # ---------------------------
     # ADD NODES & EDGES
     # ---------------------------
-<<<<<<< HEAD
-=======
-
->>>>>>> origin/Taki
     def add_node(self, node):
         if node not in self.nodes:
             self.nodes.add(node)
@@ -143,9 +139,6 @@ class Graph:
     # ---------------------------
     def get_neighbors(self, node):
         return self.adj_list.get(node, [])
-<<<<<<< HEAD
-
-=======
     def get_all_adjacent(self, node):
         """
         Returns all nodes connected to this node, 
@@ -164,7 +157,6 @@ class Graph:
                         adjacent.add(u)
         
         return list(adjacent)
->>>>>>> origin/Taki
     def get_nodes(self):
         return sorted(self.nodes)
 
