@@ -9,6 +9,33 @@ from app.algorithms.connectivity.connected_components import is_connected
 from app.algorithms.connectivity.strongly_connected import is_strongly_connected
 from app.algorithms.eulerian.eulerian_path import check_eulerian_status, find_eulerian_tour
 from app.algorithms.coloring.welsh_powell import welsh_powell
+from app.algorithms.mst.kruskal import kruskal
+from app.algorithms.mst.prim    import prim
+
+def handle_kruskal(graph, params):
+    result = kruskal(graph)
+
+    return {
+        "type":       "mst",
+        "mst_edges":  result["mst_edges"],
+        "distances":  {"total_weight": result["total_weight"]},
+        "steps":      result.get("steps", []),
+        "complexity": "O(E log E)"
+    }
+
+
+def handle_prim(graph, params):
+    # Sommet de départ optionnel depuis params
+    start  = params.get("source", None)
+    result = prim(graph, start=start)
+
+    return {
+        "type":       "mst",
+        "mst_edges":  result["mst_edges"],
+        "distances":  {"total_weight": result["total_weight"]},
+        "steps":      result.get("steps", []),
+        "complexity": "O((V + E) log V)"
+    }
 
 def handle_dijkstra(graph, params):
     source = params.get("source")
@@ -108,16 +135,17 @@ def handle_welsh_powell(graph, params):
 # --- THE MAPPING DICTIONARY ---
 
 ALGO_REGISTRY = {
-    "dijkstra": handle_dijkstra,
-    "bellman_ford": handle_bellman_ford,
-    "bellman": handle_bellman,
-    "ford_fulkerson": handle_ford_fulkerson,
-    "connectivity": handle_connectivity,
+    "dijkstra":          handle_dijkstra,
+    "bellman_ford":      handle_bellman_ford,
+    "bellman":           handle_bellman,
+    "ford_fulkerson":    handle_ford_fulkerson,
+    "connectivity":      handle_connectivity,
     "strong_connectivity": handle_strong_connectivity,
-    "eulerian": handle_eulerian,
-    "welsh_powell": handle_welsh_powell
+    "eulerian":          handle_eulerian,
+    "welsh_powell":      handle_welsh_powell,
+    "kruskal":           handle_kruskal,   # ← ton ajout
+    "prim":              handle_prim,      # ← ton ajout
 }
-
 
 def execute_algorithm(json_data):
     try:
