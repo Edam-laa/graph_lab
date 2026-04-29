@@ -1,5 +1,6 @@
 {
   "graph": {
+
     "nodes": ["S", "A", "B", "T"],
     "edges": [
       {"from": "S", "to": "A", "capacity": 10},
