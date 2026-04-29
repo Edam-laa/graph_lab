@@ -1,0 +1,482 @@
+{
+  "graphs": {
+    "empty_graph": {
+      "nodes": [],
+      "edges": [],
+      "directed": false,
+      "metadata": {
+        "name": "Empty Graph",
+        "description": "Graph with no vertices and no edges",
+        "allow_negative_weights": false
+      }
+    },
+    "single_vertex_graph": {
+      "nodes": ["A"],
+      "edges": [],
+      "directed": false,
+      "metadata": {
+        "name": "Single Vertex Graph",
+        "description": "One isolated node with no edges",
+        "allow_negative_weights": false
+      }
+    },
+    "single_edge_undirected_graph": {
+      "nodes": ["A", "B"],
+      "edges": [
+        {"id": "e1", "from": "A", "to": "B", "weight": 1, "capacity": null}
+      ],
+      "directed": false,
+      "metadata": {
+        "name": "Single Edge Undirected Graph",
+        "description": "Simple undirected path of length one",
+        "allow_negative_weights": false
+      }
+    },
+    "simple_undirected_eulerian_circuit": {
+      "nodes": ["A", "B", "C", "D"],
+      "edges": [
+        {"id": "e1", "from": "A", "to": "B", "weight": 1, "capacity": null},
+        {"id": "e2", "from": "B", "to": "C", "weight": 1, "capacity": null},
+        {"id": "e3", "from": "C", "to": "D", "weight": 1, "capacity": null},
+        {"id": "e4", "from": "D", "to": "A", "weight": 1, "capacity": null}
+      ],
+      "directed": false,
+      "metadata": {
+        "name": "Simple Undirected Eulerian Circuit",
+        "description": "All vertices have even degree",
+        "allow_negative_weights": false
+      }
+    },
+    "simple_undirected_eulerian_path": {
+      "nodes": ["A", "B", "C"],
+      "edges": [
+        {"id": "e1", "from": "A", "to": "B", "weight": 1, "capacity": null},
+        {"id": "e2", "from": "B", "to": "C", "weight": 1, "capacity": null}
+      ],
+      "directed": false,
+      "metadata": {
+        "name": "Simple Undirected Eulerian Path",
+        "description": "Exactly two odd-degree nodes",
+        "allow_negative_weights": false
+      }
+    },
+    "undirected_non_eulerian_graph": {
+      "nodes": ["A", "B", "C", "D"],
+      "edges": [
+        {"id": "e1", "from": "A", "to": "B", "weight": 1, "capacity": null},
+        {"id": "e2", "from": "A", "to": "C", "weight": 1, "capacity": null},
+        {"id": "e3", "from": "A", "to": "D", "weight": 1, "capacity": null}
+      ],
+      "directed": false,
+      "metadata": {
+        "name": "Undirected Non-Eulerian Graph",
+        "description": "More than two odd-degree vertices",
+        "allow_negative_weights": false
+      }
+    },
+    "disconnected_undirected_graph": {
+      "nodes": ["A", "B", "C", "D"],
+      "edges": [
+        {"id": "e1", "from": "A", "to": "B", "weight": 1, "capacity": null},
+        {"id": "e2", "from": "C", "to": "D", "weight": 1, "capacity": null}
+      ],
+      "directed": false,
+      "metadata": {
+        "name": "Disconnected Undirected Graph",
+        "description": "Two disconnected components should fail connectivity checks",
+        "allow_negative_weights": false
+      }
+    },
+    "cycle_graph": {
+      "nodes": ["A", "B", "C", "D"],
+      "edges": [
+        {"id": "e1", "from": "A", "to": "B", "weight": 1, "capacity": null},
+        {"id": "e2", "from": "B", "to": "C", "weight": 1, "capacity": null},
+        {"id": "e3", "from": "C", "to": "D", "weight": 1, "capacity": null},
+        {"id": "e4", "from": "D", "to": "A", "weight": 1, "capacity": null}
+      ],
+      "directed": false,
+      "metadata": {
+        "name": "Cycle Graph",
+        "description": "Closed cycle for traversal correctness",
+        "allow_negative_weights": false
+      }
+    },
+    "graph_with_bridge_edges": {
+      "nodes": ["A", "B", "C", "D", "E"],
+      "edges": [
+        {"id": "e1", "from": "A", "to": "B", "weight": 1, "capacity": null},
+        {"id": "e2", "from": "B", "to": "C", "weight": 1, "capacity": null},
+        {"id": "e3", "from": "C", "to": "A", "weight": 1, "capacity": null},
+        {"id": "e4", "from": "C", "to": "D", "weight": 1, "capacity": null},
+        {"id": "e5", "from": "D", "to": "E", "weight": 1, "capacity": null},
+        {"id": "e6", "from": "E", "to": "C", "weight": 1, "capacity": null}
+      ],
+      "directed": false,
+      "metadata": {
+        "name": "Graph With Bridge Edges",
+        "description": "Two cycles connected through a bridge-like articulation point",
+        "allow_negative_weights": false
+      }
+    },
+    "graph_with_multiple_cycles": {
+      "nodes": ["A", "B", "C", "D", "E"],
+      "edges": [
+        {"id": "e1", "from": "A", "to": "B", "weight": 1, "capacity": null},
+        {"id": "e2", "from": "B", "to": "C", "weight": 1, "capacity": null},
+        {"id": "e3", "from": "C", "to": "A", "weight": 1, "capacity": null},
+        {"id": "e4", "from": "C", "to": "D", "weight": 1, "capacity": null},
+        {"id": "e5", "from": "D", "to": "E", "weight": 1, "capacity": null},
+        {"id": "e6", "from": "E", "to": "C", "weight": 1, "capacity": null}
+      ],
+      "directed": false,
+      "metadata": {
+        "name": "Graph With Multiple Cycles",
+        "description": "Hierholzer backtracking on overlapping cycles",
+        "allow_negative_weights": false
+      }
+    },
+    "graph_with_self_loop": {
+      "nodes": ["A", "B", "C"],
+      "edges": [
+        {"id": "e1", "from": "A", "to": "A", "weight": 1, "capacity": null},
+        {"id": "e2", "from": "A", "to": "B", "weight": 1, "capacity": null},
+        {"id": "e3", "from": "B", "to": "C", "weight": 1, "capacity": null},
+        {"id": "e4", "from": "C", "to": "A", "weight": 1, "capacity": null}
+      ],
+      "directed": false,
+      "metadata": {
+        "name": "Graph With Self Loop",
+        "description": "Self-loop should be handled without breaking traversal",
+        "allow_negative_weights": false
+      }
+    },
+    "graph_with_parallel_edges": {
+      "nodes": ["A", "B", "C"],
+      "edges": [
+        {"id": "e1", "from": "A", "to": "B", "weight": 1, "capacity": null},
+        {"id": "e2", "from": "A", "to": "B", "weight": 1, "capacity": null},
+        {"id": "e3", "from": "B", "to": "C", "weight": 1, "capacity": null},
+        {"id": "e4", "from": "C", "to": "A", "weight": 1, "capacity": null}
+      ],
+      "directed": false,
+      "metadata": {
+        "name": "Graph With Parallel Edges",
+        "description": "Multiedge handling and edge consumption correctness",
+        "allow_negative_weights": false
+      }
+    },
+    "zero_edge_graph": {
+      "nodes": ["A", "B", "C"],
+      "edges": [],
+      "directed": false,
+      "metadata": {
+        "name": "Zero Edge Graph",
+        "description": "Vertices exist but no edges are present",
+        "allow_negative_weights": false
+      }
+    },
+    "all_edges_used_exactly_once": {
+      "nodes": ["A", "B", "C", "D"],
+      "edges": [
+        {"id": "e1", "from": "A", "to": "B", "weight": 1, "capacity": null},
+        {"id": "e2", "from": "B", "to": "C", "weight": 1, "capacity": null},
+        {"id": "e3", "from": "C", "to": "D", "weight": 1, "capacity": null},
+        {"id": "e4", "from": "D", "to": "A", "weight": 1, "capacity": null},
+        {"id": "e5", "from": "A", "to": "C", "weight": 1, "capacity": null},
+        {"id": "e6", "from": "B", "to": "D", "weight": 1, "capacity": null}
+      ],
+      "directed": false,
+      "metadata": {
+        "name": "All Edges Used Exactly Once",
+        "description": "Tour consumes every edge once in an Eulerian multicycle graph",
+        "allow_negative_weights": false
+      }
+    },
+    "returned_path_length_validation": {
+      "nodes": ["A", "B", "C", "D"],
+      "edges": [
+        {"id": "e1", "from": "A", "to": "B", "weight": 1, "capacity": null},
+        {"id": "e2", "from": "B", "to": "C", "weight": 1, "capacity": null},
+        {"id": "e3", "from": "C", "to": "D", "weight": 1, "capacity": null},
+        {"id": "e4", "from": "D", "to": "A", "weight": 1, "capacity": null}
+      ],
+      "directed": false,
+      "metadata": {
+        "name": "Returned Path Length Validation",
+        "description": "Path length should equal number of edges plus one",
+        "allow_negative_weights": false
+      }
+    },
+    "returned_circuit_start_end_equality": {
+      "nodes": ["A", "B", "C", "D"],
+      "edges": [
+        {"id": "e1", "from": "A", "to": "B", "weight": 1, "capacity": null},
+        {"id": "e2", "from": "B", "to": "C", "weight": 1, "capacity": null},
+        {"id": "e3", "from": "C", "to": "D", "weight": 1, "capacity": null},
+        {"id": "e4", "from": "D", "to": "A", "weight": 1, "capacity": null}
+      ],
+      "directed": false,
+      "metadata": {
+        "name": "Returned Circuit Start End Equality",
+        "description": "Eulerian circuit should start and end at the same node",
+        "allow_negative_weights": false
+      }
+    },
+    "returned_path_endpoints_validation": {
+      "nodes": ["A", "B", "C"],
+      "edges": [
+        {"id": "e1", "from": "A", "to": "B", "weight": 1, "capacity": null},
+        {"id": "e2", "from": "B", "to": "C", "weight": 1, "capacity": null}
+      ],
+      "directed": false,
+      "metadata": {
+        "name": "Returned Path Endpoints Validation",
+        "description": "Eulerian path should start and end at the odd-degree vertices",
+        "allow_negative_weights": false
+      }
+    },
+    "directed_eulerian_circuit": {
+      "nodes": ["A", "B", "C"],
+      "edges": [
+        {"id": "e1", "from": "A", "to": "B", "weight": 1, "capacity": null},
+        {"id": "e2", "from": "B", "to": "C", "weight": 1, "capacity": null},
+        {"id": "e3", "from": "C", "to": "A", "weight": 1, "capacity": null}
+      ],
+      "directed": true,
+      "metadata": {
+        "name": "Directed Eulerian Circuit",
+        "description": "Equal in-degree and out-degree at every node",
+        "allow_negative_weights": false
+      }
+    },
+    "directed_eulerian_path": {
+      "nodes": ["A", "B", "C", "D"],
+      "edges": [
+        {"id": "e1", "from": "A", "to": "B", "weight": 1, "capacity": null},
+        {"id": "e2", "from": "B", "to": "C", "weight": 1, "capacity": null},
+        {"id": "e3", "from": "C", "to": "A", "weight": 1, "capacity": null},
+        {"id": "e4", "from": "A", "to": "D", "weight": 1, "capacity": null}
+      ],
+      "directed": true,
+      "metadata": {
+        "name": "Directed Eulerian Path",
+        "description": "One source has out-degree minus in-degree equal to one and one sink has the inverse imbalance",
+        "allow_negative_weights": false
+      }
+    },
+    "directed_non_eulerian_graph": {
+      "nodes": ["A", "B", "C", "D"],
+      "edges": [
+        {"id": "e1", "from": "A", "to": "B", "weight": 1, "capacity": null},
+        {"id": "e2", "from": "B", "to": "C", "weight": 1, "capacity": null},
+        {"id": "e3", "from": "C", "to": "D", "weight": 1, "capacity": null}
+      ],
+      "directed": true,
+      "metadata": {
+        "name": "Directed Non-Eulerian Graph",
+        "description": "Invalid degree imbalance for Eulerian traversal",
+        "allow_negative_weights": false
+      }
+    },
+    "disconnected_directed_graph": {
+      "nodes": ["A", "B", "C", "D"],
+      "edges": [
+        {"id": "e1", "from": "A", "to": "B", "weight": 1, "capacity": null},
+        {"id": "e2", "from": "C", "to": "D", "weight": 1, "capacity": null}
+      ],
+      "directed": true,
+      "metadata": {
+        "name": "Disconnected Directed Graph",
+        "description": "Directed graph with multiple disconnected components",
+        "allow_negative_weights": false
+      }
+    },
+    "directed_cycle_graph": {
+      "nodes": ["A", "B", "C", "D"],
+      "edges": [
+        {"id": "e1", "from": "A", "to": "B", "weight": 1, "capacity": null},
+        {"id": "e2", "from": "B", "to": "C", "weight": 1, "capacity": null},
+        {"id": "e3", "from": "C", "to": "D", "weight": 1, "capacity": null},
+        {"id": "e4", "from": "D", "to": "A", "weight": 1, "capacity": null}
+      ],
+      "directed": true,
+      "metadata": {
+        "name": "Directed Cycle Graph",
+        "description": "Simple directed cycle for traversal correctness",
+        "allow_negative_weights": false
+      }
+    },
+    "directed_graph_with_dead_end": {
+      "nodes": ["A", "B", "C", "D"],
+      "edges": [
+        {"id": "e1", "from": "A", "to": "B", "weight": 1, "capacity": null},
+        {"id": "e2", "from": "B", "to": "C", "weight": 1, "capacity": null},
+        {"id": "e3", "from": "C", "to": "A", "weight": 1, "capacity": null},
+        {"id": "e4", "from": "C", "to": "D", "weight": 1, "capacity": null}
+      ],
+      "directed": true,
+      "metadata": {
+        "name": "Directed Graph With Dead End",
+        "description": "Sink/source imbalance with a terminal dead-end node",
+        "allow_negative_weights": false
+      }
+    },
+    "invalid_connectivity_for_directed_graph": {
+      "nodes": ["A", "B", "C"],
+      "edges": [
+        {"id": "e1", "from": "A", "to": "B", "weight": 1, "capacity": null},
+        {"id": "e2", "from": "B", "to": "A", "weight": 1, "capacity": null},
+        {"id": "e3", "from": "C", "to": "C", "weight": 1, "capacity": null}
+      ],
+      "directed": true,
+      "metadata": {
+        "name": "Invalid Connectivity For Directed Graph",
+        "description": "Weakly connected component plus isolated strongly connected self-loop component",
+        "allow_negative_weights": false
+      }
+    },
+    "edge_removal_correctness": {
+      "nodes": ["A", "B", "C", "D"],
+      "edges": [
+        {"id": "e1", "from": "A", "to": "B", "weight": 1, "capacity": null},
+        {"id": "e2", "from": "B", "to": "C", "weight": 1, "capacity": null},
+        {"id": "e3", "from": "C", "to": "A", "weight": 1, "capacity": null},
+        {"id": "e4", "from": "A", "to": "D", "weight": 1, "capacity": null},
+        {"id": "e5", "from": "D", "to": "C", "weight": 1, "capacity": null}
+      ],
+      "directed": false,
+      "metadata": {
+        "name": "Edge Removal Correctness",
+        "description": "Traversal should consume edges exactly once and not reuse them",
+        "allow_negative_weights": false
+      }
+    },
+    "duplicate_traversal_prevention": {
+      "nodes": ["A", "B", "C"],
+      "edges": [
+        {"id": "e1", "from": "A", "to": "B", "weight": 1, "capacity": null},
+        {"id": "e2", "from": "B", "to": "C", "weight": 1, "capacity": null},
+        {"id": "e3", "from": "C", "to": "A", "weight": 1, "capacity": null}
+      ],
+      "directed": false,
+      "metadata": {
+        "name": "Duplicate Traversal Prevention",
+        "description": "Triangle graph to verify no edge is traversed more than once",
+        "allow_negative_weights": false
+      }
+    },
+    "weighted_graph_compatibility": {
+      "nodes": ["A", "B", "C", "D"],
+      "edges": [
+        {"id": "e1", "from": "A", "to": "B", "weight": 7, "capacity": null},
+        {"id": "e2", "from": "B", "to": "C", "weight": 3, "capacity": null},
+        {"id": "e3", "from": "C", "to": "D", "weight": 9, "capacity": null},
+        {"id": "e4", "from": "D", "to": "A", "weight": 4, "capacity": null}
+      ],
+      "directed": false,
+      "metadata": {
+        "name": "Weighted Graph Compatibility",
+        "description": "Edge weights should not change Eulerian feasibility",
+        "allow_negative_weights": false
+      }
+    },
+    "large_sparse_graph": {
+      "nodes": ["N0", "N1", "N2", "N3", "N4", "N5", "N6", "N7", "N8", "N9", "N10", "N11", "N12", "N13", "N14", "N15", "N16", "N17", "N18", "N19"],
+      "edges": [
+        {"id": "e1", "from": "N0", "to": "N1", "weight": 1, "capacity": null},
+        {"id": "e2", "from": "N1", "to": "N2", "weight": 1, "capacity": null},
+        {"id": "e3", "from": "N2", "to": "N3", "weight": 1, "capacity": null},
+        {"id": "e4", "from": "N3", "to": "N4", "weight": 1, "capacity": null},
+        {"id": "e5", "from": "N4", "to": "N5", "weight": 1, "capacity": null},
+        {"id": "e6", "from": "N5", "to": "N0", "weight": 1, "capacity": null},
+        {"id": "e7", "from": "N10", "to": "N11", "weight": 1, "capacity": null},
+        {"id": "e8", "from": "N11", "to": "N12", "weight": 1, "capacity": null}
+      ],
+      "directed": false,
+      "metadata": {
+        "name": "Large Sparse Graph",
+        "description": "Many nodes with relatively few edges for performance checks",
+        "allow_negative_weights": false
+      }
+    },
+    "large_dense_graph": {
+      "nodes": ["A", "B", "C", "D", "E", "F"],
+      "edges": [
+        {"id": "e1", "from": "A", "to": "B", "weight": 1, "capacity": null},
+        {"id": "e2", "from": "A", "to": "C", "weight": 1, "capacity": null},
+        {"id": "e3", "from": "A", "to": "D", "weight": 1, "capacity": null},
+        {"id": "e4", "from": "B", "to": "C", "weight": 1, "capacity": null},
+        {"id": "e5", "from": "B", "to": "D", "weight": 1, "capacity": null},
+        {"id": "e6", "from": "C", "to": "D", "weight": 1, "capacity": null},
+        {"id": "e7", "from": "D", "to": "E", "weight": 1, "capacity": null},
+        {"id": "e8", "from": "E", "to": "F", "weight": 1, "capacity": null},
+        {"id": "e9", "from": "F", "to": "A", "weight": 1, "capacity": null},
+        {"id": "e10", "from": "C", "to": "E", "weight": 1, "capacity": null}
+      ],
+      "directed": false,
+      "metadata": {
+        "name": "Large Dense Graph",
+        "description": "Denser graph for traversal performance checks",
+        "allow_negative_weights": false
+      }
+    },
+    "deterministic_traversal_behavior": {
+      "nodes": ["A", "B", "C", "D"],
+      "edges": [
+        {"id": "e1", "from": "A", "to": "B", "weight": 1, "capacity": null},
+        {"id": "e2", "from": "B", "to": "C", "weight": 1, "capacity": null},
+        {"id": "e3", "from": "C", "to": "D", "weight": 1, "capacity": null},
+        {"id": "e4", "from": "D", "to": "A", "weight": 1, "capacity": null}
+      ],
+      "directed": false,
+      "metadata": {
+        "name": "Deterministic Traversal Behavior",
+        "description": "Same graph should produce stable traversal order if implementation is deterministic",
+        "allow_negative_weights": false
+      }
+    },
+    "adjacency_list_mutation_safety": {
+      "nodes": ["A", "B", "C", "D"],
+      "edges": [
+        {"id": "e1", "from": "A", "to": "B", "weight": 1, "capacity": null},
+        {"id": "e2", "from": "B", "to": "C", "weight": 1, "capacity": null},
+        {"id": "e3", "from": "C", "to": "D", "weight": 1, "capacity": null},
+        {"id": "e4", "from": "D", "to": "A", "weight": 1, "capacity": null}
+      ],
+      "directed": false,
+      "metadata": {
+        "name": "Adjacency List Mutation Safety",
+        "description": "Original graph should remain unchanged after execution",
+        "allow_negative_weights": false
+      }
+    },
+    "invalid_node_references": {
+      "nodes": ["A", "B"],
+      "edges": [
+        {"id": "e1", "from": "A", "to": "B", "weight": 1, "capacity": null},
+        {"id": "e2", "from": "B", "to": "X", "weight": 1, "capacity": null}
+      ],
+      "directed": false,
+      "metadata": {
+        "name": "Invalid Node References",
+        "description": "Contains an edge referencing a node not declared in nodes; useful for input-validation tests",
+        "allow_negative_weights": false
+      }
+    },
+    "isolated_vertices_with_eulerian_component": {
+      "nodes": ["A", "B", "C", "D", "E"],
+      "edges": [
+        {"id": "e1", "from": "A", "to": "B", "weight": 1, "capacity": null},
+        {"id": "e2", "from": "B", "to": "C", "weight": 1, "capacity": null},
+        {"id": "e3", "from": "C", "to": "A", "weight": 1, "capacity": null}
+      ],
+      "directed": false,
+      "metadata": {
+        "name": "Isolated Vertices With Eulerian Component",
+        "description": "Eulerian component plus isolated vertices to test connectivity rules",
+        "allow_negative_weights": false
+      }
+    }
+  }
+}

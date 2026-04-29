@@ -1,7 +1,6 @@
 import json
 
 
-<<<<<<< HEAD
 def load_graph(filepath):
     with open(filepath, "r", encoding="utf-8") as file:
         json_data = json.load(file)
@@ -13,9 +12,6 @@ def load_graph_from_json(json_data):
     if isinstance(json_data, str):
         return load_graph(json_data)
 
-=======
-def load_graph_from_json(json_data):
->>>>>>> origin/Taki
     from app.core.graph import Graph
     graph_data = json_data["graph"]
 
