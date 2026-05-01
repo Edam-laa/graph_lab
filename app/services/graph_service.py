@@ -1,6 +1,122 @@
 import time
 from app.utils.file_loader import load_graph_from_json
 from app.algorithms.shortest_path.dijkstra import dijkstra, reconstruct_path
+from app.algorithms.shortest_path.bellman_ford import bellman_ford
+from app.algorithms.shortest_path.bellman import bellman
+from app.algorithms.flow.ford_fulkerson import ford_fulkerson
+
+from app.algorithms.connectivity.connected_components import is_connected
+from app.algorithms.connectivity.strongly_connected import is_strongly_connected
+from app.algorithms.eulerian.eulerian_path import check_eulerian_status, find_eulerian_tour
+from app.algorithms.coloring.welsh_powell import welsh_powell
+
+def handle_dijkstra(graph, params):
+    source = params.get("source")
+    target = params.get("target")
+    if not source:
+        raise ValueError("Dijkstra requires a 'source' parameter.")
+    
+    result = dijkstra(graph, source)
+    path = reconstruct_path(result["previous"], source, target) if target else []
+    
+    return {
+        "type": "shortest_path",
+        "distances": result["distances"],
+        "path": path,
+        "steps": result.get("steps", []),
+        "complexity": "O((V + E) log V)"
+    }
+def handle_bellman_ford(graph, params):
+    source = params.get("source")
+    if not source:
+        raise ValueError("Bellman-Ford requires a 'source' parameter.")
+    
+    result = bellman_ford(graph, source)
+    
+    return {
+        "type": "shortest_path",
+        "distances": result["distances"],
+        "steps": result.get("steps", []),
+        "complexity": "O(V * E)"
+    }
+def handle_bellman(graph, params):
+    source = params.get("source")
+    target = params.get("target")
+    if not source:
+        raise ValueError("Bellman requires a 'source' parameter.")
+
+    result = bellman(graph, source)
+    path = reconstruct_path(result["previous"], source, target) if target else []
+
+    return {
+        "type": "shortest_path",
+        "distances": result["distances"],
+        "path": path,
+        "steps": result.get("steps", []),
+        "complexity": "O(V * E)"
+    }
+def handle_ford_fulkerson(graph, params):
+    source = params.get("source")
+    sink = params.get("sink")
+    if not source or not sink:
+        raise ValueError("Ford-Fulkerson requires 'source' and 'sink' parameters.")
+    
+    result = ford_fulkerson(graph, source, sink)
+    
+    return {
+        "type": "max_flow",
+        "flow": {
+            "value": result["max_flow"],
+            "augmenting_paths": result["augmenting_paths"]
+        },
+        "steps": result.get("steps", []),
+        "complexity": "O(E * max_flow)"
+    }
+def handle_connectivity(graph, params):
+    return {
+        "type": "connectivity_check",
+        "components": [list(graph.nodes)] if is_connected(graph) else [], # Simplified
+        "complexity": "O(V + E)"
+    }
+
+def handle_strong_connectivity(graph, params):
+    return {
+        "type": "strong_connectivity_check",
+        "is_strongly_connected": is_strongly_connected(graph),
+        "complexity": "O(V + E)"
+    }
+
+def handle_eulerian(graph, params):
+    status_code = check_eulerian_status(graph)
+    tour = find_eulerian_tour(graph) if status_code > 0 else []
+    
+    # Map to your JSON result fields
+    res = {"type": "eulerian_analysis", "complexity": "O(V + E)"}
+    if status_code == 2:
+        res["eulerian_circuit"] = tour
+    elif status_code == 1:
+        res["eulerian_path"] = tour
+    return res
+
+def handle_welsh_powell(graph, params):
+    coloring = welsh_powell(graph)
+    return {
+        "type": "graph_coloring",
+        "coloring": {"node_colors": coloring},
+        "complexity": "O(V² + V log V)"
+    }
+# --- THE MAPPING DICTIONARY ---
+
+ALGO_REGISTRY = {
+    "dijkstra": handle_dijkstra,
+    "bellman_ford": handle_bellman_ford,
+    "bellman": handle_bellman,
+    "ford_fulkerson": handle_ford_fulkerson,
+    "connectivity": handle_connectivity,
+    "strong_connectivity": handle_strong_connectivity,
+    "eulerian": handle_eulerian,
+    "welsh_powell": handle_welsh_powell
+}
 
 from app.algorithms.connectivity.connected_components import is_connected
 from app.algorithms.connectivity.strongly_connected import is_strongly_connected
@@ -104,9 +220,10 @@ def execute_algorithm(json_data):
         return json_data
 
     except Exception as e:
+        end_time = time.time()
         json_data["execution"].update({
             "status": "error",
             "message": str(e),
-            "execution_time": None
+            "execution_time": round(end_time - start_time, 6)
         })
         return json_data
