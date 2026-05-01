@@ -13,8 +13,7 @@
     "directed": true,
     "metadata": {
       "name": "",
-      "description": "",
-      "allow_negative_weights": false
+      "description": ""    
     }
   },
 
@@ -24,16 +23,9 @@
     "params": {
       "source": "A",
       "target": "E",
-      "sink": null
-    },
-    "constraints_check": {
-      "requires_positive_weights": false,
-      "requires_positive_capacity": true,
-      "requires_connected": true,
-      "requires_dag": false
+      "sink": "E"
     }
   },
-
   "execution": {
     "execution_time": null,
     "complexity": null,
@@ -85,12 +77,5 @@
       "is_weighted": null
     },
     "steps": []
-  },
-
-  "options": {
-    "return_path": true,
-    "return_steps": true,
-    "measure_time": true,
-    "visualize": false
   }
 }
