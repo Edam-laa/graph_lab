@@ -1,40 +1,70 @@
 def welsh_powell(graph):
     """
-    Attribue une couleur à chaque nœud du graphe en utilisant l'algorithme de Welsh-Powell.
-    Retourne un dictionnaire {nœud: couleur}.
+    Welsh-Powell graph coloring with step-by-step trace.
+    Returns:
+        {
+            "coloring": {node: color},
+            "steps": [...]
+        }
     """
-    # 1. Récupérer tous les nœuds avec leur degré et les trier par ordre décroissant
-    # On utilise la méthode .degree(node) de votre classe
-    nodes_sorted = sorted(graph.get_nodes(), key=lambda x: graph.degree(x), reverse=True)
-    
-    # Dictionnaire pour stocker le résultat {nœud: index_couleur}
+
+    steps = []
+
+    def log(code, msg):
+        steps.append({
+            "indexCode": code,
+            "message": msg
+        })
+
+    log("WP0", "Start Welsh-Powell algorithm")
+
+    # 1. Sort nodes by degree
+    nodes_sorted = sorted(
+        graph.get_nodes(),
+        key=lambda x: graph.degree(x),
+        reverse=True
+    )
+
+    log("WP1", f"Nodes sorted by degree: {nodes_sorted}")
+
     color_map = {}
-    
-    # 2. Initialiser la liste des couleurs disponibles
     current_color = 0
-    
-    # Tant qu'il reste des nœuds non colorés
-    print(nodes_sorted)
+
+    # 2. Coloring loop
     while len(color_map) < len(nodes_sorted):
-        print(len(color_map),len(nodes_sorted))
-        # On parcourt les nœuds dans l'ordre du tri
+
+        log("WP2", f"Starting coloring phase with color {current_color}")
+
         for node in nodes_sorted:
-            print(node)
-            if node not in color_map:
-                # Vérifier si aucun voisin n'a déjà la couleur actuelle
-                can_color = True
-                print(graph.get_all_adjacent(node))
-                for neighbor in graph.get_all_adjacent(node):
-                 
-                    if color_map.get(neighbor) == current_color:
-                       
-                        can_color = False
-                        break
-                
-                if can_color:
-                    color_map[node] = current_color
-        
-        # Passer à la couleur suivante pour le prochain passage
+
+            if node in color_map:
+                continue
+
+            neighbors = graph.get_all_adjacent(node)
+            log("WP3", f"Checking node {node}, neighbors = {neighbors}")
+
+            can_color = True
+
+            for neighbor in neighbors:
+                if color_map.get(neighbor) == current_color:
+                    can_color = False
+                    log(
+                        "WP4",
+                        f"Conflict: {node} cannot take color {current_color} "
+                        f"because neighbor {neighbor} has same color"
+                    )
+                    break
+
+            if can_color:
+                color_map[node] = current_color
+                log("WP5", f"Assign color {current_color} to node {node}")
+
         current_color += 1
-        print(current_color)
-    return color_map
+        log("WP6", f"Moving to next color → {current_color}")
+
+    log("WP7", f"Final coloring completed: {color_map}")
+
+    return {
+        "coloring": color_map,
+        "steps": steps
+    }

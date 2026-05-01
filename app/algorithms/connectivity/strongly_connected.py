@@ -1,41 +1,85 @@
 def is_strongly_connected(graph):
     """
-    Verifies if every node is reachable from every other node 
-    following the direction of the edges.
+    Verifies strong connectivity using DFS + reversed graph (Kosaraju logic).
+    Returns:
+        {
+            "strongly_connected": bool,
+            "steps": [...]
+        }
     """
-    nodes = graph.get_nodes()
-    if not nodes:
-        return True
 
-    # If the graph is undirected, strong connectivity is just connectivity
+    steps = []
+
+    def log(code, msg):
+        steps.append({
+            "indexCode": code,
+            "message": msg
+        })
+
+    log("SC0", "Start strong connectivity check")
+
+    nodes = graph.get_nodes()
+
+    if not nodes:
+        log("SC1", "Empty graph → considered strongly connected")
+        return {
+            "strongly_connected": True,
+            "steps": steps
+        }
+
+    # If undirected graph → reuse simple connectivity
     if not graph.directed:
+        log("SC2", "Graph is undirected → fallback to connectivity check")
         from connectivity import is_connected
-        return is_connected(graph)
+        result = is_connected(graph)
+        return {
+            "strongly_connected": result["connected"],
+            "steps": result["steps"]
+        }
 
     start_node = nodes[0]
+    log("SC3", f"Starting node selected: {start_node}")
 
-    # Step 1: Check if all nodes are reachable from start_node
-    if not _can_reach_all(graph, start_node, graph.adj_list):
-        return False
+    # -------------------------
+    # PASS 1: normal graph DFS
+    # -------------------------
+    log("SC4", "PASS 1: DFS on original graph")
 
-    # Step 2: Reverse all edges and check reachability again
-    # This is a standard part of Kosaraju's algorithm logic
+    if not _can_reach_all_with_steps(graph.adj_list, graph, start_node, steps, "SC5"):
+        log("SC8", "Not all nodes reachable in original graph → not strongly connected")
+        return {
+            "strongly_connected": False,
+            "steps": steps
+        }
+
+    log("SC6", "All nodes reachable in original graph")
+
+    # -------------------------
+    # PASS 2: reversed graph
+    # -------------------------
+    log("SC7", "Building reversed graph (transpose)")
+
     reversed_adj = {node: [] for node in nodes}
+
     for u in graph.adj_list:
         for v, w, c in graph.adj_list[u]:
             reversed_adj[v].append((u, w, c))
-            
-    return _can_reach_all(graph, start_node, reversed_adj)
+            log("SC7", f"Reverse edge {u} → {v} becomes {v} → {u}")
 
-def _can_reach_all(graph, start_node, adj):
-    """Helper DFS to check reachability using a specific adjacency mapping."""
-    visited = {start_node}
-    stack = [start_node]
-    while stack:
-        curr = stack.pop()
-        for edge_data in adj.get(curr, []):
-            neighbor = edge_data[0]
-            if neighbor not in visited:
-                visited.add(neighbor)
-                stack.append(neighbor)
-    return len(visited) == len(graph.nodes)
+    log("SC4", "PASS 2: DFS on reversed graph")
+
+    if not _can_reach_all_with_steps(reversed_adj, graph, start_node, steps, "SC5"):
+        log("SC8", "Not all nodes reachable in reversed graph → not strongly connected")
+        return {
+            "strongly_connected": False,
+            "steps": steps
+        }
+
+    log("SC9", "All nodes reachable in reversed graph")
+
+    log("SC10", "Graph is strongly connected")
+
+    return {
+        "strongly_connected": True,
+        "steps": steps
+    }

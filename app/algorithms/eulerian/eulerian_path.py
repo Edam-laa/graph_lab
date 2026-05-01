@@ -182,68 +182,94 @@ def _check_directed_degrees(graph):
 
 
 def find_eulerian_tour(graph):
-    """
-    Trouve le chemin/circuit eulérien avec l'algorithme de Hierholzer.
-    
-    Returns:
-        Liste des nœuds formant le tour eulérien, ou None si impossible
-    """
+    steps = []
+
+    def log(code, msg):
+        steps.append({
+            "indexCode": code,
+            "message": msg
+        })
+
+    log("E0", "Start Hierholzer algorithm")
+
     status = check_eulerian_status(graph)
+    log("E1", f"Eulerian status = {status}")
+
     if status == 0:
-        return None
-    
+        log("E8", "Graph is not Eulerian → return empty result")
+        return {
+            "tour": [],
+            "steps": steps
+        }
+
     nodes = graph.get_nodes()
-    
-    # CAS TRIVIAL: graphe vide ou un seul nœud
+
+    # trivial case
     if len(nodes) <= 1:
-        return nodes
-    
-    # Copier la liste d'adjacence pour "consommer" les arêtes
-    adj = {}
-    for u in graph.adj_list:
-        adj[u] = [(v, w, c) for v, w, c in graph.adj_list[u]]
-    
-    # S'assurer que tous les nœuds existent dans adj
-    for node in nodes:
-        if node not in adj:
-            adj[node] = []
-    
-    # Déterminer le nœud de départ
-    start_node = _find_start_node(graph, adj, status)
-    
-    # Algorithme de Hierholzer
-    stack = [start_node]
-    path = []
-    
+        log("E7", "Trivial graph → single node tour")
+        return {
+            "tour": nodes,
+            "steps": steps
+        }
+
+    # copy adjacency list (important for edge removal)
+    adj = {u: list(graph.adj_list.get(u, [])) for u in nodes}
+
+    log("E2", "Adjacency list copied for modification")
+
+    # find start node
+    start = _find_start_node(graph, adj, status)
+    log("E4", f"Start node selected: {start}")
+
+    stack = [start]
+    tour = []
+
+    log("E4", f"Initialize stack = {stack}")
+
+    # Hierholzer main loop
     while stack:
         u = stack[-1]
-        
+        log("E4", f"Top of stack: {u}")
+
         if adj[u]:
-            # Prendre la prochaine arête
             v, w, c = adj[u].pop()
-            
-            # Pour graphe non-orienté: supprimer l'arête inverse
+
+            log("E5", f"Traverse edge {u} → {v}")
+
             if not graph.directed:
                 _remove_reverse_edge(adj, v, u)
-            
-            stack.append(v)
-        else:
-            # Pas d'arête sortante: ajouter au chemin
-            path.append(stack.pop())
-    
-    # Inverser pour obtenir l'ordre correct
-    path.reverse()
-    
-    # Vérification: le chemin doit utiliser toutes les arêtes
-    total_edges = sum(len(graph.adj_list.get(node, [])) for node in nodes)
-    if not graph.directed:
-        total_edges //= 2  # Compter chaque arête une seule fois
-    
-    if len(path) - 1 != total_edges:
-        return None  # Échec de l'algorithme
-    
-    return path
+                log("E5", f"Remove reverse edge {v} → {u}")
 
+            stack.append(v)
+            log("E5", f"Push {v} to stack → {stack}")
+
+        else:
+            popped = stack.pop()
+            tour.append(popped)
+            log("E6", f"Backtrack {popped}, add to tour")
+
+    tour.reverse()
+
+    log("E7", f"Final Eulerian tour = {tour}")
+
+    # validation
+    total_edges = sum(len(graph.adj_list.get(n, [])) for n in nodes)
+    if not graph.directed:
+        total_edges //= 2
+
+    if len(tour) - 1 != total_edges:
+        log("E8", "Edge count mismatch → invalid tour")
+        return {
+            "tour": [],
+            "steps": steps
+        }
+
+    log("E7", "Valid Eulerian tour constructed")
+
+    return {
+        "tour": tour,
+        "steps": steps
+    }
 
 def _find_start_node(graph, adj, status):
     """Trouve le nœud de départ optimal pour Hierholzer."""
