@@ -1,0 +1,711 @@
+{
+  "graphs": {
+    "empty": {
+      "nodes": [],
+      "edges": [],
+      "directed": false,
+      "metadata": {
+        "name": "Empty graph",
+        "description": "No vertices and no edges",
+        "expect_error": true,
+        "expected_error_type": "ValueError"
+      }
+    },
+    "single_vertex": {
+      "nodes": ["A"],
+      "edges": [],
+      "directed": false,
+      "metadata": {
+        "name": "Single vertex",
+        "description": "Trivial MST with cost 0",
+        "expected_total_weight": 0,
+        "expected_mst_edges": 0
+      }
+    },
+    "two_vertices_with_edge": {
+      "nodes": ["A", "B"],
+      "edges": [
+        {"id": "e1", "from": "A", "to": "B", "weight": 7}
+      ],
+      "directed": false,
+      "metadata": {
+        "name": "Two vertices connected",
+        "description": "Unique edge must be selected",
+        "expected_total_weight": 7,
+        "expected_mst_edges": 1
+      }
+    },
+    "two_vertices_no_edge": {
+      "nodes": ["A", "B"],
+      "edges": [],
+      "directed": false,
+      "metadata": {
+        "name": "Two vertices without edge",
+        "description": "Disconnected graph, MST impossible",
+        "expect_error": true,
+        "expected_error_type": "ValueError"
+      }
+    },
+    "non_connected_two_components": {
+      "nodes": ["A", "B", "C", "D"],
+      "edges": [
+        {"id": "e1", "from": "A", "to": "B", "weight": 1},
+        {"id": "e2", "from": "C", "to": "D", "weight": 2}
+      ],
+      "directed": false,
+      "metadata": {
+        "name": "Non connected graph",
+        "description": "Multiple connected components",
+        "expect_error": true,
+        "expected_error_type": "ValueError"
+      }
+    },
+    "connected_tree": {
+      "nodes": ["A", "B", "C", "D", "E"],
+      "edges": [
+        {"id": "e1", "from": "A", "to": "B", "weight": 3},
+        {"id": "e2", "from": "B", "to": "C", "weight": 1},
+        {"id": "e3", "from": "C", "to": "D", "weight": 4},
+        {"id": "e4", "from": "D", "to": "E", "weight": 2}
+      ],
+      "directed": false,
+      "metadata": {
+        "name": "Already a tree",
+        "description": "Connected acyclic graph, all edges are in the MST",
+        "expected_total_weight": 10,
+        "expected_mst_edges": 4
+      }
+    },
+    "complete_k4": {
+      "nodes": ["A", "B", "C", "D"],
+      "edges": [
+        {"id": "e1", "from": "A", "to": "B", "weight": 4},
+        {"id": "e2", "from": "A", "to": "C", "weight": 3},
+        {"id": "e3", "from": "A", "to": "D", "weight": 2},
+        {"id": "e4", "from": "B", "to": "C", "weight": 1},
+        {"id": "e5", "from": "B", "to": "D", "weight": 5},
+        {"id": "e6", "from": "C", "to": "D", "weight": 6}
+      ],
+      "directed": false,
+      "metadata": {
+        "name": "Complete graph K4",
+        "description": "Classic MST example on a complete graph",
+        "expected_total_weight": 6,
+        "expected_mst_edges": 3
+      }
+    },
+    "dense_non_complete": {
+      "nodes": ["A", "B", "C", "D", "E", "F"],
+      "edges": [
+        {"id": "e1", "from": "A", "to": "B", "weight": 6},
+        {"id": "e2", "from": "A", "to": "C", "weight": 1},
+        {"id": "e3", "from": "A", "to": "D", "weight": 5},
+        {"id": "e4", "from": "B", "to": "C", "weight": 5},
+        {"id": "e5", "from": "B", "to": "D", "weight": 3},
+        {"id": "e6", "from": "B", "to": "E", "weight": 4},
+        {"id": "e7", "from": "C", "to": "D", "weight": 5},
+        {"id": "e8", "from": "C", "to": "F", "weight": 4},
+        {"id": "e9", "from": "D", "to": "E", "weight": 2},
+        {"id": "e10", "from": "E", "to": "F", "weight": 2}
+      ],
+      "directed": false,
+      "metadata": {
+        "name": "Dense graph",
+        "description": "Dense but not complete",
+        "expected_total_weight": 12,
+        "expected_mst_edges": 5
+      }
+    },
+    "sparse_graph": {
+      "nodes": ["A", "B", "C", "D", "E", "F"],
+      "edges": [
+        {"id": "e1", "from": "A", "to": "B", "weight": 1},
+        {"id": "e2", "from": "B", "to": "C", "weight": 2},
+        {"id": "e3", "from": "C", "to": "D", "weight": 3},
+        {"id": "e4", "from": "D", "to": "E", "weight": 4},
+        {"id": "e5", "from": "E", "to": "F", "weight": 5}
+      ],
+      "directed": false,
+      "metadata": {
+        "name": "Sparse graph",
+        "description": "Few edges relative to vertices",
+        "expected_total_weight": 15,
+        "expected_mst_edges": 5
+      }
+    },
+    "positive_weights": {
+      "nodes": ["A", "B", "C", "D"],
+      "edges": [
+        {"id": "e1", "from": "A", "to": "B", "weight": 2},
+        {"id": "e2", "from": "B", "to": "C", "weight": 3},
+        {"id": "e3", "from": "C", "to": "D", "weight": 4}
+      ],
+      "directed": false,
+      "metadata": {
+        "name": "Positive weights",
+        "description": "Standard Prim case with positive weights",
+        "expected_total_weight": 9,
+        "expected_mst_edges": 3
+      }
+    },
+    "zero_weight_edges": {
+      "nodes": ["A", "B", "C", "D"],
+      "edges": [
+        {"id": "e1", "from": "A", "to": "B", "weight": 0},
+        {"id": "e2", "from": "B", "to": "C", "weight": 0},
+        {"id": "e3", "from": "C", "to": "D", "weight": 1},
+        {"id": "e4", "from": "A", "to": "D", "weight": 2}
+      ],
+      "directed": false,
+      "metadata": {
+        "name": "Zero weights",
+        "description": "Checks tie handling with zero-cost edges",
+        "expected_total_weight": 1,
+        "expected_mst_edges": 3
+      }
+    },
+    "negative_weights": {
+      "nodes": ["A", "B", "C"],
+      "edges": [
+        {"id": "e1", "from": "A", "to": "B", "weight": -2},
+        {"id": "e2", "from": "B", "to": "C", "weight": 1},
+        {"id": "e3", "from": "A", "to": "C", "weight": 3}
+      ],
+      "directed": false,
+      "metadata": {
+        "name": "Negative weights",
+        "description": "Prim does not reject negative weights in this implementation",
+        "expected_total_weight": -1,
+        "expected_mst_edges": 2
+      }
+    },
+    "parallel_edges": {
+      "nodes": ["A", "B", "C"],
+      "edges": [
+        {"id": "e1", "from": "A", "to": "B", "weight": 5},
+        {"id": "e2", "from": "A", "to": "B", "weight": 2},
+        {"id": "e3", "from": "B", "to": "C", "weight": 1},
+        {"id": "e4", "from": "A", "to": "C", "weight": 4}
+      ],
+      "directed": false,
+      "metadata": {
+        "name": "Parallel edges",
+        "description": "Algorithm should use the minimum parallel edge when it is encountered in the heap",
+        "expected_total_weight": 3,
+        "expected_mst_edges": 2
+      }
+    },
+    "directed_graph": {
+      "nodes": ["A", "B", "C"],
+      "edges": [
+        {"id": "e1", "from": "A", "to": "B", "weight": 1},
+        {"id": "e2", "from": "B", "to": "C", "weight": 2}
+      ],
+      "directed": true,
+      "metadata": {
+        "name": "Directed graph",
+        "description": "Prim should reject directed graphs",
+        "expect_error": true,
+        "expected_error_type": "ValueError"
+      }
+    },
+    "undirected_graph": {
+      "nodes": ["A", "B", "C", "D"],
+      "edges": [
+        {"id": "e1", "from": "A", "to": "B", "weight": 1},
+        {"id": "e2", "from": "B", "to": "C", "weight": 2},
+        {"id": "e3", "from": "C", "to": "D", "weight": 3},
+        {"id": "e4", "from": "A", "to": "D", "weight": 4}
+      ],
+      "directed": false,
+      "metadata": {
+        "name": "Undirected graph",
+        "description": "Standard Prim case",
+        "expected_total_weight": 6,
+        "expected_mst_edges": 3
+      }
+    },
+    "simple_cycle": {
+      "nodes": ["A", "B", "C", "D"],
+      "edges": [
+        {"id": "e1", "from": "A", "to": "B", "weight": 1},
+        {"id": "e2", "from": "B", "to": "C", "weight": 2},
+        {"id": "e3", "from": "C", "to": "D", "weight": 3},
+        {"id": "e4", "from": "D", "to": "A", "weight": 4}
+      ],
+      "directed": false,
+      "metadata": {
+        "name": "Simple cycle",
+        "description": "MST should exclude the heaviest edge in the cycle",
+        "expected_total_weight": 6,
+        "expected_mst_edges": 3
+      }
+    },
+    "multiple_cycles": {
+      "nodes": ["A", "B", "C", "D", "E"],
+      "edges": [
+        {"id": "e1", "from": "A", "to": "B", "weight": 2},
+        {"id": "e2", "from": "B", "to": "C", "weight": 3},
+        {"id": "e3", "from": "C", "to": "A", "weight": 1},
+        {"id": "e4", "from": "C", "to": "D", "weight": 4},
+        {"id": "e5", "from": "D", "to": "E", "weight": 2},
+        {"id": "e6", "from": "E", "to": "B", "weight": 5}
+      ],
+      "directed": false,
+      "metadata": {
+        "name": "Multiple cycles",
+        "description": "Graph with overlapping cycles",
+        "expected_total_weight": 9,
+        "expected_mst_edges": 4
+      }
+    },
+    "star_graph": {
+      "nodes": ["center", "leaf1", "leaf2", "leaf3", "leaf4"],
+      "edges": [
+        {"id": "e1", "from": "center", "to": "leaf1", "weight": 1},
+        {"id": "e2", "from": "center", "to": "leaf2", "weight": 2},
+        {"id": "e3", "from": "center", "to": "leaf3", "weight": 3},
+        {"id": "e4", "from": "center", "to": "leaf4", "weight": 4}
+      ],
+      "directed": false,
+      "metadata": {
+        "name": "Star graph",
+        "description": "Center should be the pivot for all MST edges",
+        "expected_total_weight": 10,
+        "expected_mst_edges": 4
+      }
+    },
+    "chain_graph": {
+      "nodes": ["A", "B", "C", "D", "E"],
+      "edges": [
+        {"id": "e1", "from": "A", "to": "B", "weight": 1},
+        {"id": "e2", "from": "B", "to": "C", "weight": 1},
+        {"id": "e3", "from": "C", "to": "D", "weight": 1},
+        {"id": "e4", "from": "D", "to": "E", "weight": 1}
+      ],
+      "directed": false,
+      "metadata": {
+        "name": "Chain graph",
+        "description": "Sequential addition of edges",
+        "expected_total_weight": 4,
+        "expected_mst_edges": 4
+      }
+    },
+    "isolated_vertex": {
+      "nodes": ["A", "B", "C", "D"],
+      "edges": [
+        {"id": "e1", "from": "A", "to": "B", "weight": 1},
+        {"id": "e2", "from": "B", "to": "C", "weight": 2}
+      ],
+      "directed": false,
+      "metadata": {
+        "name": "Isolated vertex",
+        "description": "One vertex is disconnected",
+        "expect_error": true,
+        "expected_error_type": "ValueError"
+      }
+    },
+    "multiple_components": {
+      "nodes": ["A", "B", "C", "D", "E", "F"],
+      "edges": [
+        {"id": "e1", "from": "A", "to": "B", "weight": 1},
+        {"id": "e2", "from": "C", "to": "D", "weight": 1},
+        {"id": "e3", "from": "E", "to": "F", "weight": 1}
+      ],
+      "directed": false,
+      "metadata": {
+        "name": "Multiple components",
+        "description": "Non connected graph",
+        "expect_error": true,
+        "expected_error_type": "ValueError"
+      }
+    },
+    "equal_weight_edges": {
+      "nodes": ["A", "B", "C", "D"],
+      "edges": [
+        {"id": "e1", "from": "A", "to": "B", "weight": 1},
+        {"id": "e2", "from": "A", "to": "C", "weight": 1},
+        {"id": "e3", "from": "B", "to": "D", "weight": 1},
+        {"id": "e4", "from": "C", "to": "D", "weight": 1}
+      ],
+      "directed": false,
+      "metadata": {
+        "name": "Equal weights",
+        "description": "Tie cases with identical edge weights",
+        "expected_total_weight": 3,
+        "expected_mst_edges": 3
+      }
+    },
+    "multiple_tie_cases": {
+      "nodes": ["A", "B", "C", "D", "E"],
+      "edges": [
+        {"id": "e1", "from": "A", "to": "B", "weight": 2},
+        {"id": "e2", "from": "A", "to": "C", "weight": 2},
+        {"id": "e3", "from": "B", "to": "D", "weight": 2},
+        {"id": "e4", "from": "C", "to": "D", "weight": 2},
+        {"id": "e5", "from": "D", "to": "E", "weight": 2}
+      ],
+      "directed": false,
+      "metadata": {
+        "name": "Multiple tie cases",
+        "description": "Stability when many edges have same weight",
+        "expected_total_weight": 8,
+        "expected_mst_edges": 4
+      }
+    },
+    "minimum_spanning_tree_validated": {
+      "nodes": ["A", "B", "C", "D"],
+      "edges": [
+        {"id": "e1", "from": "A", "to": "B", "weight": 1},
+        {"id": "e2", "from": "B", "to": "C", "weight": 2},
+        {"id": "e3", "from": "C", "to": "D", "weight": 3},
+        {"id": "e4", "from": "A", "to": "D", "weight": 10}
+      ],
+      "directed": false,
+      "metadata": {
+        "name": "Validated MST",
+        "description": "Result should be a tree with |V|-1 edges",
+        "expected_total_weight": 6,
+        "expected_mst_edges": 3
+      }
+    },
+    "cycle_heaviest_edge": {
+      "nodes": ["A", "B", "C", "D"],
+      "edges": [
+        {"id": "e1", "from": "A", "to": "B", "weight": 1},
+        {"id": "e2", "from": "B", "to": "C", "weight": 2},
+        {"id": "e3", "from": "C", "to": "D", "weight": 3},
+        {"id": "e4", "from": "D", "to": "A", "weight": 10}
+      ],
+      "directed": false,
+      "metadata": {
+        "name": "Cycle with heaviest edge",
+        "description": "The heaviest edge in the cycle should be excluded",
+        "expected_total_weight": 6,
+        "expected_mst_edges": 3
+      }
+    },
+    "cycle_lightest_edge": {
+      "nodes": ["A", "B", "C", "D"],
+      "edges": [
+        {"id": "e1", "from": "A", "to": "B", "weight": 1},
+        {"id": "e2", "from": "B", "to": "C", "weight": 5},
+        {"id": "e3", "from": "C", "to": "D", "weight": 6},
+        {"id": "e4", "from": "D", "to": "A", "weight": 7}
+      ],
+      "directed": false,
+      "metadata": {
+        "name": "Cycle with lightest edge",
+        "description": "The lightest edge should be included if useful",
+        "expected_total_weight": 12,
+        "expected_mst_edges": 3
+      }
+    },
+    "weighted_complete_graph": {
+      "nodes": ["A", "B", "C", "D", "E"],
+      "edges": [
+        {"id": "e1", "from": "A", "to": "B", "weight": 2},
+        {"id": "e2", "from": "A", "to": "C", "weight": 3},
+        {"id": "e3", "from": "A", "to": "D", "weight": 3},
+        {"id": "e4", "from": "A", "to": "E", "weight": 6},
+        {"id": "e5", "from": "B", "to": "C", "weight": 1},
+        {"id": "e6", "from": "B", "to": "D", "weight": 4},
+        {"id": "e7", "from": "B", "to": "E", "weight": 5},
+        {"id": "e8", "from": "C", "to": "D", "weight": 2},
+        {"id": "e9", "from": "C", "to": "E", "weight": 4},
+        {"id": "e10", "from": "D", "to": "E", "weight": 1}
+      ],
+      "directed": false,
+      "metadata": {
+        "name": "Weighted complete graph",
+        "description": "Classic complete weighted MST test",
+        "expected_total_weight": 6,
+        "expected_mst_edges": 4
+      }
+    },
+    "start_order_independence": {
+      "nodes": ["A", "B", "C", "D"],
+      "edges": [
+        {"id": "e1", "from": "A", "to": "B", "weight": 1},
+        {"id": "e2", "from": "B", "to": "C", "weight": 2},
+        {"id": "e3", "from": "C", "to": "D", "weight": 3},
+        {"id": "e4", "from": "A", "to": "D", "weight": 4}
+      ],
+      "directed": false,
+      "metadata": {
+        "name": "Start order independence",
+        "description": "Different start nodes should yield equivalent MST cost",
+        "expected_total_weight": 6,
+        "expected_mst_edges": 3
+      }
+    },
+    "priority_queue_behavior": {
+      "nodes": ["A", "B", "C", "D", "E"],
+      "edges": [
+        {"id": "e1", "from": "A", "to": "B", "weight": 10},
+        {"id": "e2", "from": "A", "to": "C", "weight": 1},
+        {"id": "e3", "from": "C", "to": "D", "weight": 2},
+        {"id": "e4", "from": "D", "to": "E", "weight": 3},
+        {"id": "e5", "from": "B", "to": "E", "weight": 4}
+      ],
+      "directed": false,
+      "metadata": {
+        "name": "Priority queue behavior",
+        "description": "Minimum edge should be extracted first by the heap",
+        "expected_total_weight": 10,
+        "expected_mst_edges": 4
+      }
+    },
+    "key_updates": {
+      "nodes": ["A", "B", "C", "D"],
+      "edges": [
+        {"id": "e1", "from": "A", "to": "B", "weight": 8},
+        {"id": "e2", "from": "A", "to": "C", "weight": 5},
+        {"id": "e3", "from": "B", "to": "C", "weight": 2},
+        {"id": "e4", "from": "C", "to": "D", "weight": 1}
+      ],
+      "directed": false,
+      "metadata": {
+        "name": "Key updates",
+        "description": "Checks that cheaper candidate edges replace expensive ones in the heap",
+        "expected_total_weight": 8,
+        "expected_mst_edges": 3
+      }
+    },
+    "parents_reconstruction": {
+      "nodes": ["A", "B", "C", "D", "E"],
+      "edges": [
+        {"id": "e1", "from": "A", "to": "B", "weight": 1},
+        {"id": "e2", "from": "B", "to": "C", "weight": 2},
+        {"id": "e3", "from": "C", "to": "D", "weight": 3},
+        {"id": "e4", "from": "D", "to": "E", "weight": 4},
+        {"id": "e5", "from": "A", "to": "E", "weight": 10}
+      ],
+      "directed": false,
+      "metadata": {
+        "name": "Parents reconstruction",
+        "description": "Useful for checking MST parent reconstruction",
+        "expected_total_weight": 10,
+        "expected_mst_edges": 4
+      }
+    },
+    "extreme_values": {
+      "nodes": ["A", "B", "C"],
+      "edges": [
+        {"id": "e1", "from": "A", "to": "B", "weight": 1000000000},
+        {"id": "e2", "from": "B", "to": "C", "weight": -1000000000},
+        {"id": "e3", "from": "A", "to": "C", "weight": 5}
+      ],
+      "directed": false,
+      "metadata": {
+        "name": "Extreme values",
+        "description": "Large positive and negative weights",
+        "expected_total_weight": -999999995,
+        "expected_mst_edges": 2
+      }
+    },
+    "very_large_weights": {
+      "nodes": ["A", "B", "C", "D"],
+      "edges": [
+        {"id": "e1", "from": "A", "to": "B", "weight": 9007199254740991},
+        {"id": "e2", "from": "B", "to": "C", "weight": 9007199254740992},
+        {"id": "e3", "from": "C", "to": "D", "weight": 9007199254740993},
+        {"id": "e4", "from": "A", "to": "D", "weight": 9007199254740994}
+      ],
+      "directed": false,
+      "metadata": {
+        "name": "Very large weights",
+        "description": "Checks handling of very large integers",
+        "expected_total_weight": 27021597764222976,
+        "expected_mst_edges": 3
+      }
+    },
+    "very_small_weights": {
+      "nodes": ["A", "B", "C"],
+      "edges": [
+        {"id": "e1", "from": "A", "to": "B", "weight": 1e-9},
+        {"id": "e2", "from": "B", "to": "C", "weight": 2e-9},
+        {"id": "e3", "from": "A", "to": "C", "weight": 3e-9}
+      ],
+      "directed": false,
+      "metadata": {
+        "name": "Very small weights",
+        "description": "Checks floating-point comparison precision",
+        "expected_total_weight": 3e-9,
+        "expected_mst_edges": 2
+      }
+    },
+    "self_loop": {
+      "nodes": ["A", "B", "C"],
+      "edges": [
+        {"id": "loop", "from": "A", "to": "A", "weight": 0},
+        {"id": "e1", "from": "A", "to": "B", "weight": 2},
+        {"id": "e2", "from": "B", "to": "C", "weight": 3}
+      ],
+      "directed": false,
+      "metadata": {
+        "name": "Self loop",
+        "description": "Prim should ignore or effectively skip self-loops",
+        "expected_total_weight": 5,
+        "expected_mst_edges": 2
+      }
+    },
+    "dominant_component": {
+      "nodes": ["A", "B", "C", "D", "E", "F"],
+      "edges": [
+        {"id": "e1", "from": "A", "to": "B", "weight": 1},
+        {"id": "e2", "from": "B", "to": "C", "weight": 1},
+        {"id": "e3", "from": "C", "to": "D", "weight": 1},
+        {"id": "e4", "from": "D", "to": "E", "weight": 1}
+      ],
+      "directed": false,
+      "metadata": {
+        "name": "Dominant component",
+        "description": "One dominant component and one isolated vertex",
+        "expect_error": true,
+        "expected_error_type": "ValueError"
+      }
+    },
+    "unique_mst": {
+      "nodes": ["A", "B", "C", "D"],
+      "edges": [
+        {"id": "e1", "from": "A", "to": "B", "weight": 1},
+        {"id": "e2", "from": "B", "to": "C", "weight": 2},
+        {"id": "e3", "from": "C", "to": "D", "weight": 3},
+        {"id": "e4", "from": "A", "to": "D", "weight": 10}
+      ],
+      "directed": false,
+      "metadata": {
+        "name": "Unique MST",
+        "description": "MST is unique in this graph",
+        "expected_total_weight": 6,
+        "expected_mst_edges": 3
+      }
+    },
+    "multiple_possible_mst": {
+      "nodes": ["A", "B", "C", "D"],
+      "edges": [
+        {"id": "e1", "from": "A", "to": "B", "weight": 1},
+        {"id": "e2", "from": "A", "to": "C", "weight": 1},
+        {"id": "e3", "from": "B", "to": "D", "weight": 1},
+        {"id": "e4", "from": "C", "to": "D", "weight": 1},
+        {"id": "e5", "from": "B", "to": "C", "weight": 2}
+      ],
+      "directed": false,
+      "metadata": {
+        "name": "Multiple possible MSTs",
+        "description": "Algorithm should be deterministic even when many MSTs exist",
+        "expected_total_weight": 3,
+        "expected_mst_edges": 3
+      }
+    },
+    "already_mst_valid": {
+      "nodes": ["A", "B", "C", "D"],
+      "edges": [
+        {"id": "e1", "from": "A", "to": "B", "weight": 2},
+        {"id": "e2", "from": "B", "to": "C", "weight": 2},
+        {"id": "e3", "from": "C", "to": "D", "weight": 2}
+      ],
+      "directed": false,
+      "metadata": {
+        "name": "Already an MST",
+        "description": "Input graph is already a minimum spanning tree",
+        "expected_total_weight": 6,
+        "expected_mst_edges": 3
+      }
+    },
+    "mutation_safety": {
+      "nodes": ["A", "B", "C", "D"],
+      "edges": [
+        {"id": "e1", "from": "A", "to": "B", "weight": 1},
+        {"id": "e2", "from": "B", "to": "C", "weight": 2},
+        {"id": "e3", "from": "C", "to": "D", "weight": 3},
+        {"id": "e4", "from": "A", "to": "D", "weight": 4}
+      ],
+      "directed": false,
+      "metadata": {
+        "name": "Mutation safety",
+        "description": "The original graph should not be mutated by Prim",
+        "expected_total_weight": 6,
+        "expected_mst_edges": 3
+      }
+    },
+    "global_mst_coherence": {
+      "nodes": ["A", "B", "C", "D", "E"],
+      "edges": [
+        {"id": "e1", "from": "A", "to": "B", "weight": 1},
+        {"id": "e2", "from": "B", "to": "C", "weight": 2},
+        {"id": "e3", "from": "C", "to": "D", "weight": 3},
+        {"id": "e4", "from": "D", "to": "E", "weight": 4},
+        {"id": "e5", "from": "A", "to": "E", "weight": 10}
+      ],
+      "directed": false,
+      "metadata": {
+        "name": "Global MST coherence",
+        "description": "Checks final connectivity and absence of cycles",
+        "expected_total_weight": 10,
+        "expected_mst_edges": 4
+      }
+    },
+    "large_dense_performance": {
+      "nodes": ["n0", "n1", "n2", "n3", "n4", "n5", "n6", "n7"],
+      "edges": [
+        {"id": "e1", "from": "n0", "to": "n1", "weight": 7},
+        {"id": "e2", "from": "n0", "to": "n2", "weight": 5},
+        {"id": "e3", "from": "n0", "to": "n3", "weight": 8},
+        {"id": "e4", "from": "n0", "to": "n4", "weight": 9},
+        {"id": "e5", "from": "n0", "to": "n5", "weight": 7},
+        {"id": "e6", "from": "n0", "to": "n6", "weight": 3},
+        {"id": "e7", "from": "n0", "to": "n7", "weight": 4},
+        {"id": "e8", "from": "n1", "to": "n2", "weight": 6},
+        {"id": "e9", "from": "n1", "to": "n3", "weight": 2},
+        {"id": "e10", "from": "n1", "to": "n4", "weight": 3},
+        {"id": "e11", "from": "n1", "to": "n5", "weight": 4},
+        {"id": "e12", "from": "n1", "to": "n6", "weight": 5},
+        {"id": "e13", "from": "n1", "to": "n7", "weight": 6},
+        {"id": "e14", "from": "n2", "to": "n3", "weight": 7},
+        {"id": "e15", "from": "n2", "to": "n4", "weight": 8},
+        {"id": "e16", "from": "n2", "to": "n5", "weight": 2},
+        {"id": "e17", "from": "n2", "to": "n6", "weight": 5},
+        {"id": "e18", "from": "n2", "to": "n7", "weight": 9},
+        {"id": "e19", "from": "n3", "to": "n4", "weight": 7},
+        {"id": "e20", "from": "n3", "to": "n5", "weight": 3},
+        {"id": "e21", "from": "n3", "to": "n6", "weight": 4},
+        {"id": "e22", "from": "n3", "to": "n7", "weight": 1},
+        {"id": "e23", "from": "n4", "to": "n5", "weight": 2},
+        {"id": "e24", "from": "n4", "to": "n6", "weight": 6},
+        {"id": "e25", "from": "n4", "to": "n7", "weight": 8},
+        {"id": "e26", "from": "n5", "to": "n6", "weight": 4},
+        {"id": "e27", "from": "n5", "to": "n7", "weight": 5},
+        {"id": "e28", "from": "n6", "to": "n7", "weight": 2}
+      ],
+      "directed": false,
+      "metadata": {
+        "name": "Large dense performance",
+        "description": "Dense graph used as a performance-oriented case",
+        "expected_mst_edges": 7
+      }
+    },
+    "large_sparse_performance": {
+      "nodes": ["n0", "n1", "n2", "n3", "n4", "n5", "n6", "n7", "n8", "n9"],
+      "edges": [
+        {"id": "e1", "from": "n0", "to": "n1", "weight": 1},
+        {"id": "e2", "from": "n1", "to": "n2", "weight": 2},
+        {"id": "e3", "from": "n2", "to": "n3", "weight": 3},
+        {"id": "e4", "from": "n3", "to": "n4", "weight": 4},
+        {"id": "e5", "from": "n4", "to": "n5", "weight": 5},
+        {"id": "e6", "from": "n5", "to": "n6", "weight": 6},
+        {"id": "e7", "from": "n6", "to": "n7", "weight": 7},
+        {"id": "e8", "from": "n7", "to": "n8", "weight": 8},
+        {"id": "e9", "from": "n8", "to": "n9", "weight": 9}
+      ],
+      "directed": false,
+      "metadata": {
+        "name": "Large sparse performance",
+        "description": "Sparse graph used as a performance-oriented case",
+        "expected_total_weight": 45,
+        "expected_mst_edges": 9
+      }
+    }
+  }
+}

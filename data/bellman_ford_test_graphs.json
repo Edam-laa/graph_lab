@@ -1,0 +1,380 @@
+{
+  "graphs": {
+    "empty": {
+      "nodes": [],
+      "edges": [],
+      "directed": true,
+      "metadata": {"name": "Empty graph", "description": "No nodes or edges"}
+    },
+    "single_vertex": {
+      "nodes": ["A"],
+      "edges": [],
+      "directed": true,
+      "metadata": {"name": "Single vertex", "description": "One node only"}
+    },
+    "source_equals_destination": {
+      "nodes": ["X"],
+      "edges": [],
+      "directed": true,
+      "metadata": {"name": "Source equals sink", "source": "X", "sink": "X"}
+    },
+    "single_edge": {
+      "nodes": ["s","t"],
+      "edges": [{"id":"e1","from":"s","to":"t","weight":5}],
+      "directed": true,
+      "metadata": {"name":"Single edge","source":"s","sink":"t","expected_distance":5}
+    },
+    "simple_directed": {
+      "nodes": ["A","B","C"],
+      "edges": [
+        {"id":"e1","from":"A","to":"B","weight":1},
+        {"id":"e2","from":"B","to":"C","weight":2}
+      ],
+      "directed": true,
+      "metadata": {"name":"Simple directed","source":"A","sink":"C","expected_distance":3}
+    },
+    "undirected_behavior": {
+      "nodes": ["A","B","C"],
+      "edges": [
+        {"id":"e1","from":"A","to":"B","weight":1},
+        {"id":"e2","from":"B","to":"C","weight":2}
+      ],
+      "directed": false,
+      "metadata": {"name":"Undirected","source":"A","sink":"C","expected_distance":3}
+    },
+    "multiple_path_selection": {
+      "nodes": ["A","B","C","D"],
+      "edges": [
+        {"id":"e1","from":"A","to":"B","weight":2},
+        {"id":"e2","from":"B","to":"D","weight":2},
+        {"id":"e3","from":"A","to":"C","weight":1},
+        {"id":"e4","from":"C","to":"D","weight":4}
+      ],
+      "directed": true,
+      "metadata": {"name":"Multiple paths","source":"A","sink":"D","expected_distance":4}
+    },
+    "disconnected": {
+      "nodes": ["A","B","C","D"],
+      "edges": [
+        {"id":"e1","from":"A","to":"B","weight":1}
+      ],
+      "directed": true,
+      "metadata": {"name":"Disconnected","source":"A","sink":"D"}
+    },
+    "unreachable_node_distance": {
+      "nodes": ["s","a","b","t"],
+      "edges": [
+        {"id":"e1","from":"s","to":"a","weight":2},
+        {"id":"e2","from":"a","to":"b","weight":3}
+      ],
+      "directed": true,
+      "metadata": {"name":"Unreachable node","source":"s","sink":"t"}
+    },
+    "positive_weights": {
+      "nodes": ["A","B","C"],
+      "edges": [
+        {"id":"e1","from":"A","to":"B","weight":7},
+        {"id":"e2","from":"B","to":"C","weight":8}
+      ],
+      "directed": true,
+      "metadata": {"name":"Positive weights","source":"A","sink":"C","expected_distance":15}
+    },
+    "zero_weight_edges": {
+      "nodes": ["A","B","C"],
+      "edges": [
+        {"id":"e1","from":"A","to":"B","weight":0},
+        {"id":"e2","from":"B","to":"C","weight":0}
+      ],
+      "directed": true,
+      "metadata": {"name":"Zero weights","source":"A","sink":"C","expected_distance":0}
+    },
+    "negative_edge_weights": {
+      "nodes": ["A","B","C"],
+      "edges": [
+        {"id":"e1","from":"A","to":"B","weight":4},
+        {"id":"e2","from":"B","to":"C","weight":-2}
+      ],
+      "directed": true,
+      "metadata": {"name":"Negative edges","source":"A","sink":"C","expected_distance":2}
+    },
+    "negative_cycle": {
+      "nodes": ["A","B","C"],
+      "edges": [
+        {"id":"e1","from":"A","to":"B","weight":1},
+        {"id":"e2","from":"B","to":"C","weight":-3},
+        {"id":"e3","from":"C","to":"A","weight":1}
+      ],
+      "directed": true,
+      "metadata": {"name":"Negative cycle","source":"A","sink":"C","expect_negative_cycle":true}
+    },
+    "negative_cycle_reachable": {
+      "nodes": ["s","a","b"],
+      "edges": [
+        {"id":"e1","from":"s","to":"a","weight":1},
+        {"id":"e2","from":"a","to":"b","weight":-5},
+        {"id":"e3","from":"b","to":"a","weight":1}
+      ],
+      "directed": true,
+      "metadata": {"name":"Negative cycle reachable","source":"s","sink":"b","expect_negative_cycle":true}
+    },
+    "negative_cycle_unreachable": {
+      "nodes": ["s","a","b","c"],
+      "edges": [
+        {"id":"e1","from":"s","to":"a","weight":2},
+        {"id":"e2","from":"b","to":"c","weight":-4},
+        {"id":"e3","from":"c","to":"b","weight":1}
+      ],
+      "directed": true,
+      "metadata": {"name":"Negative cycle unreachable","source":"s","sink":"a","expect_negative_cycle":true}
+    },
+    "cycle_without_negative": {
+      "nodes":["A","B","C","D"],
+      "edges":[
+        {"id":"e1","from":"A","to":"B","weight":1},
+        {"id":"e2","from":"B","to":"C","weight":2},
+        {"id":"e3","from":"C","to":"A","weight":1},
+        {"id":"e4","from":"C","to":"D","weight":1}
+      ],
+      "directed": true,
+      "metadata": {"name":"Cycle no negative","source":"A","sink":"D","expected_distance":4}
+    },
+    "self_loop_positive": {
+      "nodes":["s","a","t"],
+      "edges":[
+        {"id":"loop","from":"a","to":"a","weight":5},
+        {"id":"e1","from":"s","to":"a","weight":2},
+        {"id":"e2","from":"a","to":"t","weight":3}
+      ],
+      "directed": true,
+      "metadata": {"name":"Self-loop positive","source":"s","sink":"t","expected_distance":5}
+    },
+    "self_loop_negative": {
+      "nodes":["s","a","t"],
+      "edges":[
+        {"id":"loop","from":"a","to":"a","weight":-2},
+        {"id":"e1","from":"s","to":"a","weight":2},
+        {"id":"e2","from":"a","to":"t","weight":3}
+      ],
+      "directed": true,
+      "metadata": {"name":"Self-loop negative","source":"s","sink":"t","expect_negative_cycle":true}
+    },
+    "parallel_edges": {
+      "nodes":["A","B","C"],
+      "edges":[
+        {"id":"e1","from":"A","to":"B","weight":5},
+        {"id":"e2","from":"A","to":"B","weight":2},
+        {"id":"e3","from":"B","to":"C","weight":1}
+      ],
+      "directed": true,
+      "metadata": {"name":"Parallel edges","source":"A","sink":"C","expected_distance":3}
+    },
+    "large_sparse": {
+      "nodes": ["s","n1","n2","n3","t"],
+      "edges": [
+        {"id":"e1","from":"s","to":"n1","weight":1},
+        {"id":"e2","from":"n2","to":"t","weight":1}
+      ],
+      "directed": true,
+      "metadata": {"name":"Large sparse sample","source":"s","sink":"t"}
+    },
+    "large_dense": {
+      "nodes": ["s","a","b","c","t"],
+      "edges": [
+        {"id":"sa","from":"s","to":"a","weight":1},
+        {"id":"sb","from":"s","to":"b","weight":1},
+        {"id":"sc","from":"s","to":"c","weight":1},
+        {"id":"ab","from":"a","to":"b","weight":1},
+        {"id":"ac","from":"a","to":"c","weight":1},
+        {"id":"bc","from":"b","to":"c","weight":1},
+        {"id":"at","from":"a","to":"t","weight":1},
+        {"id":"bt","from":"b","to":"t","weight":1},
+        {"id":"ct","from":"c","to":"t","weight":1}
+      ],
+      "directed": true,
+      "metadata": {"name":"Large dense sample","source":"s","sink":"t"}
+    },
+    "path_reconstruction": {
+      "nodes":["A","B","C","D"],
+      "edges":[
+        {"id":"e1","from":"A","to":"B","weight":1},
+        {"id":"e2","from":"B","to":"C","weight":1},
+        {"id":"e3","from":"C","to":"D","weight":1}
+      ],
+      "directed": true,
+      "metadata": {"name":"Path reconstruction","source":"A","sink":"D","expected_distance":3}
+    },
+    "predecessor_validation": {
+      "nodes":["A","B","C"],
+      "edges":[{"id":"e1","from":"A","to":"B","weight":2},{"id":"e2","from":"B","to":"C","weight":2}],
+      "directed": true,
+      "metadata": {"name":"Predecessor validation","source":"A","sink":"C","expected_distance":4}
+    },
+    "distance_initialization": {
+      "nodes":["s","a"],
+      "edges":[{"id":"e1","from":"s","to":"a","weight":1}],
+      "directed": true,
+      "metadata": {"name":"Distance init","source":"s","sink":"a","expected_distance":1}
+    },
+    "relaxation_iterations": {
+      "nodes":["s","a","b","t"],
+      "edges":[{"id":"e1","from":"s","to":"a","weight":1},{"id":"e2","from":"a","to":"b","weight":1},{"id":"e3","from":"b","to":"t","weight":1}],
+      "directed": true,
+      "metadata": {"name":"Relaxation iterations","source":"s","sink":"t","expected_distance":3}
+    },
+    "no_unnecessary_updates": {
+      "nodes":["A","B","C"],
+      "edges":[{"id":"e1","from":"A","to":"B","weight":1},{"id":"e2","from":"B","to":"C","weight":1}],
+      "directed": true,
+      "metadata": {"name":"Stability","source":"A","sink":"C"}
+    },
+    "directed_edge_respect": {
+      "nodes":["A","B"],
+      "edges":[{"id":"e1","from":"B","to":"A","weight":1}],
+      "directed": true,
+      "metadata": {"name":"Directed edge respect","source":"A","sink":"B"}
+    },
+    "mixed_positive_negative": {
+      "nodes":["A","B","C","D"],
+      "edges":[
+        {"id":"e1","from":"A","to":"B","weight":2},
+        {"id":"e2","from":"B","to":"C","weight":-4},
+        {"id":"e3","from":"C","to":"D","weight":3}
+      ],
+      "directed": true,
+      "metadata": {"name":"Mixed signs","source":"A","sink":"D"}
+    },
+    "isolated_vertices": {
+      "nodes":["s","a","iso1","iso2","t"],
+      "edges":[{"id":"e1","from":"s","to":"a","weight":1},{"id":"e2","from":"a","to":"t","weight":1}],
+      "directed": true,
+      "metadata": {"name":"Isolated vertices","source":"s","sink":"t"}
+    },
+    "invalid_source_vertex": {
+      "nodes":["A","B"],
+      "edges":[{"id":"e1","from":"A","to":"B","weight":1}],
+      "directed": true,
+      "metadata": {"name":"Invalid source","source":"Z","sink":"B"}
+    },
+    "invalid_destination_vertex": {
+      "nodes":["A","B"],
+      "edges":[{"id":"e1","from":"A","to":"B","weight":1}],
+      "directed": true,
+      "metadata": {"name":"Invalid dest","source":"A","sink":"Z"}
+    },
+    "malformed_adjacency": {
+      "nodes": "not_a_list",
+      "edges": "not_an_array",
+      "directed": true,
+      "metadata": {"name":"Malformed"}
+    },
+    "deterministic_result": {
+      "nodes":["s","a","b","t"],
+      "edges":[{"id":"e1","from":"s","to":"a","weight":1},{"id":"e2","from":"s","to":"b","weight":1},{"id":"e3","from":"a","to":"t","weight":1},{"id":"e4","from":"b","to":"t","weight":1}],
+      "directed": true,
+      "metadata": {"name":"Deterministic","source":"s","sink":"t"}
+    },
+    "adjacency_mutation_safety": {
+      "nodes":["s","a","t"],
+      "edges":[{"id":"e1","from":"s","to":"a","weight":1},{"id":"e2","from":"a","to":"t","weight":1}],
+      "directed": true,
+      "metadata": {"name":"Adjacency safety","source":"s","sink":"t"}
+    },
+    "all_nodes_reachable": {
+      "nodes":["s","a","b","t"],
+      "edges":[{"id":"e1","from":"s","to":"a","weight":1},{"id":"e2","from":"a","to":"b","weight":1},{"id":"e3","from":"b","to":"t","weight":1}],
+      "directed": true,
+      "metadata": {"name":"All reachable","source":"s","sink":"t"}
+    },
+    "partially_reachable": {
+      "nodes":["s","a","b","isolated","t"],
+      "edges":[{"id":"e1","from":"s","to":"a","weight":1},{"id":"e2","from":"a","to":"t","weight":2}],
+      "directed": true,
+      "metadata": {"name":"Partially reachable","source":"s","sink":"t"}
+    },
+    "long_chain": {
+      "nodes":["n0","n1","n2","n3","n4","n5"],
+      "edges":[{"id":"e0","from":"n0","to":"n1","weight":1},{"id":"e1","from":"n1","to":"n2","weight":1},{"id":"e2","from":"n2","to":"n3","weight":1},{"id":"e3","from":"n3","to":"n4","weight":1},{"id":"e4","from":"n4","to":"n5","weight":1}],
+      "directed": true,
+      "metadata": {"name":"Long chain","source":"n0","sink":"n5","expected_distance":5}
+    },
+    "multiple_relaxations_required": {
+      "nodes":["s","a","b","c","t"],
+      "edges":[{"id":"e1","from":"s","to":"a","weight":1},{"id":"e2","from":"a","to":"b","weight":1},{"id":"e3","from":"b","to":"c","weight":1},{"id":"e4","from":"c","to":"t","weight":1}],
+      "directed": true,
+      "metadata": {"name":"Multiple relax","source":"s","sink":"t"}
+    },
+    "negative_total_cost_path": {
+      "nodes":["A","B","C"],
+      "edges":[{"id":"e1","from":"A","to":"B","weight":-5},{"id":"e2","from":"B","to":"C","weight":1}],
+      "directed": true,
+      "metadata": {"name":"Negative total","source":"A","sink":"C","expected_distance":-4}
+    },
+    "equal_cost_alternatives": {
+      "nodes":["s","a","b","t"],
+      "edges":[{"id":"e1","from":"s","to":"a","weight":1},{"id":"e2","from":"a","to":"t","weight":2},{"id":"e3","from":"s","to":"b","weight":1},{"id":"e4","from":"b","to":"t","weight":2}],
+      "directed": true,
+      "metadata": {"name":"Equal-cost alternatives","source":"s","sink":"t"}
+    },
+    "overflow_large_weights": {
+      "nodes":["A","B","C"],
+      "edges":[{"id":"e1","from":"A","to":"B","weight":9007199254740991},{"id":"e2","from":"B","to":"C","weight":9007199254740991}],
+      "directed": true,
+      "metadata": {"name":"Large weights","source":"A","sink":"C"}
+    },
+    "clrs_classic": {
+      "nodes":["s","t","x","y","z"],
+      "edges":[
+        {"id":"e1","from":"s","to":"t","weight":6},
+        {"id":"e2","from":"s","to":"y","weight":7},
+        {"id":"e3","from":"t","to":"y","weight":8},
+        {"id":"e4","from":"y","to":"z","weight":-3},
+        {"id":"e5","from":"z","to":"t","weight":2}
+      ],
+      "directed": true,
+      "metadata": {"name":"CLRS example","source":"s","sink":"z"}
+    },
+    "edge_relaxation_order_independence": {
+      "nodes":["A","B","C","D"],
+      "edges":[{"id":"e1","from":"A","to":"B","weight":2},{"id":"e2","from":"B","to":"C","weight":2},{"id":"e3","from":"A","to":"C","weight":5},{"id":"e4","from":"C","to":"D","weight":1}],
+      "directed": true,
+      "metadata": {"name":"Relaxation order independence","source":"A","sink":"D"}
+    },
+    "negative_edge_no_negative_cycle": {
+      "nodes":["A","B","C"],
+      "edges":[{"id":"e1","from":"A","to":"B","weight":2},{"id":"e2","from":"B","to":"C","weight":-1}],
+      "directed": true,
+      "metadata": {"name":"Negative edge no cycle","source":"A","sink":"C"}
+    },
+    "redundant_edges": {
+      "nodes":["s","a","t"],
+      "edges":[{"id":"e1","from":"s","to":"a","weight":1},{"id":"e2","from":"s","to":"a","weight":100},{"id":"e3","from":"a","to":"t","weight":1}],
+      "directed": true,
+      "metadata": {"name":"Redundant edges","source":"s","sink":"t","expected_distance":2}
+    },
+    "shortest_path_tree_validation": {
+      "nodes":["s","a","b","c"],
+      "edges":[{"id":"e1","from":"s","to":"a","weight":1},{"id":"e2","from":"a","to":"b","weight":1},{"id":"e3","from":"b","to":"c","weight":1}],
+      "directed": true,
+      "metadata": {"name":"SP tree","source":"s","sink":"c"}
+    },
+    "bidirectional_weighted": {
+      "nodes":["A","B","C"],
+      "edges":[{"id":"ab","from":"A","to":"B","weight":2},{"id":"ba","from":"B","to":"A","weight":2},{"id":"bc","from":"B","to":"C","weight":3}],
+      "directed": false,
+      "metadata": {"name":"Bidirectional weighted","source":"A","sink":"C"}
+    },
+    "complete_weighted": {
+      "nodes":["A","B","C"],
+      "edges":[
+        {"id":"ab","from":"A","to":"B","weight":1},
+        {"id":"ac","from":"A","to":"C","weight":4},
+        {"id":"ba","from":"B","to":"A","weight":1},
+        {"id":"bc","from":"B","to":"C","weight":1},
+        {"id":"ca","from":"C","to":"A","weight":4},
+        {"id":"cb","from":"C","to":"B","weight":1}
+      ],
+      "directed": true,
+      "metadata": {"name":"Complete weighted","source":"A","sink":"C"}
+    }
+  }
+}
