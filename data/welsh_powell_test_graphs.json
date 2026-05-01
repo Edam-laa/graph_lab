@@ -1,0 +1,380 @@
+{
+  "graphs": {
+    "empty": {
+      "nodes": [],
+      "edges": [],
+      "directed": false,
+      "metadata": {
+        "name": "Empty graph",
+        "description": "Graph with no vertices",
+        "chromatic_number": 0
+      }
+    },
+    "single_vertex": {
+      "nodes": ["A"],
+      "edges": [],
+      "directed": false,
+      "metadata": {
+        "name": "Single vertex",
+        "description": "Graph with one vertex, no edges",
+        "chromatic_number": 1
+      }
+    },
+    "two_vertices_no_edge": {
+      "nodes": ["A", "B"],
+      "edges": [],
+      "directed": false,
+      "metadata": {
+        "name": "Two vertices no edge",
+        "description": "Two isolated vertices",
+        "chromatic_number": 1
+      }
+    },
+    "single_edge": {
+      "nodes": ["A", "B"],
+      "edges": [{"id": "e1", "from": "A", "to": "B", "weight": 1}],
+      "directed": false,
+      "metadata": {
+        "name": "Single edge",
+        "description": "Two vertices connected by one edge",
+        "chromatic_number": 2
+      }
+    },
+    "complete_k3": {
+      "nodes": ["A", "B", "C"],
+      "edges": [
+        {"id": "e1", "from": "A", "to": "B", "weight": 1},
+        {"id": "e2", "from": "A", "to": "C", "weight": 1},
+        {"id": "e3", "from": "B", "to": "C", "weight": 1}
+      ],
+      "directed": false,
+      "metadata": {
+        "name": "Complete graph K_3",
+        "description": "Triangle - complete graph with 3 vertices",
+        "chromatic_number": 3
+      }
+    },
+    "complete_k4": {
+      "nodes": ["A", "B", "C", "D"],
+      "edges": [
+        {"id": "e1", "from": "A", "to": "B", "weight": 1},
+        {"id": "e2", "from": "A", "to": "C", "weight": 1},
+        {"id": "e3", "from": "A", "to": "D", "weight": 1},
+        {"id": "e4", "from": "B", "to": "C", "weight": 1},
+        {"id": "e5", "from": "B", "to": "D", "weight": 1},
+        {"id": "e6", "from": "C", "to": "D", "weight": 1}
+      ],
+      "directed": false,
+      "metadata": {
+        "name": "Complete graph K_4",
+        "description": "Complete graph with 4 vertices",
+        "chromatic_number": 4
+      }
+    },
+    "complete_bipartite_k33": {
+      "nodes": ["A1", "A2", "A3", "B1", "B2", "B3"],
+      "edges": [
+        {"id": "e1", "from": "A1", "to": "B1", "weight": 1},
+        {"id": "e2", "from": "A1", "to": "B2", "weight": 1},
+        {"id": "e3", "from": "A1", "to": "B3", "weight": 1},
+        {"id": "e4", "from": "A2", "to": "B1", "weight": 1},
+        {"id": "e5", "from": "A2", "to": "B2", "weight": 1},
+        {"id": "e6", "from": "A2", "to": "B3", "weight": 1},
+        {"id": "e7", "from": "A3", "to": "B1", "weight": 1},
+        {"id": "e8", "from": "A3", "to": "B2", "weight": 1},
+        {"id": "e9", "from": "A3", "to": "B3", "weight": 1}
+      ],
+      "directed": false,
+      "metadata": {
+        "name": "Complete bipartite graph K_{3,3}",
+        "description": "Two sets of 3 vertices, all vertices in one set connected to all in the other",
+        "chromatic_number": 2
+      }
+    },
+    "incomplete_bipartite": {
+      "nodes": ["A1", "A2", "B1", "B2"],
+      "edges": [
+        {"id": "e1", "from": "A1", "to": "B1", "weight": 1},
+        {"id": "e2", "from": "A1", "to": "B2", "weight": 1},
+        {"id": "e3", "from": "A2", "to": "B1", "weight": 1}
+      ],
+      "directed": false,
+      "metadata": {
+        "name": "Incomplete bipartite graph",
+        "description": "Bipartite-like structure but not all edges present",
+        "chromatic_number": 2
+      }
+    },
+    "star_graph": {
+      "nodes": ["center", "leaf1", "leaf2", "leaf3", "leaf4"],
+      "edges": [
+        {"id": "e1", "from": "center", "to": "leaf1", "weight": 1},
+        {"id": "e2", "from": "center", "to": "leaf2", "weight": 1},
+        {"id": "e3", "from": "center", "to": "leaf3", "weight": 1},
+        {"id": "e4", "from": "center", "to": "leaf4", "weight": 1}
+      ],
+      "directed": false,
+      "metadata": {
+        "name": "Star graph",
+        "description": "One central vertex connected to all others, no edges between leaves",
+        "chromatic_number": 2
+      }
+    },
+    "path_graph": {
+      "nodes": ["A", "B", "C", "D", "E"],
+      "edges": [
+        {"id": "e1", "from": "A", "to": "B", "weight": 1},
+        {"id": "e2", "from": "B", "to": "C", "weight": 1},
+        {"id": "e3", "from": "C", "to": "D", "weight": 1},
+        {"id": "e4", "from": "D", "to": "E", "weight": 1}
+      ],
+      "directed": false,
+      "metadata": {
+        "name": "Path graph",
+        "description": "Linear chain of vertices",
+        "chromatic_number": 2
+      }
+    },
+    "cycle_even": {
+      "nodes": ["A", "B", "C", "D"],
+      "edges": [
+        {"id": "e1", "from": "A", "to": "B", "weight": 1},
+        {"id": "e2", "from": "B", "to": "C", "weight": 1},
+        {"id": "e3", "from": "C", "to": "D", "weight": 1},
+        {"id": "e4", "from": "D", "to": "A", "weight": 1}
+      ],
+      "directed": false,
+      "metadata": {
+        "name": "Even cycle",
+        "description": "Cycle with even number of vertices",
+        "chromatic_number": 2
+      }
+    },
+    "cycle_odd": {
+      "nodes": ["A", "B", "C"],
+      "edges": [
+        {"id": "e1", "from": "A", "to": "B", "weight": 1},
+        {"id": "e2", "from": "B", "to": "C", "weight": 1},
+        {"id": "e3", "from": "C", "to": "A", "weight": 1}
+      ],
+      "directed": false,
+      "metadata": {
+        "name": "Odd cycle",
+        "description": "Cycle with odd number of vertices (triangle)",
+        "chromatic_number": 3
+      }
+    },
+    "disconnected_two_components": {
+      "nodes": ["A", "B", "C", "D"],
+      "edges": [
+        {"id": "e1", "from": "A", "to": "B", "weight": 1},
+        {"id": "e2", "from": "C", "to": "D", "weight": 1}
+      ],
+      "directed": false,
+      "metadata": {
+        "name": "Disconnected graph (two components)",
+        "description": "Two separate connected components",
+        "chromatic_number": 2
+      }
+    },
+    "disconnected_different_sizes": {
+      "nodes": ["A", "B", "C", "D", "E", "F"],
+      "edges": [
+        {"id": "e1", "from": "A", "to": "B", "weight": 1},
+        {"id": "e2", "from": "B", "to": "C", "weight": 1},
+        {"id": "e3", "from": "C", "to": "A", "weight": 1},
+        {"id": "e4", "from": "D", "to": "E", "weight": 1}
+      ],
+      "directed": false,
+      "metadata": {
+        "name": "Disconnected with different component sizes",
+        "description": "Triangle component and edge component plus isolated vertex",
+        "chromatic_number": 3
+      }
+    },
+    "regular_graph_3": {
+      "nodes": ["A", "B", "C", "D"],
+      "edges": [
+        {"id": "e1", "from": "A", "to": "B", "weight": 1},
+        {"id": "e2", "from": "A", "to": "C", "weight": 1},
+        {"id": "e3", "from": "B", "to": "D", "weight": 1},
+        {"id": "e4", "from": "C", "to": "D", "weight": 1},
+        {"id": "e5", "from": "A", "to": "D", "weight": 1},
+        {"id": "e6", "from": "B", "to": "C", "weight": 1}
+      ],
+      "directed": false,
+      "metadata": {
+        "name": "Regular graph (3-regular)",
+        "description": "Each vertex has degree 3",
+        "chromatic_number": 4
+      }
+    },
+    "identical_degrees": {
+      "nodes": ["A", "B", "C", "D"],
+      "edges": [
+        {"id": "e1", "from": "A", "to": "B", "weight": 1},
+        {"id": "e2", "from": "A", "to": "C", "weight": 1},
+        {"id": "e3", "from": "B", "to": "D", "weight": 1},
+        {"id": "e4", "from": "C", "to": "D", "weight": 1}
+      ],
+      "directed": false,
+      "metadata": {
+        "name": "All vertices identical degree",
+        "description": "All vertices have degree 2, tests tie-breaking",
+        "chromatic_number": 2
+      }
+    },
+    "order_dependent": {
+      "nodes": ["v1", "v2", "v3", "v4"],
+      "edges": [
+        {"id": "e1", "from": "v1", "to": "v2", "weight": 1},
+        {"id": "e2", "from": "v1", "to": "v3", "weight": 1},
+        {"id": "e3", "from": "v2", "to": "v3", "weight": 1},
+        {"id": "e4", "from": "v2", "to": "v4", "weight": 1},
+        {"id": "e5", "from": "v3", "to": "v4", "weight": 1}
+      ],
+      "directed": false,
+      "metadata": {
+        "name": "Order-dependent coloring",
+        "description": "Processing order strongly affects coloring quality",
+        "chromatic_number": 3
+      }
+    },
+    "dense_non_complete": {
+      "nodes": ["A", "B", "C", "D", "E"],
+      "edges": [
+        {"id": "e1", "from": "A", "to": "B", "weight": 1},
+        {"id": "e2", "from": "A", "to": "C", "weight": 1},
+        {"id": "e3", "from": "A", "to": "D", "weight": 1},
+        {"id": "e4", "from": "B", "to": "C", "weight": 1},
+        {"id": "e5", "from": "B", "to": "D", "weight": 1},
+        {"id": "e6", "from": "C", "to": "D", "weight": 1},
+        {"id": "e7", "from": "D", "to": "E", "weight": 1}
+      ],
+      "directed": false,
+      "metadata": {
+        "name": "Dense non-complete graph",
+        "description": "Many edges but missing some edges to be complete",
+        "chromatic_number": 4
+      }
+    },
+    "sparse_graph": {
+      "nodes": ["A", "B", "C", "D", "E", "F"],
+      "edges": [
+        {"id": "e1", "from": "A", "to": "B", "weight": 1},
+        {"id": "e2", "from": "C", "to": "D", "weight": 1},
+        {"id": "e3", "from": "E", "to": "F", "weight": 1}
+      ],
+      "directed": false,
+      "metadata": {
+        "name": "Sparse graph",
+        "description": "Few edges relative to number of vertices",
+        "chromatic_number": 2
+      }
+    },
+    "isolated_vertex": {
+      "nodes": ["A", "B", "C", "isolated"],
+      "edges": [
+        {"id": "e1", "from": "A", "to": "B", "weight": 1},
+        {"id": "e2", "from": "B", "to": "C", "weight": 1},
+        {"id": "e3", "from": "C", "to": "A", "weight": 1}
+      ],
+      "directed": false,
+      "metadata": {
+        "name": "Isolated vertex",
+        "description": "Triangle with one isolated vertex",
+        "chromatic_number": 3
+      }
+    },
+    "multiple_max_degree": {
+      "nodes": ["A", "B", "C", "D", "E"],
+      "edges": [
+        {"id": "e1", "from": "A", "to": "C", "weight": 1},
+        {"id": "e2", "from": "A", "to": "D", "weight": 1},
+        {"id": "e3", "from": "A", "to": "E", "weight": 1},
+        {"id": "e4", "from": "B", "to": "C", "weight": 1},
+        {"id": "e5", "from": "B", "to": "D", "weight": 1},
+        {"id": "e6", "from": "B", "to": "E", "weight": 1}
+      ],
+      "directed": false,
+      "metadata": {
+        "name": "Multiple vertices with max degree",
+        "description": "Both A and B have degree 3 (max), tests degree sorting",
+        "chromatic_number": 3
+      }
+    },
+    "bad_greedy_choice": {
+      "nodes": ["a", "b", "c", "d", "e"],
+      "edges": [
+        {"id": "e1", "from": "a", "to": "b", "weight": 1},
+        {"id": "e2", "from": "a", "to": "c", "weight": 1},
+        {"id": "e3", "from": "b", "to": "d", "weight": 1},
+        {"id": "e4", "from": "c", "to": "d", "weight": 1},
+        {"id": "e5", "from": "d", "to": "e", "weight": 1},
+        {"id": "e6", "from": "b", "to": "c", "weight": 1}
+      ],
+      "directed": false,
+      "metadata": {
+        "name": "Bad greedy choice impact",
+        "description": "Suboptimal initial choice can require extra colors",
+        "chromatic_number": 3
+      }
+    },
+    "large_complete_k10": {
+      "nodes": ["n0", "n1", "n2", "n3", "n4", "n5", "n6", "n7", "n8", "n9"],
+      "edges": [
+        {"id": "e1", "from": "n0", "to": "n1", "weight": 1},
+        {"id": "e2", "from": "n0", "to": "n2", "weight": 1},
+        {"id": "e3", "from": "n0", "to": "n3", "weight": 1},
+        {"id": "e4", "from": "n0", "to": "n4", "weight": 1},
+        {"id": "e5", "from": "n0", "to": "n5", "weight": 1},
+        {"id": "e6", "from": "n0", "to": "n6", "weight": 1},
+        {"id": "e7", "from": "n0", "to": "n7", "weight": 1},
+        {"id": "e8", "from": "n0", "to": "n8", "weight": 1},
+        {"id": "e9", "from": "n0", "to": "n9", "weight": 1},
+        {"id": "e10", "from": "n1", "to": "n2", "weight": 1},
+        {"id": "e11", "from": "n1", "to": "n3", "weight": 1},
+        {"id": "e12", "from": "n1", "to": "n4", "weight": 1},
+        {"id": "e13", "from": "n1", "to": "n5", "weight": 1},
+        {"id": "e14", "from": "n1", "to": "n6", "weight": 1},
+        {"id": "e15", "from": "n1", "to": "n7", "weight": 1},
+        {"id": "e16", "from": "n1", "to": "n8", "weight": 1},
+        {"id": "e17", "from": "n1", "to": "n9", "weight": 1},
+        {"id": "e18", "from": "n2", "to": "n3", "weight": 1},
+        {"id": "e19", "from": "n2", "to": "n4", "weight": 1},
+        {"id": "e20", "from": "n2", "to": "n5", "weight": 1},
+        {"id": "e21", "from": "n2", "to": "n6", "weight": 1},
+        {"id": "e22", "from": "n2", "to": "n7", "weight": 1},
+        {"id": "e23", "from": "n2", "to": "n8", "weight": 1},
+        {"id": "e24", "from": "n2", "to": "n9", "weight": 1},
+        {"id": "e25", "from": "n3", "to": "n4", "weight": 1},
+        {"id": "e26", "from": "n3", "to": "n5", "weight": 1},
+        {"id": "e27", "from": "n3", "to": "n6", "weight": 1},
+        {"id": "e28", "from": "n3", "to": "n7", "weight": 1},
+        {"id": "e29", "from": "n3", "to": "n8", "weight": 1},
+        {"id": "e30", "from": "n3", "to": "n9", "weight": 1},
+        {"id": "e31", "from": "n4", "to": "n5", "weight": 1},
+        {"id": "e32", "from": "n4", "to": "n6", "weight": 1},
+        {"id": "e33", "from": "n4", "to": "n7", "weight": 1},
+        {"id": "e34", "from": "n4", "to": "n8", "weight": 1},
+        {"id": "e35", "from": "n4", "to": "n9", "weight": 1},
+        {"id": "e36", "from": "n5", "to": "n6", "weight": 1},
+        {"id": "e37", "from": "n5", "to": "n7", "weight": 1},
+        {"id": "e38", "from": "n5", "to": "n8", "weight": 1},
+        {"id": "e39", "from": "n5", "to": "n9", "weight": 1},
+        {"id": "e40", "from": "n6", "to": "n7", "weight": 1},
+        {"id": "e41", "from": "n6", "to": "n8", "weight": 1},
+        {"id": "e42", "from": "n6", "to": "n9", "weight": 1},
+        {"id": "e43", "from": "n7", "to": "n8", "weight": 1},
+        {"id": "e44", "from": "n7", "to": "n9", "weight": 1},
+        {"id": "e45", "from": "n8", "to": "n9", "weight": 1}
+      ],
+      "directed": false,
+      "metadata": {
+        "name": "Large complete graph K_10",
+        "description": "Stress test with complete graph of 10 vertices",
+        "chromatic_number": 10
+      }
+    }
+  }
+}

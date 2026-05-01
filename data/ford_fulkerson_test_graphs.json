@@ -1,0 +1,430 @@
+{
+  "graphs": {
+    "empty_graph": {
+      "nodes": [],
+      "edges": [],
+      "directed": true,
+      "metadata": {
+        "name": "Empty graph",
+        "source": null,
+        "sink": null,
+        "description": "Graph with no nodes or edges"
+      }
+    },
+    "single_edge_graph": {
+      "nodes": ["s", "t"],
+      "edges": [
+        {"id": "e1", "from": "s", "to": "t", "capacity": 7}
+      ],
+      "directed": true,
+      "metadata": {"name": "Single edge", "source": "s", "sink": "t", "expected_max_flow": 7}
+    },
+    "disconnected_graph": {
+      "nodes": ["s", "a", "b", "t"],
+      "edges": [
+        {"id": "e1", "from": "s", "to": "a", "capacity": 5},
+        {"id": "e2", "from": "a", "to": "b", "capacity": 3}
+      ],
+      "directed": true,
+      "metadata": {"name": "Disconnected", "source": "s", "sink": "t", "expected_max_flow": 0}
+    },
+    "source_equals_sink": {
+      "nodes": ["v"],
+      "edges": [],
+      "directed": true,
+      "metadata": {"name": "Source equals sink", "source": "v", "sink": "v", "description": "Source and sink are identical"}
+    },
+    "zero_capacity_edge": {
+      "nodes": ["s","a","t"],
+      "edges": [
+        {"id":"e1","from":"s","to":"a","capacity":0},
+        {"id":"e2","from":"a","to":"t","capacity":5}
+      ],
+      "directed": true,
+      "metadata": {"name":"Zero capacity edge","source":"s","sink":"t","expected_max_flow":0}
+    },
+    "simple_linear_graph": {
+      "nodes": ["s","a","b","t"],
+      "edges": [
+        {"id":"e1","from":"s","to":"a","capacity":4},
+        {"id":"e2","from":"a","to":"b","capacity":3},
+        {"id":"e3","from":"b","to":"t","capacity":5}
+      ],
+      "directed": true,
+      "metadata": {"name":"Simple chain","source":"s","sink":"t","expected_max_flow":3}
+    },
+    "multiple_parallel_paths": {
+      "nodes":["s","a","b","t"],
+      "edges":[
+        {"id":"e1","from":"s","to":"a","capacity":3},
+        {"id":"e2","from":"a","to":"t","capacity":3},
+        {"id":"e3","from":"s","to":"b","capacity":4},
+        {"id":"e4","from":"b","to":"t","capacity":2}
+      ],
+      "directed": true,
+      "metadata":{"name":"Parallel paths","source":"s","sink":"t","expected_max_flow":5}
+    },
+    "bottleneck_edge_graph": {
+      "nodes":["s","a","t"],
+      "edges":[
+        {"id":"e1","from":"s","to":"a","capacity":100},
+        {"id":"e2","from":"a","to":"t","capacity":7}
+      ],
+      "directed": true,
+      "metadata":{"name":"Bottleneck","source":"s","sink":"t","expected_max_flow":7}
+    },
+    "graph_with_cycles": {
+      "nodes":["s","a","b","t"],
+      "edges":[
+        {"id":"e1","from":"s","to":"a","capacity":10},
+        {"id":"e2","from":"a","to":"b","capacity":5},
+        {"id":"e3","from":"b","to":"a","capacity":3},
+        {"id":"e4","from":"b","to":"t","capacity":8}
+      ],
+      "directed": true,
+      "metadata":{"name":"Cycles","source":"s","sink":"t"}
+    },
+    "graph_with_back_edges": {
+      "nodes":["s","a","t"],
+      "edges":[
+        {"id":"e1","from":"s","to":"a","capacity":5},
+        {"id":"e2","from":"a","to":"s","capacity":0},
+        {"id":"e3","from":"a","to":"t","capacity":5}
+      ],
+      "directed": true,
+      "metadata":{"name":"Back edges","source":"s","sink":"t"}
+    },
+    "directed_graph_enforcement": {
+      "nodes":["s","a","t"],
+      "edges":[
+        {"id":"e1","from":"a","to":"s","capacity":100},
+        {"id":"e2","from":"s","to":"t","capacity":4}
+      ],
+      "directed": true,
+      "metadata":{"name":"Directed enforcement","source":"s","sink":"t","description":"Edges to wrong direction should not carry flow"}
+    },
+    "undirected_graph_behavior": {
+      "nodes":["s","a","t"],
+      "edges":[
+        {"id":"e1","from":"s","to":"a","capacity":3},
+        {"id":"e2","from":"a","to":"s","capacity":3},
+        {"id":"e3","from":"a","to":"t","capacity":2},
+        {"id":"e4","from":"t","to":"a","capacity":2}
+      ],
+      "directed": false,
+      "metadata":{"name":"Undirected","source":"s","sink":"t"}
+    },
+    "multiple_augmenting_paths": {
+      "nodes":["s","a","b","c","t"],
+      "edges":[
+        {"id":"e1","from":"s","to":"a","capacity":10},
+        {"id":"e2","from":"a","to":"t","capacity":2},
+        {"id":"e3","from":"s","to":"b","capacity":10},
+        {"id":"e4","from":"b","to":"c","capacity":5},
+        {"id":"e5","from":"c","to":"t","capacity":5}
+      ],
+      "directed": true,
+      "metadata":{"name":"Multiple augmenting paths","source":"s","sink":"t"}
+    },
+    "residual_graph_update_correctness": {
+      "nodes":["s","a","t"],
+      "edges":[
+        {"id":"e1","from":"s","to":"a","capacity":6},
+        {"id":"e2","from":"a","to":"t","capacity":4}
+      ],
+      "directed": true,
+      "metadata":{"name":"Residual update","source":"s","sink":"t"}
+    },
+    "reverse_edge_utilization": {
+      "nodes":["s","a","t"],
+      "edges":[
+        {"id":"e1","from":"s","to":"a","capacity":3},
+        {"id":"e2","from":"a","to":"t","capacity":3}
+      ],
+      "directed": true,
+      "metadata":{"name":"Reverse edge usage","source":"s","sink":"t"}
+    },
+    "flow_rerouting_graph": {
+      "nodes":["s","a","b","t"],
+      "edges":[
+        {"id":"e1","from":"s","to":"a","capacity":10},
+        {"id":"e2","from":"a","to":"b","capacity":1},
+        {"id":"e3","from":"b","to":"t","capacity":10},
+        {"id":"e4","from":"a","to":"t","capacity":0}
+      ],
+      "directed": true,
+      "metadata":{"name":"Flow rerouting","source":"s","sink":"t"}
+    },
+    "parallel_multi_edges": {
+      "nodes":["s","t"],
+      "edges":[
+        {"id":"e1","from":"s","to":"t","capacity":3},
+        {"id":"e2","from":"s","to":"t","capacity":4}
+      ],
+      "directed": true,
+      "metadata":{"name":"Parallel multi-edges","source":"s","sink":"t","expected_max_flow":7}
+    },
+    "self_loop_edge": {
+      "nodes":["s","a","t"],
+      "edges":[
+        {"id":"e_loop","from":"a","to":"a","capacity":100},
+        {"id":"e1","from":"s","to":"a","capacity":5},
+        {"id":"e2","from":"a","to":"t","capacity":5}
+      ],
+      "directed": true,
+      "metadata":{"name":"Self-loop","source":"s","sink":"t","description":"Self-loop should not affect max flow"}
+    },
+    "unreachable_sink": {
+      "nodes":["s","a","b"],
+      "edges":[
+        {"id":"e1","from":"s","to":"a","capacity":5},
+        {"id":"e2","from":"a","to":"b","capacity":2}
+      ],
+      "directed": true,
+      "metadata":{"name":"Unreachable sink","source":"s","sink":"t","expected_max_flow":0}
+    },
+    "fully_saturated_network": {
+      "nodes":["s","a","t"],
+      "edges":[
+        {"id":"e1","from":"s","to":"a","capacity":2},
+        {"id":"e2","from":"a","to":"t","capacity":2}
+      ],
+      "directed": true,
+      "metadata":{"name":"Saturated","source":"s","sink":"t","expected_max_flow":2}
+    },
+    "large_capacities": {
+      "nodes":["s","a","t"],
+      "edges":[
+        {"id":"e1","from":"s","to":"a","capacity":1000000000},
+        {"id":"e2","from":"a","to":"t","capacity":1000000000}
+      ],
+      "directed": true,
+      "metadata":{"name":"Large caps","source":"s","sink":"t"}
+    },
+    "floating_capacities": {
+      "nodes":["s","a","t"],
+      "edges":[
+        {"id":"e1","from":"s","to":"a","capacity":3.5},
+        {"id":"e2","from":"a","to":"t","capacity":1.5}
+      ],
+      "directed": true,
+      "metadata":{"name":"Float capacities","source":"s","sink":"t","description":"Use if algorithm supports real capacities"}
+    },
+    "integer_capacities": {
+      "nodes":["s","a","t"],
+      "edges":[
+        {"id":"e1","from":"s","to":"a","capacity":6},
+        {"id":"e2","from":"a","to":"t","capacity":4}
+      ],
+      "directed": true,
+      "metadata":{"name":"Integer capacities","source":"s","sink":"t"}
+    },
+    "capacity_conservation_law": {
+      "nodes":["s","a","b","t"],
+      "edges":[
+        {"id":"e1","from":"s","to":"a","capacity":5},
+        {"id":"e2","from":"s","to":"b","capacity":5},
+        {"id":"e3","from":"a","to":"t","capacity":5},
+        {"id":"e4","from":"b","to":"t","capacity":5}
+      ],
+      "directed": true,
+      "metadata":{"name":"Conservation law","source":"s","sink":"t"}
+    },
+    "flow_never_exceeds_capacity": {
+      "nodes":["s","a","t"],
+      "edges":[
+        {"id":"e1","from":"s","to":"a","capacity":2},
+        {"id":"e2","from":"a","to":"t","capacity":2}
+      ],
+      "directed": true,
+      "metadata":{"name":"Capacity constraint","source":"s","sink":"t"}
+    },
+    "maxflow_mincut_validation": {
+      "nodes":["s","a","b","t"],
+      "edges":[
+        {"id":"e1","from":"s","to":"a","capacity":3},
+        {"id":"e2","from":"s","to":"b","capacity":2},
+        {"id":"e3","from":"a","to":"t","capacity":2},
+        {"id":"e4","from":"b","to":"t","capacity":3}
+      ],
+      "directed": true,
+      "metadata":{"name":"MaxFlow-MinCut","source":"s","sink":"t"}
+    },
+    "disconnected_residual_components": {
+      "nodes":["s","a","b","c","t"],
+      "edges":[
+        {"id":"e1","from":"s","to":"a","capacity":4},
+        {"id":"e2","from":"a","to":"t","capacity":1},
+        {"id":"e3","from":"b","to":"c","capacity":2}
+      ],
+      "directed": true,
+      "metadata":{"name":"Disconnected residuals","source":"s","sink":"t"}
+    },
+    "invalid_source_node": {
+      "nodes":["a","b","t"],
+      "edges":[{"id":"e1","from":"a","to":"t","capacity":3}],
+      "directed": true,
+      "metadata":{"name":"Invalid source","source":"s_missing","sink":"t"}
+    },
+    "invalid_sink_node": {
+      "nodes":["s","a","b"],
+      "edges":[{"id":"e1","from":"s","to":"a","capacity":3}],
+      "directed": true,
+      "metadata":{"name":"Invalid sink","source":"s","sink":"t_missing"}
+    },
+    "negative_capacity_rejection": {
+      "nodes":["s","a","t"],
+      "edges":[
+        {"id":"e1","from":"s","to":"a","capacity":5},
+        {"id":"e2","from":"a","to":"t","capacity":-3}
+      ],
+      "directed": true,
+      "metadata":{"name":"Negative capacity","source":"s","sink":"t","description":"Contains negative capacity to test rejection"}
+    },
+    "isolated_vertices": {
+      "nodes":["s","a","t","iso1","iso2"],
+      "edges":[{"id":"e1","from":"s","to":"t","capacity":1}],
+      "directed": true,
+      "metadata":{"name":"Isolated vertices","source":"s","sink":"t"}
+    },
+    "deterministic_output": {
+      "nodes":["s","a","b","t"],
+      "edges":[
+        {"id":"e1","from":"s","to":"a","capacity":3},
+        {"id":"e2","from":"a","to":"t","capacity":3},
+        {"id":"e3","from":"s","to":"b","capacity":3},
+        {"id":"e4","from":"b","to":"t","capacity":3}
+      ],
+      "directed": true,
+      "metadata":{"name":"Deterministic","source":"s","sink":"t"}
+    },
+    "adjacency_mutation_safety": {
+      "nodes":["s","a","t"],
+      "edges":[
+        {"id":"e1","from":"s","to":"a","capacity":4},
+        {"id":"e2","from":"a","to":"t","capacity":4}
+      ],
+      "directed": true,
+      "metadata":{"name":"Adjacency safety","source":"s","sink":"t","description":"Algorithm must not mutate original adjacency"}
+    },
+    "large_sparse_network": {
+      "nodes": [
+        "s","n1","n2","n3","n4","n5","t"
+      ],
+      "edges":[
+        {"id":"e1","from":"s","to":"n1","capacity":10},
+        {"id":"e2","from":"n1","to":"n2","capacity":1},
+        {"id":"e3","from":"n2","to":"t","capacity":10},
+        {"id":"e4","from":"s","to":"n3","capacity":8},
+        {"id":"e5","from":"n3","to":"t","capacity":8}
+      ],
+      "directed": true,
+      "metadata":{"name":"Large sparse","source":"s","sink":"t"}
+    },
+    "large_dense_network": {
+      "nodes":["s","a","b","c","t"],
+      "edges":[
+        {"id":"e_sa","from":"s","to":"a","capacity":5},
+        {"id":"e_sb","from":"s","to":"b","capacity":5},
+        {"id":"e_sc","from":"s","to":"c","capacity":5},
+        {"id":"e_at","from":"a","to":"t","capacity":5},
+        {"id":"e_bt","from":"b","to":"t","capacity":5},
+        {"id":"e_ct","from":"c","to":"t","capacity":5},
+        {"id":"e_ab","from":"a","to":"b","capacity":2},
+        {"id":"e_bc","from":"b","to":"c","capacity":2}
+      ],
+      "directed": true,
+      "metadata":{"name":"Large dense","source":"s","sink":"t"}
+    },
+    "clrs_classic_example": {
+      "nodes":["s","v1","v2","v3","t"],
+      "edges":[
+        {"id":"e1","from":"s","to":"v1","capacity":16},
+        {"id":"e2","from":"s","to":"v2","capacity":13},
+        {"id":"e3","from":"v1","to":"v2","capacity":10},
+        {"id":"e4","from":"v2","to":"v1","capacity":4},
+        {"id":"e5","from":"v1","to":"v3","capacity":12},
+        {"id":"e6","from":"v3","to":"v2","capacity":9},
+        {"id":"e7","from":"v2","to":"t","capacity":14},
+        {"id":"e8","from":"v3","to":"t","capacity":20}
+      ],
+      "directed": true,
+      "metadata":{"name":"CLRS classic","source":"s","sink":"t","description":"Standard textbook example"}
+    },
+    "augmenting_path_exhaustion": {
+      "nodes":["s","a","t"],
+      "edges":[
+        {"id":"e1","from":"s","to":"a","capacity":1},
+        {"id":"e2","from":"a","to":"t","capacity":1}
+      ],
+      "directed": true,
+      "metadata":{"name":"Augmenting exhaustion","source":"s","sink":"t"}
+    },
+    "residual_reverse_capacity_correctness": {
+      "nodes":["s","a","t"],
+      "edges":[{"id":"e1","from":"s","to":"a","capacity":5},{"id":"e2","from":"a","to":"t","capacity":5}],
+      "directed": true,
+      "metadata":{"name":"Residual reverse capacities","source":"s","sink":"t"}
+    },
+    "multiple_min_cut_possibilities": {
+      "nodes":["s","a","b","t"],
+      "edges":[
+        {"id":"e1","from":"s","to":"a","capacity":5},
+        {"id":"e2","from":"s","to":"b","capacity":5},
+        {"id":"e3","from":"a","to":"t","capacity":5},
+        {"id":"e4","from":"b","to":"t","capacity":5}
+      ],
+      "directed": true,
+      "metadata":{"name":"Multiple min-cuts","source":"s","sink":"t"}
+    },
+    "invalid_graph_structure": {
+      "nodes":"not_a_list",
+      "edges":"also_not_a_list",
+      "directed": true,
+      "metadata":{"name":"Invalid structure","source":"s","sink":"t"}
+    },
+    "disconnected_source_component": {
+      "nodes":["s","a","b","t"],
+      "edges":[{"id":"e1","from":"a","to":"b","capacity":5},{"id":"e2","from":"b","to":"t","capacity":5}],
+      "directed": true,
+      "metadata":{"name":"Source disconnected","source":"s","sink":"t","expected_max_flow":0}
+    },
+    "sink_incoming_no_outgoing": {
+      "nodes":["s","a","t"],
+      "edges":[{"id":"e1","from":"s","to":"a","capacity":3},{"id":"e2","from":"a","to":"t","capacity":3}],
+      "directed": true,
+      "metadata":{"name":"Sink incoming only","source":"s","sink":"t"}
+    },
+    "source_outgoing_no_incoming": {
+      "nodes":["s","a","t"],
+      "edges":[{"id":"e1","from":"s","to":"a","capacity":4},{"id":"e2","from":"a","to":"t","capacity":1}],
+      "directed": true,
+      "metadata":{"name":"Source outgoing only","source":"s","sink":"t"}
+    },
+    "redundant_edges": {
+      "nodes":["s","a","t"],
+      "edges":[
+        {"id":"e1","from":"s","to":"a","capacity":3},
+        {"id":"e2","from":"s","to":"a","capacity":0},
+        {"id":"e3","from":"a","to":"t","capacity":3}
+      ],
+      "directed": true,
+      "metadata":{"name":"Redundant edges","source":"s","sink":"t"}
+    },
+    "high_branching_factor": {
+      "nodes":["s","a","b","c","d","t"],
+      "edges":[
+        {"id":"e_sa","from":"s","to":"a","capacity":2},
+        {"id":"e_sb","from":"s","to":"b","capacity":2},
+        {"id":"e_sc","from":"s","to":"c","capacity":2},
+        {"id":"e_sd","from":"s","to":"d","capacity":2},
+        {"id":"e_at","from":"a","to":"t","capacity":2},
+        {"id":"e_bt","from":"b","to":"t","capacity":2},
+        {"id":"e_ct","from":"c","to":"t","capacity":2},
+        {"id":"e_dt","from":"d","to":"t","capacity":2}
+      ],
+      "directed": true,
+      "metadata":{"name":"High branching","source":"s","sink":"t"}
+    }
+  }
+}

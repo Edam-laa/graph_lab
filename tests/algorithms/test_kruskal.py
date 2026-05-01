@@ -19,10 +19,6 @@ NOTES FOR DEVELOPMENT TEAM:
 3. ADDING NEW TEST CASES
    - Add entries to data/kruskal_test_graphs.json under "graphs" key
    - Use: graph = load_kruskal_graph("case_name")
-
-4. NOTE: Implementation (kruskal.py) is currently empty
-   - Tests will fail until algorithm is implemented
-   - Adapter infrastructure is ready for implementation
 """
 
 import json
