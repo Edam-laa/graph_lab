@@ -9,8 +9,8 @@ from app.algorithms.connectivity.connected_components import is_connected
 from app.algorithms.connectivity.strongly_connected import is_strongly_connected
 from app.algorithms.eulerian.eulerian_path import check_eulerian_status, find_eulerian_tour
 from app.algorithms.coloring.welsh_powell import welsh_powell
-from app.algorithms.mst.kruskal import kruskal
-from app.algorithms.mst.prim    import prim
+from app.algorithms.spanning_tree.kruskal import kruskal
+from app.algorithms.spanning_tree.prim    import prim
 
 def handle_kruskal(graph, params):
     result = kruskal(graph)
