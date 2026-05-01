@@ -1,28 +1,30 @@
 {
   "graph": {
 
-    "nodes": ["S", "A", "B", "T"],
+    "nodes": ["A", "B", "C", "D", "E"],
     "edges": [
-      {"from": "S", "to": "A", "capacity": 10},
-      {"from": "S", "to": "B", "capacity": 5},
-      {"from": "A", "to": "B", "capacity": 15},
-      {"from": "A", "to": "T", "capacity": 10},
-      {"from": "B", "to": "T", "capacity": 10}
+      {"id": "e1", "from": "A", "to": "B", "weight": 4,"capacity": null},
+      {"id": "e2", "from": "A", "to": "C", "weight": 1,"capacity": null},
+      {"id": "e3", "from": "C", "to": "B", "weight": 2,"capacity": null},
+      {"id": "e4", "from": "B", "to": "E", "weight": 4,"capacity": null},
+      {"id": "e5", "from": "C", "to": "D", "weight": 4,"capacity": null},
+      {"id": "e6", "from": "D", "to": "E", "weight": 1,"capacity": null}
     ],
     "directed": true,
     "metadata": {
       "name": "",
       "description": "",
-      "allow_negative_weights": true
+      "allow_negative_weights": false
     }
   },
 
   "algorithm": {
-    "name": "ford_fulkerson",
-    "category": "max_flow",
+    "name": "dijkstra",
+    "category": "shortest_path",
     "params": {
-      "source": "S",
-      "sink": "T"
+      "source": "A",
+      "target": "E",
+      "sink": null
     },
     "constraints_check": {
       "requires_positive_weights": false,
@@ -42,14 +44,24 @@
 
   "result": {
     "type": null,
-    "distances": {},
-    "path": [],
-    "paths": {},
-    "mst_edges": [],
-    "components": [],
-    "cycles": [],
-    "eulerian_path": [],
-    "eulerian_circuit": [],
+    "metrics": {
+      "distances": {},
+      "predecessors": {},
+      "levels": {},
+      "times": {}
+    },
+    "structures": {
+      "path": [],
+      "paths": {},
+      "tree_edges": [],
+      "mst_edges": [],
+      "components": [],
+      "cycles": []
+    },
+    "special_paths": {
+      "eulerian_path": [],
+      "eulerian_circuit": []
+    },
     "coloring": {
       "node_colors": {},
       "edge_colors": {}

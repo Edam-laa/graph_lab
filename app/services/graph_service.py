@@ -9,7 +9,42 @@ from app.algorithms.connectivity.connected_components import is_connected
 from app.algorithms.connectivity.strongly_connected import is_strongly_connected
 from app.algorithms.eulerian.eulerian_path import check_eulerian_status, find_eulerian_tour
 from app.algorithms.coloring.welsh_powell import welsh_powell
+from app.algorithms.spanning_tree.kruskal import kruskal
+from app.algorithms.spanning_tree.prim    import prim
+from app.algorithms.traversal.bfs import bfs
+from app.algorithms.traversal.dfs import dfs
+def handle_kruskal(graph, params):
+    result = kruskal(graph)
 
+    return {
+        "type":       "mst",
+        "structures": {
+            "mst_edges": result["mst_edges"]
+        }, 
+        "metrics": {
+            "distances":  {"total_weight": result["total_weight"]},
+        },
+        "steps":      result.get("steps", []),
+        "complexity": "O(E log E)"
+    }
+
+
+def handle_prim(graph, params):
+    # Sommet de départ optionnel depuis params
+    start  = params.get("source", None)
+    result = prim(graph, start=start)
+
+    return {
+        "type":       "mst",
+        "structures": {
+            "mst_edges": result["mst_edges"]
+        },
+        "metrics": {
+            "distances":  {"total_weight": result["total_weight"]},
+        },
+        "steps":      result.get("steps", []),
+        "complexity": "O((V + E) log V)"
+    }
 def handle_dijkstra(graph, params):
     source = params.get("source")
     target = params.get("target")
@@ -21,21 +56,30 @@ def handle_dijkstra(graph, params):
     
     return {
         "type": "shortest_path",
-        "distances": result["distances"],
-        "path": path,
+        "metrics": {
+            "distances": result["distances"],
+            "predecessors": result["previous"]
+        },
+        "structures": {
+            "path": path
+        },        
         "steps": result.get("steps", []),
         "complexity": "O((V + E) log V)"
     }
 def handle_bellman_ford(graph, params):
     source = params.get("source")
+    target = params.get("target")
     if not source:
         raise ValueError("Bellman-Ford requires a 'source' parameter.")
     
     result = bellman_ford(graph, source)
-    
+    path = reconstruct_path(result["previous"], source, target) if target else []
     return {
         "type": "shortest_path",
-        "distances": result["distances"],
+        "metrics": {
+            "distances": result["distances"],
+            "predecessors": result["previous"]
+        },
         "steps": result.get("steps", []),
         "complexity": "O(V * E)"
     }
@@ -50,8 +94,13 @@ def handle_bellman(graph, params):
 
     return {
         "type": "shortest_path",
-        "distances": result["distances"],
-        "path": path,
+        "metrics": {
+            "distances": result["distances"],
+            "predecessors": result["previous"]
+        },
+        "structures": {
+            "path": path
+        },
         "steps": result.get("steps", []),
         "complexity": "O(V * E)"
     }
@@ -75,14 +124,21 @@ def handle_ford_fulkerson(graph, params):
 def handle_connectivity(graph, params):
     return {
         "type": "connectivity_check",
-        "components": [list(graph.nodes)] if is_connected(graph) else [], # Simplified
+        "structures": {
+            "components": [list(graph.nodes)] if is_connected(graph) else [] # Simplified
+        },
+        "graph_properties": {
+            "is_connected": is_connected(graph)
+        },
         "complexity": "O(V + E)"
     }
 
 def handle_strong_connectivity(graph, params):
     return {
         "type": "strong_connectivity_check",
-        "is_strongly_connected": is_strongly_connected(graph),
+        "graph_properties": {
+            "is_strongly_connected": is_strongly_connected(graph)
+        },
         "complexity": "O(V + E)"
     }
 
@@ -91,12 +147,21 @@ def handle_eulerian(graph, params):
     tour = find_eulerian_tour(graph) if status_code > 0 else []
     
     # Map to your JSON result fields
-    res = {"type": "eulerian_analysis", "complexity": "O(V + E)"}
-    if status_code == 2:
-        res["eulerian_circuit"] = tour
-    elif status_code == 1:
-        res["eulerian_path"] = tour
-    return res
+    res = {
+        "type": "eulerian_analysis",
+        "special_paths": {
+            "eulerian_path": tour if status_code == 1 else [],
+            "eulerian_circuit": tour if status_code == 2 else []
+        }, 
+        "graph_properties": {
+            "is_eulerian": status_code > 0
+        },
+        "complexity": "O(V + E)"}
+    #if status_code == 2:
+    #    res["special_paths"]["eulerian_circuit"] = tour
+    #elif status_code == 1:
+    #    res["special_paths"]["eulerian_path"] = tour
+    #return res
 
 def handle_welsh_powell(graph, params):
     coloring = welsh_powell(graph)
@@ -105,20 +170,60 @@ def handle_welsh_powell(graph, params):
         "coloring": {"node_colors": coloring},
         "complexity": "O(V² + V log V)"
     }
+def handle_bfs(graph, params):
+    source = params.get("source")
+    if not source:
+        raise ValueError("BFS requires 'source'.")
+
+    result = bfs(graph, source)
+
+    return {
+        "type": "traversal",
+        "traversal": {
+            "order": result["order"],
+            "tree_edges": result["tree_edges"]
+        },
+        "metrics": {
+            "levels": result["levels"]
+        },
+        "steps": result["steps"],
+        "complexity": "O(V + E)"
+    }
+def handle_dfs(graph, params):
+    source = params.get("source")
+    if not source:
+        raise ValueError("DFS requires 'source'.")
+
+    result = dfs(graph, source)
+
+    return {
+        "type": "traversal",
+        "traversal": {
+            "order": result["order"],
+            "tree_edges": result["tree_edges"]
+        },
+        "metrics": {
+            "times": result["times"]
+        },
+        "steps": result["steps"],
+        "complexity": "O(V + E)"
+    }
+
+
 # --- THE MAPPING DICTIONARY ---
 
 ALGO_REGISTRY = {
-    "dijkstra": handle_dijkstra,
-    "bellman_ford": handle_bellman_ford,
-    "bellman": handle_bellman,
-    "ford_fulkerson": handle_ford_fulkerson,
-    "connectivity": handle_connectivity,
+    "dijkstra":          handle_dijkstra,
+    "bellman_ford":      handle_bellman_ford,
+    "bellman":           handle_bellman,
+    "ford_fulkerson":    handle_ford_fulkerson,
+    "connectivity":      handle_connectivity,
     "strong_connectivity": handle_strong_connectivity,
-    "eulerian": handle_eulerian,
-    "welsh_powell": handle_welsh_powell
+    "eulerian":          handle_eulerian,
+    "welsh_powell":      handle_welsh_powell,
+    "kruskal":           handle_kruskal,   # ← ton ajout
+    "prim":              handle_prim,      # ← ton ajout
 }
-
-
 def execute_algorithm(json_data):
     try:
         # 1. Build graph
@@ -149,8 +254,8 @@ def execute_algorithm(json_data):
         })
 
         # 6. Update Result field
-        json_data["result"].update(output)
-
+        #json_data["result"].update(output)
+        deep_merge(json_data["result"], output)
         return json_data
 
     except Exception as e:
@@ -161,3 +266,52 @@ def execute_algorithm(json_data):
             "execution_time": round(end_time - start_time, 6)
         })
         return json_data
+    
+def deep_merge(base, update):
+    for key, value in update.items():
+        if isinstance(value, dict) and key in base:
+            deep_merge(base[key], value)
+        else:
+            base[key] = value
+
+def get_empty_result_template():
+    return {
+        "type": None,
+        "metrics": {
+            "distances": {},
+            "predecessors": {},
+            "levels": {},
+            "times": {}
+        },
+        "structures": {
+            "path": [],
+            "paths": {},
+            "tree_edges": [],
+            "mst_edges": [],
+            "components": [],
+            "cycles": []
+        },
+        "flow": {
+            "value": None,
+            "edge_flows": {},
+            "augmenting_paths": []
+        },
+        "coloring": {
+            "node_colors": {},
+            "edge_colors": {}
+        },
+        "special_paths": {
+            "eulerian_path": [],
+            "eulerian_circuit": []
+        },
+        "properties": {
+            "is_connected": None,
+            "is_strongly_connected": None,
+            "is_tree": None,
+            "is_bipartite": None,
+            "is_eulerian": None,
+            "has_cycle": None,
+            "is_weighted": None
+        },
+        "steps": []
+    }
