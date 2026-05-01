@@ -15,6 +15,12 @@
         "to": "C",
         "weight": 2,
         "capacity": null
+      },{
+        "id": "e3",
+        "from": "C",
+        "to": "A",
+        "weight": 2,
+        "capacity": null
       }
     ],
     "directed": true,
@@ -26,7 +32,7 @@
   },
 
   "algorithm": {
-    "name": "welsh_powell",
+    "name": "eulerian",
     "category": "shortest_path",
     "params": {
       "source": "A",
