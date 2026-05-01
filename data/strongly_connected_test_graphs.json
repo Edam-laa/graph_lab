@@ -1,0 +1,467 @@
+{
+  "graphs": {
+    "empty_graph": {
+      "nodes": [],
+      "edges": [],
+      "directed": false,
+      "metadata": {
+        "name": "Empty Graph",
+        "description": "Empty graph is considered strongly connected by the current implementation",
+        "allow_negative_weights": false
+      }
+    },
+    "single_vertex_graph": {
+      "nodes": ["A"],
+      "edges": [],
+      "directed": true,
+      "metadata": {
+        "name": "Single Vertex Graph",
+        "description": "One isolated node is strongly connected",
+        "allow_negative_weights": false
+      }
+    },
+    "single_directed_self_loop": {
+      "nodes": ["A"],
+      "edges": [
+        {"id": "e1", "from": "A", "to": "A", "weight": 1, "capacity": null}
+      ],
+      "directed": true,
+      "metadata": {
+        "name": "Single Directed Self Loop",
+        "description": "A single node with a loop is strongly connected",
+        "allow_negative_weights": false
+      }
+    },
+    "two_nodes_one_way_edge": {
+      "nodes": ["A", "B"],
+      "edges": [
+        {"id": "e1", "from": "A", "to": "B", "weight": 1, "capacity": null}
+      ],
+      "directed": true,
+      "metadata": {
+        "name": "Two Nodes One Way Edge",
+        "description": "One-way edge A to B is not strongly connected",
+        "allow_negative_weights": false
+      }
+    },
+    "two_nodes_bidirectional_edges": {
+      "nodes": ["A", "B"],
+      "edges": [
+        {"id": "e1", "from": "A", "to": "B", "weight": 1, "capacity": null},
+        {"id": "e2", "from": "B", "to": "A", "weight": 1, "capacity": null}
+      ],
+      "directed": true,
+      "metadata": {
+        "name": "Two Nodes Bidirectional Edges",
+        "description": "Mutual reachability makes the graph strongly connected",
+        "allow_negative_weights": false
+      }
+    },
+    "simple_directed_cycle": {
+      "nodes": ["A", "B", "C"],
+      "edges": [
+        {"id": "e1", "from": "A", "to": "B", "weight": 1, "capacity": null},
+        {"id": "e2", "from": "B", "to": "C", "weight": 1, "capacity": null},
+        {"id": "e3", "from": "C", "to": "A", "weight": 1, "capacity": null}
+      ],
+      "directed": true,
+      "metadata": {
+        "name": "Simple Directed Cycle",
+        "description": "A simple directed cycle is strongly connected",
+        "allow_negative_weights": false
+      }
+    },
+    "directed_chain": {
+      "nodes": ["A", "B", "C"],
+      "edges": [
+        {"id": "e1", "from": "A", "to": "B", "weight": 1, "capacity": null},
+        {"id": "e2", "from": "B", "to": "C", "weight": 1, "capacity": null}
+      ],
+      "directed": true,
+      "metadata": {
+        "name": "Directed Chain",
+        "description": "A chain A to B to C is not strongly connected",
+        "allow_negative_weights": false
+      }
+    },
+    "strongly_connected_directed_graph": {
+      "nodes": ["A", "B", "C", "D"],
+      "edges": [
+        {"id": "e1", "from": "A", "to": "B", "weight": 1, "capacity": null},
+        {"id": "e2", "from": "B", "to": "C", "weight": 1, "capacity": null},
+        {"id": "e3", "from": "C", "to": "D", "weight": 1, "capacity": null},
+        {"id": "e4", "from": "D", "to": "A", "weight": 1, "capacity": null},
+        {"id": "e5", "from": "A", "to": "C", "weight": 1, "capacity": null},
+        {"id": "e6", "from": "B", "to": "D", "weight": 1, "capacity": null}
+      ],
+      "directed": true,
+      "metadata": {
+        "name": "Strongly Connected Directed Graph",
+        "description": "A complex cycle with multiple routes between nodes",
+        "allow_negative_weights": false
+      }
+    },
+    "directed_graph_with_sink_node": {
+      "nodes": ["A", "B", "C"],
+      "edges": [
+        {"id": "e1", "from": "A", "to": "B", "weight": 1, "capacity": null},
+        {"id": "e2", "from": "B", "to": "C", "weight": 1, "capacity": null}
+      ],
+      "directed": true,
+      "metadata": {
+        "name": "Directed Graph With Sink Node",
+        "description": "Node C has no outgoing edges",
+        "allow_negative_weights": false
+      }
+    },
+    "directed_graph_with_source_node_only": {
+      "nodes": ["A", "B", "C"],
+      "edges": [
+        {"id": "e1", "from": "A", "to": "B", "weight": 1, "capacity": null},
+        {"id": "e2", "from": "A", "to": "C", "weight": 1, "capacity": null}
+      ],
+      "directed": true,
+      "metadata": {
+        "name": "Directed Graph With Source Node Only",
+        "description": "Node A has only outgoing edges and no incoming edges",
+        "allow_negative_weights": false
+      }
+    },
+    "graph_with_multiple_scc_components": {
+      "nodes": ["A", "B", "C", "D", "E", "F"],
+      "edges": [
+        {"id": "e1", "from": "A", "to": "B", "weight": 1, "capacity": null},
+        {"id": "e2", "from": "B", "to": "A", "weight": 1, "capacity": null},
+        {"id": "e3", "from": "C", "to": "D", "weight": 1, "capacity": null},
+        {"id": "e4", "from": "D", "to": "C", "weight": 1, "capacity": null},
+        {"id": "e5", "from": "E", "to": "F", "weight": 1, "capacity": null},
+        {"id": "e6", "from": "F", "to": "E", "weight": 1, "capacity": null}
+      ],
+      "directed": true,
+      "metadata": {
+        "name": "Graph With Multiple SCC Components",
+        "description": "Three disconnected SCC components",
+        "allow_negative_weights": false
+      }
+    },
+    "disconnected_directed_graph": {
+      "nodes": ["A", "B", "C", "D"],
+      "edges": [
+        {"id": "e1", "from": "A", "to": "B", "weight": 1, "capacity": null},
+        {"id": "e2", "from": "C", "to": "D", "weight": 1, "capacity": null}
+      ],
+      "directed": true,
+      "metadata": {
+        "name": "Disconnected Directed Graph",
+        "description": "Separated directed components should be rejected",
+        "allow_negative_weights": false
+      }
+    },
+    "undirected_connected_graph": {
+      "nodes": ["A", "B", "C"],
+      "edges": [
+        {"id": "e1", "from": "A", "to": "B", "weight": 1, "capacity": null},
+        {"id": "e2", "from": "B", "to": "C", "weight": 1, "capacity": null}
+      ],
+      "directed": false,
+      "metadata": {
+        "name": "Undirected Connected Graph",
+        "description": "Fallback to is_connected should succeed for undirected graphs",
+        "allow_negative_weights": false
+      }
+    },
+    "undirected_disconnected_graph": {
+      "nodes": ["A", "B", "C", "D"],
+      "edges": [
+        {"id": "e1", "from": "A", "to": "B", "weight": 1, "capacity": null},
+        {"id": "e2", "from": "C", "to": "D", "weight": 1, "capacity": null}
+      ],
+      "directed": false,
+      "metadata": {
+        "name": "Undirected Disconnected Graph",
+        "description": "Undirected graph with multiple components",
+        "allow_negative_weights": false
+      }
+    },
+    "graph_with_isolated_node": {
+      "nodes": ["A", "B", "C"],
+      "edges": [
+        {"id": "e1", "from": "A", "to": "B", "weight": 1, "capacity": null}
+      ],
+      "directed": true,
+      "metadata": {
+        "name": "Graph With Isolated Node",
+        "description": "Node C is isolated and makes the graph not strongly connected",
+        "allow_negative_weights": false
+      }
+    },
+    "graph_with_self_loop_only_nodes_except_one_isolated": {
+      "nodes": ["A", "B", "C"],
+      "edges": [
+        {"id": "e1", "from": "A", "to": "A", "weight": 1, "capacity": null},
+        {"id": "e2", "from": "B", "to": "B", "weight": 1, "capacity": null}
+      ],
+      "directed": true,
+      "metadata": {
+        "name": "Graph With Self Loop Only Nodes Except One Isolated",
+        "description": "Two self-loop nodes plus one isolated node",
+        "allow_negative_weights": false
+      }
+    },
+    "graph_forward_reachable_but_not_reverse_reachable": {
+      "nodes": ["A", "B", "C"],
+      "edges": [
+        {"id": "e1", "from": "A", "to": "B", "weight": 1, "capacity": null},
+        {"id": "e2", "from": "B", "to": "C", "weight": 1, "capacity": null},
+        {"id": "e3", "from": "A", "to": "C", "weight": 1, "capacity": null}
+      ],
+      "directed": true,
+      "metadata": {
+        "name": "Forward Reachable But Not Reverse Reachable",
+        "description": "Forward DFS can reach all nodes but the reversed graph cannot",
+        "allow_negative_weights": false
+      }
+    },
+    "graph_reverse_reachable_but_not_forward_reachable": {
+      "nodes": ["A", "B", "C"],
+      "edges": [
+        {"id": "e1", "from": "B", "to": "A", "weight": 1, "capacity": null},
+        {"id": "e2", "from": "C", "to": "B", "weight": 1, "capacity": null},
+        {"id": "e3", "from": "C", "to": "A", "weight": 1, "capacity": null}
+      ],
+      "directed": true,
+      "metadata": {
+        "name": "Reverse Reachable But Not Forward Reachable",
+        "description": "Reverse DFS could reach nodes that forward DFS cannot",
+        "allow_negative_weights": false
+      }
+    },
+    "complete_directed_graph": {
+      "nodes": ["A", "B", "C", "D"],
+      "edges": [
+        {"id": "e1", "from": "A", "to": "B", "weight": 1, "capacity": null},
+        {"id": "e2", "from": "A", "to": "C", "weight": 1, "capacity": null},
+        {"id": "e3", "from": "A", "to": "D", "weight": 1, "capacity": null},
+        {"id": "e4", "from": "B", "to": "A", "weight": 1, "capacity": null},
+        {"id": "e5", "from": "B", "to": "C", "weight": 1, "capacity": null},
+        {"id": "e6", "from": "B", "to": "D", "weight": 1, "capacity": null},
+        {"id": "e7", "from": "C", "to": "A", "weight": 1, "capacity": null},
+        {"id": "e8", "from": "C", "to": "B", "weight": 1, "capacity": null},
+        {"id": "e9", "from": "C", "to": "D", "weight": 1, "capacity": null},
+        {"id": "e10", "from": "D", "to": "A", "weight": 1, "capacity": null},
+        {"id": "e11", "from": "D", "to": "B", "weight": 1, "capacity": null},
+        {"id": "e12", "from": "D", "to": "C", "weight": 1, "capacity": null}
+      ],
+      "directed": true,
+      "metadata": {
+        "name": "Complete Directed Graph",
+        "description": "Fully connected directed graph",
+        "allow_negative_weights": false
+      }
+    },
+    "nearly_complete_graph_missing_one_edge": {
+      "nodes": ["A", "B", "C", "D"],
+      "edges": [
+        {"id": "e1", "from": "A", "to": "B", "weight": 1, "capacity": null},
+        {"id": "e2", "from": "A", "to": "C", "weight": 1, "capacity": null},
+        {"id": "e3", "from": "A", "to": "D", "weight": 1, "capacity": null},
+        {"id": "e4", "from": "B", "to": "A", "weight": 1, "capacity": null},
+        {"id": "e5", "from": "B", "to": "C", "weight": 1, "capacity": null},
+        {"id": "e6", "from": "B", "to": "D", "weight": 1, "capacity": null},
+        {"id": "e7", "from": "C", "to": "A", "weight": 1, "capacity": null},
+        {"id": "e8", "from": "C", "to": "B", "weight": 1, "capacity": null},
+        {"id": "e9", "from": "D", "to": "A", "weight": 1, "capacity": null},
+        {"id": "e10", "from": "D", "to": "B", "weight": 1, "capacity": null},
+        {"id": "e11", "from": "D", "to": "C", "weight": 1, "capacity": null}
+      ],
+      "directed": true,
+      "metadata": {
+        "name": "Nearly Complete Directed Graph",
+        "description": "One missing edge breaks full reachability symmetry",
+        "allow_negative_weights": false
+      }
+    },
+    "graph_with_parallel_edges": {
+      "nodes": ["A", "B", "C"],
+      "edges": [
+        {"id": "e1", "from": "A", "to": "B", "weight": 1, "capacity": null},
+        {"id": "e2", "from": "A", "to": "B", "weight": 2, "capacity": null},
+        {"id": "e3", "from": "B", "to": "C", "weight": 1, "capacity": null},
+        {"id": "e4", "from": "C", "to": "A", "weight": 1, "capacity": null}
+      ],
+      "directed": true,
+      "metadata": {
+        "name": "Graph With Parallel Edges",
+        "description": "Parallel edges should not break the logic",
+        "allow_negative_weights": false
+      }
+    },
+    "graph_with_weighted_edges": {
+      "nodes": ["A", "B", "C", "D"],
+      "edges": [
+        {"id": "e1", "from": "A", "to": "B", "weight": 5, "capacity": null},
+        {"id": "e2", "from": "B", "to": "C", "weight": 10, "capacity": null},
+        {"id": "e3", "from": "C", "to": "D", "weight": 15, "capacity": null},
+        {"id": "e4", "from": "D", "to": "A", "weight": 20, "capacity": null}
+      ],
+      "directed": true,
+      "metadata": {
+        "name": "Graph With Weighted Edges",
+        "description": "Weights should be ignored by connectivity logic",
+        "allow_negative_weights": false
+      }
+    },
+    "large_strongly_connected_sparse_graph": {
+      "nodes": ["N0", "N1", "N2", "N3", "N4", "N5", "N6", "N7", "N8", "N9", "N10", "N11", "N12", "N13", "N14", "N15", "N16", "N17", "N18", "N19"],
+      "edges": [
+        {"id": "e1", "from": "N0", "to": "N1", "weight": 1, "capacity": null},
+        {"id": "e2", "from": "N1", "to": "N2", "weight": 1, "capacity": null},
+        {"id": "e3", "from": "N2", "to": "N3", "weight": 1, "capacity": null},
+        {"id": "e4", "from": "N3", "to": "N4", "weight": 1, "capacity": null},
+        {"id": "e5", "from": "N4", "to": "N5", "weight": 1, "capacity": null},
+        {"id": "e6", "from": "N5", "to": "N6", "weight": 1, "capacity": null},
+        {"id": "e7", "from": "N6", "to": "N7", "weight": 1, "capacity": null},
+        {"id": "e8", "from": "N7", "to": "N8", "weight": 1, "capacity": null},
+        {"id": "e9", "from": "N8", "to": "N9", "weight": 1, "capacity": null},
+        {"id": "e10", "from": "N9", "to": "N0", "weight": 1, "capacity": null}
+      ],
+      "directed": true,
+      "metadata": {
+        "name": "Large Strongly Connected Sparse Graph",
+        "description": "Sparse but strongly connected directed graph",
+        "allow_negative_weights": false
+      }
+    },
+    "large_non_strongly_connected_sparse_graph": {
+      "nodes": ["N0", "N1", "N2", "N3", "N4", "N5", "N6", "N7", "N8", "N9", "N10", "N11", "N12", "N13", "N14", "N15", "N16", "N17", "N18", "N19"],
+      "edges": [
+        {"id": "e1", "from": "N0", "to": "N1", "weight": 1, "capacity": null},
+        {"id": "e2", "from": "N1", "to": "N2", "weight": 1, "capacity": null},
+        {"id": "e3", "from": "N2", "to": "N3", "weight": 1, "capacity": null},
+        {"id": "e4", "from": "N3", "to": "N4", "weight": 1, "capacity": null},
+        {"id": "e5", "from": "N4", "to": "N5", "weight": 1, "capacity": null}
+      ],
+      "directed": true,
+      "metadata": {
+        "name": "Large Non Strongly Connected Sparse Graph",
+        "description": "Sparse directed graph with unreachable nodes",
+        "allow_negative_weights": false
+      }
+    },
+    "graph_unreachable_node_forward_dfs_only": {
+      "nodes": ["A", "B", "C", "D"],
+      "edges": [
+        {"id": "e1", "from": "A", "to": "B", "weight": 1, "capacity": null},
+        {"id": "e2", "from": "B", "to": "C", "weight": 1, "capacity": null},
+        {"id": "e3", "from": "C", "to": "A", "weight": 1, "capacity": null},
+        {"id": "e4", "from": "D", "to": "A", "weight": 1, "capacity": null}
+      ],
+      "directed": true,
+      "metadata": {
+        "name": "Unreachable Node Forward DFS Only",
+        "description": "Step 1 should fail because D is unreachable from the starting node",
+        "allow_negative_weights": false
+      }
+    },
+    "graph_unreachable_node_reversed_dfs_only": {
+      "nodes": ["A", "B", "C", "D"],
+      "edges": [
+        {"id": "e1", "from": "A", "to": "B", "weight": 1, "capacity": null},
+        {"id": "e2", "from": "B", "to": "C", "weight": 1, "capacity": null},
+        {"id": "e3", "from": "C", "to": "A", "weight": 1, "capacity": null},
+        {"id": "e4", "from": "A", "to": "D", "weight": 1, "capacity": null}
+      ],
+      "directed": true,
+      "metadata": {
+        "name": "Unreachable Node Reversed DFS Only",
+        "description": "Step 2 should fail on the reversed graph",
+        "allow_negative_weights": false
+      }
+    },
+    "graph_with_cycles_and_dead_end_branch": {
+      "nodes": ["A", "B", "C", "D", "E"],
+      "edges": [
+        {"id": "e1", "from": "A", "to": "B", "weight": 1, "capacity": null},
+        {"id": "e2", "from": "B", "to": "C", "weight": 1, "capacity": null},
+        {"id": "e3", "from": "C", "to": "A", "weight": 1, "capacity": null},
+        {"id": "e4", "from": "C", "to": "D", "weight": 1, "capacity": null},
+        {"id": "e5", "from": "D", "to": "E", "weight": 1, "capacity": null}
+      ],
+      "directed": true,
+      "metadata": {
+        "name": "Cycles And Dead End Branch",
+        "description": "Cycle plus dead-end branch",
+        "allow_negative_weights": false
+      }
+    },
+    "graph_with_multiple_incoming_no_outgoing": {
+      "nodes": ["A", "B", "C"],
+      "edges": [
+        {"id": "e1", "from": "A", "to": "C", "weight": 1, "capacity": null},
+        {"id": "e2", "from": "B", "to": "C", "weight": 1, "capacity": null}
+      ],
+      "directed": true,
+      "metadata": {
+        "name": "Multiple Incoming No Outgoing",
+        "description": "Node C has incoming edges but no outgoing edges",
+        "allow_negative_weights": false
+      }
+    },
+    "graph_with_multiple_outgoing_no_incoming": {
+      "nodes": ["A", "B", "C"],
+      "edges": [
+        {"id": "e1", "from": "C", "to": "A", "weight": 1, "capacity": null},
+        {"id": "e2", "from": "C", "to": "B", "weight": 1, "capacity": null}
+      ],
+      "directed": true,
+      "metadata": {
+        "name": "Multiple Outgoing No Incoming",
+        "description": "Node C has outgoing edges but no incoming edges",
+        "allow_negative_weights": false
+      }
+    },
+    "non_sequential_node_ids": {
+      "nodes": ["node-10", "alpha", "zeta", "node-2"],
+      "edges": [
+        {"id": "e1", "from": "node-10", "to": "alpha", "weight": 1, "capacity": null},
+        {"id": "e2", "from": "alpha", "to": "zeta", "weight": 1, "capacity": null},
+        {"id": "e3", "from": "zeta", "to": "node-2", "weight": 1, "capacity": null},
+        {"id": "e4", "from": "node-2", "to": "node-10", "weight": 1, "capacity": null}
+      ],
+      "directed": true,
+      "metadata": {
+        "name": "Non Sequential Node IDs",
+        "description": "Arbitrary labels should not affect reachability",
+        "allow_negative_weights": false
+      }
+    },
+    "malformed_adjacency_missing_node_entries": {
+      "nodes": ["A", "B"],
+      "edges": [
+        {"id": "e1", "from": "A", "to": "B", "weight": 1, "capacity": null},
+        {"id": "e2", "from": "B", "to": "X", "weight": 1, "capacity": null}
+      ],
+      "directed": true,
+      "metadata": {
+        "name": "Malformed Adjacency Missing Node Entries",
+        "description": "Edge references a node not declared in nodes; useful for robustness checks",
+        "allow_negative_weights": false
+      }
+    },
+    "start_node_choice_changes_result": {
+      "nodes": ["A", "B", "C", "D"],
+      "edges": [
+        {"id": "e1", "from": "A", "to": "B", "weight": 1, "capacity": null},
+        {"id": "e2", "from": "B", "to": "A", "weight": 1, "capacity": null},
+        {"id": "e3", "from": "C", "to": "D", "weight": 1, "capacity": null},
+        {"id": "e4", "from": "D", "to": "C", "weight": 1, "capacity": null}
+      ],
+      "directed": true,
+      "metadata": {
+        "name": "Start Node Choice Changes Result",
+        "description": "Connectivity result should not depend on the first node chosen",
+        "allow_negative_weights": false
+      }
+    }
+  }
+}

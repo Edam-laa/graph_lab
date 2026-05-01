@@ -15,7 +15,6 @@ from app.algorithms.traversal.bfs import bfs
 from app.algorithms.traversal.dfs import dfs
 def handle_kruskal(graph, params):
     result = kruskal(graph)
-
     return {
         "type":       "mst",
         "structures": {
