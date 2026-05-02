@@ -18,7 +18,6 @@ def is_connected(graph):
 
     log("C0", "Start connectivity check (DFS on undirected projection)")
     nodes = graph.get_nodes()
-    print("aaaaaaaaaaaaaaaaaaaaaaaaa",nodes)
 
     if not nodes:
         log("C1", "Empty graph → considered connected")
@@ -31,7 +30,16 @@ def is_connected(graph):
     undirected_adj = {node: set() for node in nodes}
 
     for u in graph.adj_list:
+        # Vérification si le nœud source existe dans la liste des nœuds
+        if u not in undirected_adj:
+            raise ValueError(f"Node '{u}' in adjacency list is not in the graph nodes")
+            
         for v, _, _ in graph.adj_list[u]:
+            # Correction : Vérification si le voisin 'v' existe dans le graphe
+            if v not in undirected_adj:
+                log("E1", f"Error: Node '{v}' referenced as neighbor of '{u}' is missing")
+                raise ValueError(f"Node '{v}' referenced in adjacency is not in the graph nodes")
+            
             undirected_adj[u].add(v)
             undirected_adj[v].add(u)
 
@@ -57,13 +65,13 @@ def is_connected(graph):
     log("C6", f"Visited nodes: {list(visited)}")
 
     connected = len(visited) == len(nodes)
-    print("aaaaaaaaaaaaaaaaaaaaaaaaa","ouais connecté")
 
     if connected:
         log("C7", "All nodes reached → graph is connected")
     else:
         missing = set(nodes) - visited
         log("C8", f"Unreachable nodes detected: {list(missing)}")
+        
     return {
         "connected": connected,
         "steps": steps

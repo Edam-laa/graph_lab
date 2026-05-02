@@ -19,6 +19,14 @@ def is_strongly_connected(graph):
     log("SC0", "Start strong connectivity check")
 
     nodes = graph.get_nodes()
+    adj = graph.adj_list
+
+    # --- AJOUT : Validation de l'intégrité ---
+    # On vérifie que chaque nœud déclaré possède une entrée dans la liste d'adjacence
+    for node in nodes:
+        if node not in adj:
+            raise ValueError(f"Missing adjacency entry for node: {node}")
+    # ----------------------------------------
 
     if not nodes:
         log("SC1", "Empty graph → considered strongly connected")

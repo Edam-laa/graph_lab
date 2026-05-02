@@ -1,45 +1,35 @@
 def check_eulerian_status(graph):
-    """
-    Vérifie si un graphe possède un chemin ou circuit eulérien.
-    
-    Returns:
-        0 - Pas de chemin/circuit eulérien
-        1 - Chemin eulérien (commence et finit à des nœuds différents)
-        2 - Circuit eulérien (commence et finit au même nœud)
-    """
     nodes = graph.get_nodes()
     
-    # CAS 1: Graphe vide
+    # CAS 1: Graphe vide (test_empty_graph_raises_value_error)
     if not nodes:
-        return 0
+        raise ValueError("Le graphe est vide.")
     
-    # CAS 2: Graphe avec un seul nœud
+    # CAS 2: Graphe avec un seul nœud (test_single_vertex_graph_raises_value_error)
     if len(nodes) == 1:
-        # Un nœud isolé est un circuit eulérien trivial
-        return 2 if not graph.adj_list.get(nodes[0]) else 0
+        # Un nœud seul sans arêtes ne permet pas de définir un parcours eulérien valide ici
+        raise ValueError("Graphe à sommet unique sans arêtes.")
     
-    # CAS 3: Graphe sans arêtes (tous les nœuds isolés)
+    # CAS 3: Graphe sans arêtes (test_undirected_non_eulerian_or_disconnected_graphs[zero_edge_graph])
     has_edges = any(graph.adj_list.get(node) for node in nodes)
     if not has_edges:
-        return 0
+        raise ValueError("Le graphe ne contient aucune arête.")
     
     # CAS 4: Vérifier la connexité appropriée
     if not graph.directed:
-        # Pour graphe non-orienté: vérifier connexité simple
         if not _is_connected_undirected(graph):
-            return 0
+            raise ValueError("Le graphe non-orienté n'est pas connexe.")
     else:
-        # Pour graphe orienté: vérifier forte connexité OU semi-connexité pour path
         if not _is_eulerian_connected_directed(graph):
-            return 0
+            raise ValueError("Le graphe orienté n'est pas suffisamment connecté.")
     
     # CAS 5: Vérifier les degrés
-    if not graph.directed:
-        return _check_undirected_degrees(graph)
-    else:
-        return _check_directed_degrees(graph)
-
-
+    status = _check_undirected_degrees(graph) if not graph.directed else _check_directed_degrees(graph)
+    
+    if status == 0:
+        raise ValueError("Les degrés des sommets ne permettent pas un chemin/circuit eulérien.")
+    
+    return status
 def _is_connected_undirected(graph):
     """Vérifie si le graphe non-orienté est connexe (en ignorant les nœuds isolés)."""
     nodes = graph.get_nodes()
@@ -144,7 +134,11 @@ def _check_undirected_degrees(graph):
 
 
 def _check_directed_degrees(graph):
+
+
     """Vérifie les degrés pour graphe orienté."""
+
+
     nodes = graph.get_nodes()
     
     in_degree = {node: 0 for node in nodes}
@@ -185,22 +179,14 @@ def find_eulerian_tour(graph):
     steps = []
 
     def log(code, msg):
-        steps.append({
-            "indexCode": code,
-            "message": msg
-        })
+        steps.append({"indexCode": code, "message": msg})
 
     log("E0", "Start Hierholzer algorithm")
 
-    status = check_eulerian_status(graph)
+    # Si status est 0 ou invalide, check_eulerian_status lèvera une ValueError
+    # Cela règle les tests "raises_value_error"
+    status = check_eulerian_status(graph) 
     log("E1", f"Eulerian status = {status}")
-
-    if status == 0:
-        log("E8", "Graph is not Eulerian → return empty result")
-        return {
-            "tour": [],
-            "steps": steps
-        }
 
     nodes = graph.get_nodes()
 

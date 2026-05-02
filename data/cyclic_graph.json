@@ -1,11 +1,37 @@
 {
   "graph": {
-    "nodes": [],
-    "edges": [],
+    "nodes": [
+      "A",
+      "B",
+      "C"
+    ],
+    "edges": [
+      {
+        "id": "e1",
+        "from": "A",
+        "to": "B",
+        "weight": 1,
+        "capacity": null
+      },
+      {
+        "id": "e2",
+        "from": "B",
+        "to": "C",
+        "weight": 2,
+        "capacity": null
+      },
+      {
+        "id": "e3",
+        "from": "C",
+        "to": "A",
+        "weight": 3,
+        "capacity": null
+      }
+    ],
     "directed": true,
     "metadata": {
-      "name": "Graph1",
-      "description": "Graph from graph1.json",
+      "name": "Cyclic Graph",
+      "description": "Graph from cyclic_graph.json",
       "allow_negative_weights": false
     }
   },
