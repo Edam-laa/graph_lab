@@ -198,6 +198,8 @@ ALGO_REGISTRY = {
     "welsh_powell":      handle_welsh_powell,
     "kruskal":           handle_kruskal,   # ← ton ajout
     "prim":              handle_prim,      # ← ton ajout
+    "bfs":               handle_bfs,
+    "dfs":               handle_dfs
 }
 def execute_algorithm(json_data):
     try:

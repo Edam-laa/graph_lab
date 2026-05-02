@@ -1,26 +1,28 @@
 {
   "graph": {
 
-    "nodes": ["S", "A", "B", "T"],
+    "nodes": ["S", "A", "B", "C", "D", "T"],
     "edges": [
-      {"id": "e1", "from": "A", "to": "B", "weight": 4,"capacity": null},
-      {"id": "e2", "from": "A", "to": "C", "weight": 1,"capacity": null},
-      {"id": "e3", "from": "C", "to": "B", "weight": 2,"capacity": null},
-      {"id": "e4", "from": "B", "to": "E", "weight": 4,"capacity": null},
-      {"id": "e5", "from": "C", "to": "D", "weight": 4,"capacity": null},
-      {"id": "e6", "from": "D", "to": "E", "weight": 1,"capacity": null}
+      { "id": "e1", "from": "S", "to": "A", "weight": 4, "capacity": 10 },
+      { "id": "e2", "from": "S", "to": "B", "weight": 2, "capacity": 8 },
+      { "id": "e3", "from": "A", "to": "B", "weight": 5, "capacity": 5 },
+      { "id": "e4", "from": "A", "to": "C", "weight": 10, "capacity": 7 },
+      { "id": "e5", "from": "B", "to": "C", "weight": 3, "capacity": 6 },
+      { "id": "e6", "from": "B", "to": "D", "weight": 4, "capacity": 10 },
+      { "id": "e7", "from": "C", "to": "T", "weight": 11, "capacity": 10 },
+      { "id": "e8", "from": "D", "to": "T", "weight": 2, "capacity": 4 }
     ],
     "directed": true,
     "metadata": {
-      "name": "",
-      "description": "",
-      "allow_negative_weights": true
+      "name": "Test Graph",
+      "description": "Graph for testing all algorithms",
+      "allow_negative_weights": false
     }
   },
 
   "algorithm": {
-    "name": "ford_fulkerson",
-    "category": "max_flow",
+    "name": "dfs",
+    "category": "traversal",
     "params": {
       "source": "S",
       "target": "T",
@@ -28,8 +30,8 @@
     },
     "constraints_check": {
       "requires_positive_weights": false,
-      "requires_positive_capacity": true,
-      "requires_connected": true,
+      "requires_positive_capacity": false,
+      "requires_connected": false,
       "requires_dag": false
     }
   },
