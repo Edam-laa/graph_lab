@@ -17,12 +17,9 @@ def handle_kruskal(graph, params):
     result = kruskal(graph)
     return {
         "type":       "mst",
-        "structures": {
-            "mst_edges": result["mst_edges"]
-        }, 
-        "metrics": {
-            "distances":  {"total_weight": result["total_weight"]},
-        },
+        "mst_edges": result["mst_edges"],
+        "distances":  {"total_weight": result["total_weight"]},
+        
         "steps":      result.get("steps", []),
         "complexity": "O(E log E)"
     }
@@ -35,12 +32,8 @@ def handle_prim(graph, params):
 
     return {
         "type":       "mst",
-        "structures": {
-            "mst_edges": result["mst_edges"]
-        },
-        "metrics": {
-            "distances":  {"total_weight": result["total_weight"]},
-        },
+        "mst_edges": result["mst_edges"],
+        "distances":  {"total_weight": result["total_weight"]},
         "steps":      result.get("steps", []),
         "complexity": "O((V + E) log V)"
     }
@@ -55,13 +48,9 @@ def handle_dijkstra(graph, params):
     
     return {
         "type": "shortest_path",
-        "metrics": {
-            "distances": result["distances"],
-            "predecessors": result["previous"]
-        },
-        "structures": {
-            "path": path
-        },        
+        "distances": result["distances"],
+        "predecessors": result["previous"],
+        "path": path,        
         "steps": result.get("steps", []),
         "complexity": "O((V + E) log V)"
     }
@@ -75,10 +64,9 @@ def handle_bellman_ford(graph, params):
     path = reconstruct_path(result["previous"], source, target) if target else []
     return {
         "type": "shortest_path",
-        "metrics": {
-            "distances": result["distances"],
-            "predecessors": result["previous"]
-        },
+        "distances": result["distances"],
+        "predecessors": result["previous"],
+        "path": path,
         "steps": result.get("steps", []),
         "complexity": "O(V * E)"
     }
@@ -93,13 +81,9 @@ def handle_bellman(graph, params):
 
     return {
         "type": "shortest_path",
-        "metrics": {
-            "distances": result["distances"],
-            "predecessors": result["previous"]
-        },
-        "structures": {
-            "path": path
-        },
+        "distances": result["distances"],
+        "predecessors": result["previous"],
+        "path": path,
         "steps": result.get("steps", []),
         "complexity": "O(V * E)"
     }
@@ -123,9 +107,7 @@ def handle_ford_fulkerson(graph, params):
 def handle_connectivity(graph, params):
     return {
         "type": "connectivity_check",
-        "structures": {
-            "components": [list(graph.nodes)] if is_connected(graph) else [] # Simplified
-        },
+        "components": [list(graph.nodes)] if is_connected(graph) else [],
         "graph_properties": {
             "is_connected": is_connected(graph)
         },
@@ -148,10 +130,8 @@ def handle_eulerian(graph, params):
     # Map to your JSON result fields
     res = {
         "type": "eulerian_analysis",
-        "special_paths": {
-            "eulerian_path": tour if status_code == 1 else [],
-            "eulerian_circuit": tour if status_code == 2 else []
-        }, 
+        "eulerian_path": tour if status_code == 1 else [],
+        "eulerian_circuit": tour if status_code == 2 else [], 
         "graph_properties": {
             "is_eulerian": status_code > 0
         },
@@ -180,9 +160,7 @@ def handle_bfs(graph, params):
         "type": "traversal",
         "traversal": {
             "order": result["order"],
-            "tree_edges": result["tree_edges"]
-        },
-        "metrics": {
+            "tree_edges": result["tree_edges"],
             "levels": result["levels"]
         },
         "steps": result["steps"],
@@ -199,9 +177,7 @@ def handle_dfs(graph, params):
         "type": "traversal",
         "traversal": {
             "order": result["order"],
-            "tree_edges": result["tree_edges"]
-        },
-        "metrics": {
+            "tree_edges": result["tree_edges"],
             "times": result["times"]
         },
         "steps": result["steps"],

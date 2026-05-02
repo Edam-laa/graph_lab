@@ -1,7 +1,7 @@
 {
   "graph": {
 
-    "nodes": ["A", "B", "C", "D", "E"],
+    "nodes": ["S", "A", "B", "T"],
     "edges": [
       {"id": "e1", "from": "A", "to": "B", "weight": 4,"capacity": null},
       {"id": "e2", "from": "A", "to": "C", "weight": 1,"capacity": null},
@@ -13,19 +13,27 @@
     "directed": true,
     "metadata": {
       "name": "",
-      "description": ""    
+      "description": "",
+      "allow_negative_weights": true
     }
   },
 
   "algorithm": {
-    "name": "dijkstra",
-    "category": "shortest_path",
+    "name": "ford_fulkerson",
+    "category": "max_flow",
     "params": {
-      "source": "A",
-      "target": "E",
-      "sink": "E"
+      "source": "S",
+      "target": "T",
+      "sink": "T"
+    },
+    "constraints_check": {
+      "requires_positive_weights": false,
+      "requires_positive_capacity": true,
+      "requires_connected": true,
+      "requires_dag": false
     }
   },
+
   "execution": {
     "execution_time": null,
     "complexity": null,
@@ -36,24 +44,15 @@
 
   "result": {
     "type": null,
-    "metrics": {
-      "distances": {},
-      "predecessors": {},
-      "levels": {},
-      "times": {}
-    },
-    "structures": {
-      "path": [],
-      "paths": {},
-      "tree_edges": [],
-      "mst_edges": [],
-      "components": [],
-      "cycles": []
-    },
-    "special_paths": {
-      "eulerian_path": [],
-      "eulerian_circuit": []
-    },
+    "distances": {},
+    "predecessors": {},
+    "path": [],
+    "paths": {},
+    "mst_edges": [],
+    "components": [],
+    "cycles": [],
+    "eulerian_path": [],
+    "eulerian_circuit": [],
     "coloring": {
       "node_colors": {},
       "edge_colors": {}
@@ -65,7 +64,9 @@
     },
     "traversal": {
       "order": [],
-      "tree_edges": []
+      "tree_edges": [],
+      "levels": {},
+      "times": {}
     },
     "graph_properties": {
       "is_connected": null,
@@ -77,5 +78,12 @@
       "is_weighted": null
     },
     "steps": []
+  },
+
+  "options": {
+    "return_path": true,
+    "return_steps": true,
+    "measure_time": true,
+    "visualize": false
   }
 }
