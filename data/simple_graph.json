@@ -3,11 +3,34 @@
 
     "nodes": ["S", "A", "B", "T"],
     "edges": [
+<<<<<<< HEAD
       {"from": "S", "to": "A", "capacity": 10},
       {"from": "S", "to": "B", "capacity": 5},
       {"from": "A", "to": "B", "capacity": 15},
       {"from": "A", "to": "T", "capacity": 10},
       {"from": "B", "to": "T", "capacity": 10}
+=======
+      {
+        "id": "e1",
+        "from": "A",
+        "to": "B",
+        "weight": 1,
+        "capacity": null
+      },
+      {
+        "id": "e2",
+        "from": "B",
+        "to": "C",
+        "weight": 2,
+        "capacity": null
+      },{
+        "id": "e3",
+        "from": "C",
+        "to": "A",
+        "weight": 2,
+        "capacity": null
+      }
+>>>>>>> origin/feature/taki-back
     ],
     "directed": true,
     "metadata": {
@@ -18,8 +41,13 @@
   },
 
   "algorithm": {
+<<<<<<< HEAD
     "name": "ford_fulkerson",
     "category": "max_flow",
+=======
+    "name": "eulerian",
+    "category": "shortest_path",
+>>>>>>> origin/feature/taki-back
     "params": {
       "source": "S",
       "sink": "T"

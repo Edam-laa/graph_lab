@@ -133,22 +133,18 @@ def test_negative_cycle_unreachable_does_not_break():
 
 def test_empty_graph_raises():
 	graph = load_bellman_graph("empty")
-	# Implementation accepts an arbitrary source and will return distances dict
-	result = bellman_ford_module.bellman_ford(graph, source="A")
-	assert result["distances"]["A"] == 0
+	with pytest.raises(ValueError):
+		bellman_ford_module.bellman_ford(graph, source="A")
 
 
 def test_invalid_source_and_target_raise():
 	g1 = load_bellman_graph("invalid_source_vertex")
-	# Implementation will not raise at call time for unknown source; it will add the key
-	res1 = bellman_ford_module.bellman_ford(g1, source="Z")
-	assert res1["distances"].get("Z") == 0
+	with pytest.raises(ValueError):
+		bellman_ford_module.bellman_ford(g1, source="Z")
 
 	g2 = load_bellman_graph("invalid_destination_vertex")
-	res2 = bellman_ford_module.bellman_ford(g2, source="A")
-	with pytest.raises(KeyError):
-		# distances does not contain unknown target
-		_ = res2["distances"]["Z"]
+	with pytest.raises(ValueError):
+		bellman_ford_module.bellman_ford(g2, source="A")
 
 
 def test_zero_weight_edges():
@@ -305,23 +301,30 @@ def test_bellman_ford_disconnected_graph_no_path():
 
 def test_bellman_ford_source_vertex_missing():
 	graph = load_bellman_graph("simple_directed")
-	# Implementation does not raise on unknown source; it will add the key
-	res = bellman_ford_module.bellman_ford(graph, source="Z")
-	assert res["distances"].get("Z") == 0
+	with pytest.raises(ValueError):
+		bellman_ford_module.bellman_ford(graph, source="Z")
 
 
 def test_bellman_ford_target_vertex_missing():
 	graph = load_bellman_graph("simple_directed")
-	res = bellman_ford_module.bellman_ford(graph, source="A")
-	with pytest.raises(KeyError):
-		_ = res["distances"]["Z"]
+	with pytest.raises(ValueError):
+		bellman_ford_module.bellman_ford(graph, source="A")
 
 
 def test_bellman_ford_empty_graph():
 	graph = load_bellman_graph("empty")
-	# Implementation returns distances with the provided source key
-	res = bellman_ford_module.bellman_ford(graph, source="A")
-	assert res["distances"]["A"] == 0
+	with pytest.raises(ValueError):
+		bellman_ford_module.bellman_ford(graph, source="A")
+
+
+@pytest.mark.parametrize("case_name, source", [
+	("self_loop_positive", "s"),
+	("self_loop_negative", "s"),
+])
+def test_bellman_ford_self_loop_rejected(case_name, source):
+	graph = load_bellman_graph(case_name)
+	with pytest.raises(ValueError):
+		bellman_ford_module.bellman_ford(graph, source=source)
 
 
 def test_bellman_ford_zero_weight_edges():

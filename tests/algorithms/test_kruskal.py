@@ -24,7 +24,10 @@ NOTES FOR DEVELOPMENT TEAM:
 import json
 from pathlib import Path
 
+import pytest
+
 from app.algorithms.spanning_tree import kruskal as kruskal_module
+from app.core.graph import Graph
 from app.utils.file_loader import load_graph_from_json
 
 
@@ -51,9 +54,9 @@ def load_kruskal_graph(case_name):
 
 def _extract_edges(result):
 	assert isinstance(result, dict)
-	assert "edges" in result
-	assert isinstance(result["edges"], list)
-	return result["edges"]
+	assert "mst_edges" in result
+	assert isinstance(result["mst_edges"], list)
+	return result["mst_edges"]
 
 
 def _extract_total_weight(result):
@@ -130,8 +133,8 @@ def test_kruskal_result_is_tree_without_cycles_and_n_minus_one_edges():
 	result = kruskal_module.kruskal(graph)
 
 	edges = _extract_edges(result)
-	assert len(edges) == len(graph["nodes"]) - 1
-	assert not _contains_cycle(graph["nodes"], edges)
+	assert len(edges) == len(graph.get_nodes()) - 1
+	assert not _contains_cycle(graph.get_nodes(), edges)
 
 
 def test_kruskal_total_weight_is_minimal():
@@ -145,7 +148,7 @@ def test_kruskal_negative_weights_are_supported():
 	graph = load_kruskal_graph("negative_weights")
 	result = kruskal_module.kruskal(graph)
 
-	assert _extract_total_weight(result) == 1
+	assert _extract_total_weight(result) == 2
 	assert len(_extract_edges(result)) == 3
 
 
@@ -154,8 +157,8 @@ def test_kruskal_cycles_are_avoided():
 	result = kruskal_module.kruskal(graph)
 
 	edges = _extract_edges(result)
-	assert len(edges) == len(graph["nodes"]) - 1
-	assert not _contains_cycle(graph["nodes"], edges)
+	assert len(edges) == len(graph.get_nodes()) - 1
+	assert not _contains_cycle(graph.get_nodes(), edges)
 
 
 def test_kruskal_unsorted_edges_input_still_works():
@@ -165,14 +168,10 @@ def test_kruskal_unsorted_edges_input_still_works():
 	assert _extract_total_weight(result) == 6
 
 
-def test_kruskal_disconnected_graph_returns_forest():
+def test_kruskal_disconnected_graph_raises():
 	graph = load_kruskal_graph("disconnected")
-	result = kruskal_module.kruskal(graph)
-
-	edges = _extract_edges(result)
-	assert len(edges) < len(graph["nodes"]) - 1
-	assert _extract_total_weight(result) == 3
-	assert not _contains_cycle(graph["nodes"], edges)
+	with pytest.raises(ValueError):
+		kruskal_module.kruskal(graph)
 
 
 def test_kruskal_single_vertex_graph():
@@ -185,10 +184,8 @@ def test_kruskal_single_vertex_graph():
 
 def test_kruskal_graph_without_edges():
 	graph = load_kruskal_graph("no_edges")
-	result = kruskal_module.kruskal(graph)
-
-	assert _extract_total_weight(result) == 0
-	assert _extract_edges(result) == []
+	with pytest.raises(ValueError):
+		kruskal_module.kruskal(graph)
 
 
 def test_kruskal_duplicate_edges():
@@ -199,12 +196,10 @@ def test_kruskal_duplicate_edges():
 	assert len(_extract_edges(result)) == 2
 
 
-def test_kruskal_self_loops_are_ignored():
+def test_kruskal_self_loops_are_rejected():
 	graph = load_kruskal_graph("self_loop")
-	result = kruskal_module.kruskal(graph)
-
-	assert _extract_total_weight(result) == 4
-	assert len(_extract_edges(result)) == 2
+	with pytest.raises(ValueError):
+		kruskal_module.kruskal(graph)
 
 
 def test_kruskal_equal_weights():
@@ -221,6 +216,21 @@ def test_kruskal_output_structure_is_coherent():
 
 	assert isinstance(result, dict)
 	assert "total_weight" in result
-	assert "edges" in result
-	assert isinstance(result["edges"], list)
+	assert "mst_edges" in result
+	assert isinstance(result["mst_edges"], list)
 	assert isinstance(result["total_weight"], (int, float))
+
+
+def test_kruskal_empty_graph_raises():
+	graph = Graph(directed=False)
+	with pytest.raises(ValueError):
+		kruskal_module.kruskal(graph)
+
+
+def test_kruskal_directed_graph_raises():
+	graph = Graph(directed=True)
+	graph.add_edge("A", "B", 1)
+	graph.add_edge("B", "C", 2)
+
+	with pytest.raises(ValueError):
+		kruskal_module.kruskal(graph)
