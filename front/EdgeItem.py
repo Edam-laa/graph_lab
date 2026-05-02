@@ -46,6 +46,9 @@ class EdgeItem(QGraphicsPathItem):
         sp = QPointF(p1.x() + nx * r, p1.y() + ny * r)
         ep = QPointF(p2.x() - nx * r, p2.y() - ny * r)
 
+        # Determine curve offset for parallel edges
+        curve_offset = self._get_curve_offset()
+
         self.prepareGeometryChange()
         path = QPainterPath(sp)
         if self.src is self.dst:
@@ -56,7 +59,7 @@ class EdgeItem(QGraphicsPathItem):
             )
         else:
             mid  = QPointF((sp.x() + ep.x()) / 2, (sp.y() + ep.y()) / 2)
-            ctrl = QPointF(mid.x() - ny * 18, mid.y() + nx * 18)
+            ctrl = QPointF(mid.x() - ny * curve_offset, mid.y() + nx * curve_offset)
             path.quadTo(ctrl, ep)
 
         self.setPath(path)
@@ -90,10 +93,35 @@ class EdgeItem(QGraphicsPathItem):
         self._weight_item.setPlainText(label_txt)
         wr = self._weight_item.boundingRect()
         self._weight_item.setPos(
-            mid_pt.x() - wr.width() / 2 - ny * 16,
-            mid_pt.y() - wr.height() / 2 + nx * 16,
+            mid_pt.x() - wr.width() / 2 - ny * (curve_offset * 0.6 + 8),
+            mid_pt.y() - wr.height() / 2 + nx * (curve_offset * 0.6 + 8),
         )
         self.update()
+
+    def _get_curve_offset(self):
+        """Return a curve offset so parallel edges between same nodes fan out."""
+        scene = self.scene()
+        if scene is None:
+            return 18
+        # Count all parallel edges between this src/dst pair (both directions count as parallel)
+        parallel = [
+            e for e in scene._edges
+            if (e.src is self.src and e.dst is self.dst)
+            or (e.src is self.dst and e.dst is self.src)
+        ]
+        if len(parallel) <= 1:
+            return 18  # default slight curve
+        # Assign index to self among parallel edges
+        try:
+            idx = parallel.index(self)
+        except ValueError:
+            idx = 0
+        total = len(parallel)
+        # Spread: evenly spaced offsets centered around 0
+        # e.g. 2 edges: -40, +40 ; 3 edges: -50, 0, +50
+        spacing = 45
+        start = -(total - 1) * spacing / 2
+        return start + idx * spacing
 
     def paint(self, painter, option, widget):
         painter.setRenderHint(QPainter.Antialiasing)

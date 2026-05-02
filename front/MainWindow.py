@@ -209,14 +209,49 @@ class MainWindow(QMainWindow):
 
     def _build_bottom_bar(self):
         bar = QWidget()
-        bar.setFixedHeight(48)
+        bar.setFixedHeight(52)
         bar.setObjectName("bottomBar")
         layout = QHBoxLayout(bar)
-        layout.setContentsMargins(16, 4, 16, 4)
-        layout.setSpacing(8)
+        layout.setContentsMargins(16, 6, 16, 6)
+        layout.setSpacing(6)
 
-        layout.addWidget(QLabel("Algorithms:").setStyleSheet if False else QLabel("Algorithms:"))
+        # Source input
+        src_lbl = QLabel("Source:")
+        src_lbl.setFont(QFont("Consolas", 10))
+        src_lbl.setStyleSheet(f"color: {TEXT_DIM};")
+        layout.addWidget(src_lbl)
 
+        self._param_source = QLineEdit()
+        self._param_source.setPlaceholderText("A")
+        self._param_source.setFont(QFont("Consolas", 10))
+        self._param_source.setFixedWidth(52)
+        self._param_source.setFixedHeight(32)
+        self._param_source.setStyleSheet(self._field_style())
+        layout.addWidget(self._param_source)
+
+        layout.addSpacing(4)
+
+        # Target input
+        tgt_lbl = QLabel("Target:")
+        tgt_lbl.setFont(QFont("Consolas", 10))
+        tgt_lbl.setStyleSheet(f"color: {TEXT_DIM};")
+        layout.addWidget(tgt_lbl)
+
+        self._param_sink = QLineEdit()
+        self._param_sink.setPlaceholderText("Z")
+        self._param_sink.setFont(QFont("Consolas", 10))
+        self._param_sink.setFixedWidth(52)
+        self._param_sink.setFixedHeight(32)
+        self._param_sink.setStyleSheet(self._field_style())
+        layout.addWidget(self._param_sink)
+
+        # Separator
+        sep = QFrame()
+        sep.setFrameShape(QFrame.VLine)
+        sep.setStyleSheet(f"color: {BORDER};")
+        layout.addWidget(sep)
+
+        # Algo buttons
         self._algo_btns: dict[str, AlgoBtn] = {}
         for name, cat, color in ALGO_DEFS:
             btn = AlgoBtn(name, color)
@@ -373,44 +408,6 @@ class MainWindow(QMainWindow):
         layout = QVBoxLayout(inner)
         layout.setContentsMargins(12, 16, 12, 16)
         layout.setSpacing(10)
-
-        # ── Algorithm Parameters ─────────────────────────────────────────────
-        algo_grp = QGroupBox("Algorithm Parameters")
-        algo_grp.setObjectName("infoGroup")
-        algo_layout = QVBoxLayout(algo_grp)
-        algo_layout.setSpacing(6)
-
-        # Algorithm selector
-        algo_layout.addWidget(self._dim_label("Algorithm:"))
-        self._algo_selector = QComboBox()
-        self._algo_selector.addItems([name for name, _, _ in ALGO_DEFS])
-        self._algo_selector.setFont(QFont("Consolas", 10))
-        self._algo_selector.setStyleSheet(f"""
-            QComboBox {{ background: {BG_CARD}; color: {TEXT_MAIN}; border: 1px solid {BORDER};
-                         border-radius: 4px; padding: 4px 8px; }}
-            QComboBox::drop-down {{ border: none; }}
-            QComboBox QAbstractItemView {{ background: {BG_CARD2}; color: {TEXT_MAIN};
-                                           selection-background-color: {ACCENT_BLUE}44; }}
-        """)
-        algo_layout.addWidget(self._algo_selector)
-
-        # Source node
-        algo_layout.addWidget(self._dim_label("Source node:"))
-        self._param_source = QLineEdit()
-        self._param_source.setPlaceholderText("ex: A, S ...")
-        self._param_source.setFont(QFont("Consolas", 10))
-        self._param_source.setStyleSheet(self._field_style())
-        algo_layout.addWidget(self._param_source)
-
-        # Sink / target node
-        algo_layout.addWidget(self._dim_label("Target / Sink node:"))
-        self._param_sink = QLineEdit()
-        self._param_sink.setPlaceholderText("ex: T, Z ... (optional)")
-        self._param_sink.setFont(QFont("Consolas", 10))
-        self._param_sink.setStyleSheet(self._field_style())
-        algo_layout.addWidget(self._param_sink)
-
-        layout.addWidget(algo_grp)
 
         # ── Execution Info ───────────────────────────────────────────────────
         exec_grp = QGroupBox("Execution Info")
@@ -820,15 +817,22 @@ class MainWindow(QMainWindow):
                 json.dump(data, f, indent=2, ensure_ascii=False)
             QMessageBox.information(self, "Exported", f"Graph exported to:\n{path}")
 
-    def _get_selected_algo_info(self):
-        name = self._algo_selector.currentText()
+    def _get_selected_algo_info(self, name=None):
+        if name is None:
+            # Fallback: first algo
+            name = ALGO_DEFS[0][0]
         cat_map = {n: c for n, c, _ in ALGO_DEFS}
         return name, cat_map.get(name, "shortest_path")
+
+    def _on_algo_clicked(self, name):
+        """Handle algorithm button click: track selection and run algorithm"""
+        self._current_algo = name
+        self._run_algo(name)
 
     def _run_algo(self, name):
         import requests
 
-        algo_name, algo_cat = self._get_selected_algo_info()
+        algo_name, algo_cat = self._get_selected_algo_info(name)
 
         params = {}
         if self._param_source.text().strip():
@@ -872,6 +876,13 @@ class MainWindow(QMainWindow):
                 adj.setdefault(t, []).append((f, w, c))
         return adj
     def _handle_backend_result(self, result):
+        # Check execution status for errors
+        execution = result.get("execution", {})
+        if execution.get("status") == "error":
+            error_message = execution.get("message", "Unknown error occurred")
+            self._log(f"Error: {error_message}", "error")
+            return
+
         res = result.get("result", {})
         # Clear old styles first
         self._reset_graph_style()

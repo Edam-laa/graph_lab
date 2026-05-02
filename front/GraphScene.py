@@ -203,11 +203,23 @@ class GraphScene(QGraphicsScene):
             cur = cur.parentItem()
         return None
 
+    def _get_next_label(self):
+        """Return the first label not currently used by any node."""
+        used = {n.label for n in self._nodes.values()}
+        for lbl in self._node_labels:
+            if lbl not in used:
+                return lbl
+        # Fallback: double letters AA, AB, ...
+        for a in self._node_labels:
+            for b in self._node_labels:
+                lbl = a + b
+                if lbl not in used:
+                    return lbl
+        return "?"
+
     def _add_node(self, pos):
         nid = self._node_counter
-        lbl = self._node_labels[nid % 26]
-        if nid >= 26:
-            lbl = self._node_labels[(nid // 26) - 1] + lbl
+        lbl = self._get_next_label()
         node = NodeItem(nid, lbl, pos.x(), pos.y(), self)
         node.setAcceptHoverEvents(True)
         node.setFlag(QGraphicsItem.ItemIsMovable,    self._mode == "select")
@@ -243,6 +255,8 @@ class GraphScene(QGraphicsScene):
         self.addItem(edge)      # must be in scene before update_path() reads scenePos()
         edge.update_path()
         self._edges.append(edge)
+        # Refresh all edges between the same pair so parallel ones re-space
+        self._refresh_parallel_edges(src, dst)
         # Save to history for undo
         self._history.append(("add_edge", edge))
         self.graph_changed.emit()
@@ -264,17 +278,27 @@ class GraphScene(QGraphicsScene):
         if isinstance(item, EdgeItem):
             # Save to history for undo
             self._history.append(("delete_edge", item))
+            src, dst = item.src, item.dst
             self.removeItem(item)
             self._edges.remove(item)
+            self._refresh_parallel_edges(src, dst)
             self.graph_changed.emit()
         elif isinstance(item, QGraphicsTextItem):
             parent = item.parentItem()
             if isinstance(parent, EdgeItem):
                 # Save to history for undo
                 self._history.append(("delete_edge", parent))
+                src, dst = parent.src, parent.dst
                 self.removeItem(parent)
                 self._edges.remove(parent)
+                self._refresh_parallel_edges(src, dst)
                 self.graph_changed.emit()
+
+    def _refresh_parallel_edges(self, src, dst):
+        """Re-draw all edges between src<->dst so they fan out correctly."""
+        for e in self._edges:
+            if (e.src is src and e.dst is dst) or (e.src is dst and e.dst is src):
+                e.update_path()
 
     def node_moved(self, node):
         for e in self._edges:
