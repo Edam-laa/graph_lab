@@ -1,129 +1,14 @@
 {
   "graphs": {
-    "simple": {
-      "nodes": ["A", "B", "C"],
-      "edges": [
-        {"id": "e1", "from": "A", "to": "B", "weight": 1, "capacity": null},
-        {"id": "e2", "from": "B", "to": "C", "weight": 2, "capacity": null}
-      ],
+    "empty_graph": {
+      "nodes": [],
+      "edges": [],
       "directed": true,
       "metadata": {
-        "name": "Bellman Simple Graph",
-        "description": "Shared Bellman-Ford simple graph",
-        "allow_negative_weights": false
-      }
-    },
-    "multiple_paths": {
-      "nodes": ["A", "B", "C", "D"],
-      "edges": [
-        {"id": "e1", "from": "A", "to": "B", "weight": 2, "capacity": null},
-        {"id": "e2", "from": "A", "to": "C", "weight": 1, "capacity": null},
-        {"id": "e3", "from": "C", "to": "B", "weight": 0, "capacity": null},
-        {"id": "e4", "from": "B", "to": "D", "weight": 1, "capacity": null},
-        {"id": "e5", "from": "C", "to": "D", "weight": 10, "capacity": null}
-      ],
-      "directed": true,
-      "metadata": {
-        "name": "Bellman Multiple Paths Graph",
-        "description": "Graph with a negative edge but no negative cycle",
-        "allow_negative_weights": false
-      }
-    },
-    "directed": {
-      "nodes": ["A", "B", "C"],
-      "edges": [
-        {"id": "e1", "from": "A", "to": "B", "weight": 1, "capacity": null},
-        {"id": "e2", "from": "B", "to": "C", "weight": 2, "capacity": null}
-      ],
-      "directed": true,
-      "metadata": {
-        "name": "Bellman Directed Graph",
-        "description": "Direction-sensitive Bellman-Ford graph",
-        "allow_negative_weights": false
-      }
-    },
-    "undirected": {
-      "nodes": ["A", "B", "C"],
-      "edges": [
-        {"id": "e1", "from": "A", "to": "B", "weight": 1, "capacity": null},
-        {"id": "e2", "from": "B", "to": "C", "weight": 2, "capacity": null}
-      ],
-      "directed": false,
-      "metadata": {
-        "name": "Bellman Undirected Graph",
-        "description": "Undirected Bellman-Ford baseline",
-        "allow_negative_weights": false
-      }
-    },
-    "negative_weights": {
-      "nodes": ["A", "B", "C"],
-      "edges": [
-        {"id": "e1", "from": "A", "to": "B", "weight": 1, "capacity": null},
-        {"id": "e2", "from": "B", "to": "C", "weight": -2, "capacity": null}
-      ],
-      "directed": true,
-      "metadata": {
-        "name": "Negative Weights Graph",
-        "description": "Valid negative weights without a negative cycle",
-        "allow_negative_weights": true
-      }
-    },
-    "mixed_weights": {
-      "nodes": ["A", "B", "C", "D"],
-      "edges": [
-        {"id": "e1", "from": "A", "to": "B", "weight": 2, "capacity": null},
-        {"id": "e2", "from": "B", "to": "C", "weight": -1, "capacity": null},
-        {"id": "e3", "from": "C", "to": "D", "weight": 4, "capacity": null},
-        {"id": "e4", "from": "A", "to": "D", "weight": 10, "capacity": null}
-      ],
-      "directed": true,
-      "metadata": {
-        "name": "Bellman Mixed Weights Graph",
-        "description": "Positive and negative weights together",
-        "allow_negative_weights": true
-      }
-    },
-    "sum_weights": {
-      "nodes": ["A", "B", "C"],
-      "edges": [
-        {"id": "e1", "from": "A", "to": "B", "weight": 3, "capacity": null},
-        {"id": "e2", "from": "B", "to": "C", "weight": 4, "capacity": null}
-      ],
-      "directed": true,
-      "metadata": {
-        "name": "Bellman Sum Weights Graph",
-        "description": "Path cost equals the sum of edge weights",
-        "allow_negative_weights": false
-      }
-    },
-    "negative_cycle": {
-      "nodes": ["A", "B", "C", "D"],
-      "edges": [
-        {"id": "e1", "from": "A", "to": "B", "weight": 1, "capacity": null},
-        {"id": "e2", "from": "B", "to": "C", "weight": -3, "capacity": null},
-        {"id": "e3", "from": "C", "to": "A", "weight": 1, "capacity": null},
-        {"id": "e4", "from": "C", "to": "D", "weight": 2, "capacity": null}
-      ],
-      "directed": true,
-      "metadata": {
-        "name": "Bellman Negative Cycle Graph",
-        "description": "Negative cycle must be detected",
-        "allow_negative_weights": true
-      }
-    },
-    "normal_cycle": {
-      "nodes": ["A", "B", "C", "D"],
-      "edges": [
-        {"id": "e1", "from": "A", "to": "B", "weight": 1, "capacity": null},
-        {"id": "e2", "from": "B", "to": "C", "weight": 1, "capacity": null},
-        {"id": "e3", "from": "C", "to": "A", "weight": 1, "capacity": null},
-        {"id": "e4", "from": "C", "to": "D", "weight": 2, "capacity": null}
-      ],
-      "directed": true,
-      "metadata": {
-        "name": "Bellman Normal Cycle Graph",
-        "description": "Cycle without negative weight",
-        "allow_negative_weights": false
+        "name": "Graphe vide",
+        "description": "Verifier le comportement sans sommets",
+        "source": "A",
+        "target": "A"
       }
     },
     "single_vertex": {
@@ -131,22 +16,133 @@
       "edges": [],
       "directed": true,
       "metadata": {
-        "name": "Bellman Single Vertex Graph",
-        "description": "Single vertex graph",
-        "allow_negative_weights": false
+        "name": "Graphe a un seul sommet",
+        "description": "Verifier distance source = 0",
+        "source": "A",
+        "target": "A",
+        "expected_distance": 0
       }
     },
-    "disconnected": {
+    "source_equals_destination": {
+      "nodes": ["A", "B"],
+      "edges": [
+        {"id": "e1", "from": "A", "to": "B", "weight": 3, "capacity": null}
+      ],
+      "directed": true,
+      "metadata": {
+        "name": "Source egale destination",
+        "description": "Verifier absence de deplacement",
+        "source": "A",
+        "target": "A",
+        "expected_distance": 0
+      }
+    },
+    "single_edge": {
+      "nodes": ["A", "B"],
+      "edges": [
+        {"id": "e1", "from": "A", "to": "B", "weight": 5, "capacity": null}
+      ],
+      "directed": true,
+      "metadata": {
+        "name": "Une seule arete",
+        "description": "Verifier calcul direct",
+        "source": "A",
+        "target": "B",
+        "expected_distance": 5
+      }
+    },
+    "simple_dag": {
       "nodes": ["A", "B", "C", "D"],
       "edges": [
         {"id": "e1", "from": "A", "to": "B", "weight": 1, "capacity": null},
+        {"id": "e2", "from": "A", "to": "C", "weight": 4, "capacity": null},
+        {"id": "e3", "from": "B", "to": "D", "weight": 3, "capacity": null},
+        {"id": "e4", "from": "C", "to": "D", "weight": 1, "capacity": null}
+      ],
+      "directed": true,
+      "metadata": {
+        "name": "Graphe oriente acyclique simple",
+        "description": "Verifier calcul correct des distances",
+        "source": "A",
+        "target": "D",
+        "expected_distance": 4
+      }
+    },
+    "dag_multiple_paths": {
+      "nodes": ["A", "B", "C", "D", "E"],
+      "edges": [
+        {"id": "e1", "from": "A", "to": "B", "weight": 2, "capacity": null},
+        {"id": "e2", "from": "A", "to": "C", "weight": 1, "capacity": null},
+        {"id": "e3", "from": "B", "to": "D", "weight": 3, "capacity": null},
+        {"id": "e4", "from": "C", "to": "D", "weight": 1, "capacity": null},
+        {"id": "e5", "from": "D", "to": "E", "weight": 1, "capacity": null}
+      ],
+      "directed": true,
+      "metadata": {
+        "name": "DAG avec plusieurs chemins",
+        "description": "Verifier selection du cout minimal",
+        "source": "A",
+        "target": "E",
+        "expected_distance": 3
+      }
+    },
+    "unreachable_vertex": {
+      "nodes": ["A", "B", "C", "D"],
+      "edges": [
+        {"id": "e1", "from": "A", "to": "B", "weight": 2, "capacity": null},
         {"id": "e2", "from": "B", "to": "C", "weight": 2, "capacity": null}
       ],
       "directed": true,
       "metadata": {
-        "name": "Disconnected Graph",
-        "description": "Destination remains unreachable from the source",
-        "allow_negative_weights": false
+        "name": "Sommet inaccessible",
+        "description": "Verifier distance infinie ou absence de chemin",
+        "source": "A",
+        "target": "D"
+      }
+    },
+    "partially_reachable": {
+      "nodes": ["S", "A", "B", "X", "Y"],
+      "edges": [
+        {"id": "e1", "from": "S", "to": "A", "weight": 1, "capacity": null},
+        {"id": "e2", "from": "A", "to": "B", "weight": 2, "capacity": null},
+        {"id": "e3", "from": "X", "to": "Y", "weight": 1, "capacity": null}
+      ],
+      "directed": true,
+      "metadata": {
+        "name": "Graphe partiellement atteignable",
+        "description": "Verifier coexistence atteignable et inatteignable",
+        "source": "S",
+        "target": "B",
+        "expected_distance": 3
+      }
+    },
+    "isolated_vertices": {
+      "nodes": ["S", "A", "B", "I1", "I2"],
+      "edges": [
+        {"id": "e1", "from": "S", "to": "A", "weight": 1, "capacity": null},
+        {"id": "e2", "from": "A", "to": "B", "weight": 1, "capacity": null}
+      ],
+      "directed": true,
+      "metadata": {
+        "name": "Sommets isoles",
+        "description": "Verifier qu ils restent non atteignables",
+        "source": "S",
+        "target": "I1"
+      }
+    },
+    "positive_weights": {
+      "nodes": ["A", "B", "C"],
+      "edges": [
+        {"id": "e1", "from": "A", "to": "B", "weight": 3, "capacity": null},
+        {"id": "e2", "from": "B", "to": "C", "weight": 4, "capacity": null}
+      ],
+      "directed": true,
+      "metadata": {
+        "name": "Aretes de poids positif",
+        "description": "Verifier cas standard",
+        "source": "A",
+        "target": "C",
+        "expected_distance": 7
       }
     },
     "zero_weights": {
@@ -157,19 +153,432 @@
       ],
       "directed": true,
       "metadata": {
-        "name": "Bellman Zero Weights Graph",
-        "description": "Zero weights remain valid",
-        "allow_negative_weights": false
+        "name": "Aretes de poids nul",
+        "description": "Verifier gestion correcte des couts nuls",
+        "source": "A",
+        "target": "C",
+        "expected_distance": 0
       }
     },
-    "empty": {
-      "nodes": [],
-      "edges": [],
+    "negative_weights_no_cycle": {
+      "nodes": ["A", "B", "C"],
+      "edges": [
+        {"id": "e1", "from": "A", "to": "B", "weight": 2, "capacity": null},
+        {"id": "e2", "from": "B", "to": "C", "weight": -1, "capacity": null}
+      ],
       "directed": true,
       "metadata": {
-        "name": "Empty Graph",
-        "description": "Empty graph used for validation",
-        "allow_negative_weights": false
+        "name": "Poids negatifs sans cycle",
+        "description": "Verifier support des poids negatifs",
+        "source": "A",
+        "target": "C",
+        "expected_distance": 1,
+        "allow_negative_weights": true
+      }
+    },
+    "mixed_positive_negative": {
+      "nodes": ["A", "B", "C", "D"],
+      "edges": [
+        {"id": "e1", "from": "A", "to": "B", "weight": 4, "capacity": null},
+        {"id": "e2", "from": "A", "to": "C", "weight": 1, "capacity": null},
+        {"id": "e3", "from": "C", "to": "B", "weight": -2, "capacity": null},
+        {"id": "e4", "from": "B", "to": "D", "weight": 2, "capacity": null}
+      ],
+      "directed": true,
+      "metadata": {
+        "name": "Melange poids positifs et negatifs",
+        "description": "Verifier calcul correct",
+        "source": "A",
+        "target": "D",
+        "expected_distance": 1,
+        "allow_negative_weights": true
+      }
+    },
+    "long_chain": {
+      "nodes": ["N0", "N1", "N2", "N3", "N4", "N5", "N6"],
+      "edges": [
+        {"id": "e1", "from": "N0", "to": "N1", "weight": 1, "capacity": null},
+        {"id": "e2", "from": "N1", "to": "N2", "weight": 2, "capacity": null},
+        {"id": "e3", "from": "N2", "to": "N3", "weight": 3, "capacity": null},
+        {"id": "e4", "from": "N3", "to": "N4", "weight": 4, "capacity": null},
+        {"id": "e5", "from": "N4", "to": "N5", "weight": 5, "capacity": null},
+        {"id": "e6", "from": "N5", "to": "N6", "weight": 6, "capacity": null}
+      ],
+      "directed": true,
+      "metadata": {
+        "name": "Longue chaine de sommets",
+        "description": "Verifier accumulation correcte des distances",
+        "source": "N0",
+        "target": "N6",
+        "expected_distance": 21
+      }
+    },
+    "cheaper_indirect_path": {
+      "nodes": ["A", "B", "C"],
+      "edges": [
+        {"id": "e1", "from": "A", "to": "C", "weight": 10, "capacity": null},
+        {"id": "e2", "from": "A", "to": "B", "weight": 2, "capacity": null},
+        {"id": "e3", "from": "B", "to": "C", "weight": 3, "capacity": null}
+      ],
+      "directed": true,
+      "metadata": {
+        "name": "Chemin indirect moins couteux",
+        "description": "Verifier propagation correcte des etiquettes",
+        "source": "A",
+        "target": "C",
+        "expected_distance": 5
+      }
+    },
+    "multiple_predecessors": {
+      "nodes": ["S", "A", "B", "T"],
+      "edges": [
+        {"id": "e1", "from": "S", "to": "A", "weight": 2, "capacity": null},
+        {"id": "e2", "from": "S", "to": "B", "weight": 1, "capacity": null},
+        {"id": "e3", "from": "A", "to": "T", "weight": 3, "capacity": null},
+        {"id": "e4", "from": "B", "to": "T", "weight": 4, "capacity": null}
+      ],
+      "directed": true,
+      "metadata": {
+        "name": "Plusieurs predecesseurs",
+        "description": "Verifier choix du minimum",
+        "source": "S",
+        "target": "T",
+        "expected_distance": 5
+      }
+    },
+    "equal_cost_paths": {
+      "nodes": ["S", "A", "B", "T"],
+      "edges": [
+        {"id": "e1", "from": "S", "to": "A", "weight": 2, "capacity": null},
+        {"id": "e2", "from": "A", "to": "T", "weight": 2, "capacity": null},
+        {"id": "e3", "from": "S", "to": "B", "weight": 1, "capacity": null},
+        {"id": "e4", "from": "B", "to": "T", "weight": 3, "capacity": null}
+      ],
+      "directed": true,
+      "metadata": {
+        "name": "Chemins de cout egal",
+        "description": "Verifier comportement en cas d egalite",
+        "source": "S",
+        "target": "T",
+        "expected_distance": 4
+      }
+    },
+    "parallel_edges": {
+      "nodes": ["A", "B", "C"],
+      "edges": [
+        {"id": "e1", "from": "A", "to": "B", "weight": 6, "capacity": null},
+        {"id": "e2", "from": "A", "to": "B", "weight": 2, "capacity": null},
+        {"id": "e3", "from": "B", "to": "C", "weight": 1, "capacity": null}
+      ],
+      "directed": true,
+      "metadata": {
+        "name": "Aretes paralleles",
+        "description": "Verifier selection de la meilleure arete",
+        "source": "A",
+        "target": "C",
+        "expected_distance": 3
+      }
+    },
+    "path_reconstruction": {
+      "nodes": ["A", "B", "C", "D"],
+      "edges": [
+        {"id": "e1", "from": "A", "to": "B", "weight": 1, "capacity": null},
+        {"id": "e2", "from": "B", "to": "C", "weight": 1, "capacity": null},
+        {"id": "e3", "from": "C", "to": "D", "weight": 1, "capacity": null}
+      ],
+      "directed": true,
+      "metadata": {
+        "name": "Reconstruction du chemin",
+        "description": "Verifier coherence du chemin retourne",
+        "source": "A",
+        "target": "D",
+        "expected_path": ["A", "B", "C", "D"],
+        "expected_distance": 3
+      }
+    },
+    "predecessor_validation": {
+      "nodes": ["A", "B", "C", "D"],
+      "edges": [
+        {"id": "e1", "from": "A", "to": "B", "weight": 2, "capacity": null},
+        {"id": "e2", "from": "B", "to": "C", "weight": 2, "capacity": null},
+        {"id": "e3", "from": "C", "to": "D", "weight": 2, "capacity": null}
+      ],
+      "directed": true,
+      "metadata": {
+        "name": "Validation des predecesseurs",
+        "description": "Verifier parent correct pour chaque sommet",
+        "source": "A",
+        "target": "D",
+        "expected_previous": {
+          "A": null,
+          "B": "A",
+          "C": "B",
+          "D": "C"
+        }
+      }
+    },
+    "distance_initialization": {
+      "nodes": ["S", "A", "B"],
+      "edges": [
+        {"id": "e1", "from": "S", "to": "A", "weight": 3, "capacity": null},
+        {"id": "e2", "from": "A", "to": "B", "weight": 1, "capacity": null}
+      ],
+      "directed": true,
+      "metadata": {
+        "name": "Initialisation des distances",
+        "description": "Verifier seule la source vaut 0",
+        "source": "S",
+        "target": "B"
+      }
+    },
+    "valid_topological_order": {
+      "nodes": ["S", "A", "B", "C", "T"],
+      "edges": [
+        {"id": "e1", "from": "S", "to": "A", "weight": 2, "capacity": null},
+        {"id": "e2", "from": "S", "to": "B", "weight": 4, "capacity": null},
+        {"id": "e3", "from": "A", "to": "C", "weight": 2, "capacity": null},
+        {"id": "e4", "from": "B", "to": "C", "weight": 1, "capacity": null},
+        {"id": "e5", "from": "C", "to": "T", "weight": 1, "capacity": null}
+      ],
+      "directed": true,
+      "metadata": {
+        "name": "Ordre topologique valide",
+        "description": "Verifier traitement apres les predecesseurs",
+        "source": "S",
+        "target": "T",
+        "expected_distance": 5
+      }
+    },
+    "dense_acyclic_graph": {
+      "nodes": ["A", "B", "C", "D", "E"],
+      "edges": [
+        {"id": "e1", "from": "A", "to": "B", "weight": 1, "capacity": null},
+        {"id": "e2", "from": "A", "to": "C", "weight": 2, "capacity": null},
+        {"id": "e3", "from": "A", "to": "D", "weight": 3, "capacity": null},
+        {"id": "e4", "from": "A", "to": "E", "weight": 9, "capacity": null},
+        {"id": "e5", "from": "B", "to": "C", "weight": 1, "capacity": null},
+        {"id": "e6", "from": "B", "to": "D", "weight": 2, "capacity": null},
+        {"id": "e7", "from": "B", "to": "E", "weight": 5, "capacity": null},
+        {"id": "e8", "from": "C", "to": "D", "weight": 1, "capacity": null},
+        {"id": "e9", "from": "C", "to": "E", "weight": 3, "capacity": null},
+        {"id": "e10", "from": "D", "to": "E", "weight": 1, "capacity": null}
+      ],
+      "directed": true,
+      "metadata": {
+        "name": "Graphe dense acyclique",
+        "description": "Verifier fonctionnement avec beaucoup d aretes",
+        "source": "A",
+        "target": "E",
+        "expected_distance": 4
+      }
+    },
+    "sparse_graph": {
+      "nodes": ["A", "B", "C", "D", "E", "F"],
+      "edges": [
+        {"id": "e1", "from": "A", "to": "B", "weight": 1, "capacity": null},
+        {"id": "e2", "from": "B", "to": "C", "weight": 1, "capacity": null},
+        {"id": "e3", "from": "E", "to": "F", "weight": 1, "capacity": null}
+      ],
+      "directed": true,
+      "metadata": {
+        "name": "Graphe clairseme",
+        "description": "Verifier fonctionnement avec peu d aretes",
+        "source": "A",
+        "target": "C",
+        "expected_distance": 2
+      }
+    },
+    "all_vertices_reachable": {
+      "nodes": ["S", "A", "B", "C", "D"],
+      "edges": [
+        {"id": "e1", "from": "S", "to": "A", "weight": 1, "capacity": null},
+        {"id": "e2", "from": "A", "to": "B", "weight": 1, "capacity": null},
+        {"id": "e3", "from": "B", "to": "C", "weight": 1, "capacity": null},
+        {"id": "e4", "from": "C", "to": "D", "weight": 1, "capacity": null}
+      ],
+      "directed": true,
+      "metadata": {
+        "name": "Tous les sommets atteignables",
+        "description": "Verifier couverture complete",
+        "source": "S",
+        "target": "D",
+        "expected_distance": 4
+      }
+    },
+    "final_distance_validation": {
+      "nodes": ["S", "A", "B", "C", "T"],
+      "edges": [
+        {"id": "e1", "from": "S", "to": "A", "weight": 2, "capacity": null},
+        {"id": "e2", "from": "S", "to": "B", "weight": 5, "capacity": null},
+        {"id": "e3", "from": "A", "to": "C", "weight": 1, "capacity": null},
+        {"id": "e4", "from": "C", "to": "T", "weight": 2, "capacity": null},
+        {"id": "e5", "from": "B", "to": "T", "weight": 1, "capacity": null}
+      ],
+      "directed": true,
+      "metadata": {
+        "name": "Validation des distances finales",
+        "description": "Verifier exactitude des couts calcules",
+        "source": "S",
+        "target": "T",
+        "expected_distance": 5
+      }
+    },
+    "edge_direction_respect": {
+      "nodes": ["A", "B", "C"],
+      "edges": [
+        {"id": "e1", "from": "B", "to": "A", "weight": 1, "capacity": null},
+        {"id": "e2", "from": "B", "to": "C", "weight": 1, "capacity": null}
+      ],
+      "directed": true,
+      "metadata": {
+        "name": "Respect du sens des aretes",
+        "description": "Verifier orientation correcte",
+        "source": "A",
+        "target": "C"
+      }
+    },
+    "source_not_found": {
+      "nodes": ["A", "B", "C"],
+      "edges": [
+        {"id": "e1", "from": "A", "to": "B", "weight": 1, "capacity": null},
+        {"id": "e2", "from": "B", "to": "C", "weight": 1, "capacity": null}
+      ],
+      "directed": true,
+      "metadata": {
+        "name": "Source inexistante",
+        "description": "Verifier gestion d erreur",
+        "source": "Z",
+        "target": "C",
+        "expect_error": true
+      }
+    },
+    "destination_not_found": {
+      "nodes": ["A", "B", "C"],
+      "edges": [
+        {"id": "e1", "from": "A", "to": "B", "weight": 1, "capacity": null},
+        {"id": "e2", "from": "B", "to": "C", "weight": 1, "capacity": null}
+      ],
+      "directed": true,
+      "metadata": {
+        "name": "Destination inexistante",
+        "description": "Verifier gestion d erreur",
+        "source": "A",
+        "target": "Z",
+        "expect_error": true
+      }
+    },
+    "invalid_adjacency_structure": {
+      "nodes": "invalid_nodes_type",
+      "edges": "invalid_edges_type",
+      "directed": true,
+      "metadata": {
+        "name": "Structure d adjacence invalide",
+        "description": "Verifier robustesse aux donnees malformees",
+        "expect_error": true
+      }
+    },
+    "graph_immutability": {
+      "nodes": ["S", "A", "B", "T"],
+      "edges": [
+        {"id": "e1", "from": "S", "to": "A", "weight": 2, "capacity": null},
+        {"id": "e2", "from": "A", "to": "B", "weight": 1, "capacity": null},
+        {"id": "e3", "from": "B", "to": "T", "weight": 1, "capacity": null}
+      ],
+      "directed": true,
+      "metadata": {
+        "name": "Non modification du graphe original",
+        "description": "Verifier integrite des donnees",
+        "source": "S",
+        "target": "T",
+        "expected_distance": 4
+      }
+    },
+    "deterministic_results": {
+      "nodes": ["S", "A", "B", "T"],
+      "edges": [
+        {"id": "e1", "from": "S", "to": "A", "weight": 1, "capacity": null},
+        {"id": "e2", "from": "S", "to": "B", "weight": 1, "capacity": null},
+        {"id": "e3", "from": "A", "to": "T", "weight": 2, "capacity": null},
+        {"id": "e4", "from": "B", "to": "T", "weight": 2, "capacity": null}
+      ],
+      "directed": true,
+      "metadata": {
+        "name": "Stabilite des resultats",
+        "description": "Verifier determinisme",
+        "source": "S",
+        "target": "T",
+        "expected_distance": 3
+      }
+    },
+    "simple_cycle_rejected": {
+      "nodes": ["A", "B", "C"],
+      "edges": [
+        {"id": "e1", "from": "A", "to": "B", "weight": 1, "capacity": null},
+        {"id": "e2", "from": "B", "to": "C", "weight": 1, "capacity": null},
+        {"id": "e3", "from": "C", "to": "A", "weight": 1, "capacity": null}
+      ],
+      "directed": true,
+      "metadata": {
+        "name": "Graphe avec cycle simple",
+        "description": "Verifier rejet du graphe",
+        "expect_cycle_error": true
+      }
+    },
+    "directed_cycle_detected": {
+      "nodes": ["S", "A", "B", "T"],
+      "edges": [
+        {"id": "e1", "from": "S", "to": "A", "weight": 1, "capacity": null},
+        {"id": "e2", "from": "A", "to": "B", "weight": 1, "capacity": null},
+        {"id": "e3", "from": "B", "to": "A", "weight": 1, "capacity": null},
+        {"id": "e4", "from": "B", "to": "T", "weight": 1, "capacity": null}
+      ],
+      "directed": true,
+      "metadata": {
+        "name": "Cycle oriente",
+        "description": "Verifier detection d un circuit",
+        "expect_cycle_error": true
+      }
+    },
+    "self_loop_rejected": {
+      "nodes": ["A", "B"],
+      "edges": [
+        {"id": "e1", "from": "A", "to": "A", "weight": 1, "capacity": null},
+        {"id": "e2", "from": "A", "to": "B", "weight": 2, "capacity": null}
+      ],
+      "directed": true,
+      "metadata": {
+        "name": "Self-loop",
+        "description": "Verifier rejet comme cycle trivial",
+        "expect_cycle_error": true
+      }
+    },
+    "negative_cycle_rejected": {
+      "nodes": ["A", "B", "C"],
+      "edges": [
+        {"id": "e1", "from": "A", "to": "B", "weight": 1, "capacity": null},
+        {"id": "e2", "from": "B", "to": "C", "weight": -3, "capacity": null},
+        {"id": "e3", "from": "C", "to": "A", "weight": 1, "capacity": null}
+      ],
+      "directed": true,
+      "metadata": {
+        "name": "Cycle negatif",
+        "description": "Verifier rejet immediat",
+        "expect_negative_cycle": true
+      }
+    },
+    "topological_order_impossible": {
+      "nodes": ["A", "B", "C", "D"],
+      "edges": [
+        {"id": "e1", "from": "A", "to": "B", "weight": 1, "capacity": null},
+        {"id": "e2", "from": "B", "to": "C", "weight": 1, "capacity": null},
+        {"id": "e3", "from": "C", "to": "D", "weight": 1, "capacity": null},
+        {"id": "e4", "from": "D", "to": "B", "weight": 1, "capacity": null}
+      ],
+      "directed": true,
+      "metadata": {
+        "name": "Impossibilite d ordre topologique",
+        "description": "Verifier erreur ou exception",
+        "expect_cycle_error": true
       }
     }
   }
