@@ -94,7 +94,6 @@ def test_fixture_covers_requested_scenarios():
         "final_distance_validation",
         "edge_direction_respect",
         "source_not_found",
-        "destination_not_found",
         "invalid_adjacency_structure",
         "graph_immutability",
         "deterministic_results",

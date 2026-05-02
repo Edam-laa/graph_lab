@@ -3,6 +3,13 @@ def welsh_powell(graph):
     Attribue une couleur à chaque nœud du graphe en utilisant l'algorithme de Welsh-Powell.
     Retourne un dictionnaire {nœud: couleur}.
     """
+    if graph.directed:
+        raise ValueError("Welsh-Powell only works on undirected graphs.")
+
+    for u, v, w, c in graph.get_edges():
+        if u == v:
+            raise ValueError("Graph contains self-loops.")
+
     # 1. Récupérer tous les nœuds avec leur degré et les trier par ordre décroissant
     # On utilise la méthode .degree(node) de votre classe
     nodes_sorted = sorted(graph.get_nodes(), key=lambda x: graph.degree(x), reverse=True)

@@ -7,6 +7,10 @@ def is_strongly_connected(graph):
     if not nodes:
         return True
 
+    for node in nodes:
+        if node not in graph.adj_list:
+            raise ValueError(f"Node '{node}' is missing from the adjacency list")
+
     # If the graph is undirected, strong connectivity is just connectivity
     if not graph.directed:
         from connectivity import is_connected
