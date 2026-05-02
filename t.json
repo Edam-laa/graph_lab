@@ -1,0 +1,17 @@
+{
+    "graph": 
+{"nodes": ["A", "B", "C"], "node_positions": {"A": {"x": -244.0, "y": -142.0}, "B": {"x": -79.0, "y": -6.0}, "C": {"x": -223.0, "y": 41.0}}, "edges": [{"from": "A", "to": "B", "capacity": 1, "weight": 1.0}, {"from": "B", "to": "C", "capacity": 1, "weight": 1.0}], 
+"directed": True, 
+"metadata": {"name": "", "
+description": "", 
+"allow_negative_weights": True, 
+"weighted": True}}, 
+"algorithm": {
+    "name": "Dijkstra", 
+    "category": "shortest_path", 
+    "params": {"source": "A", "sink": "C"}, 
+    "constraints_check": {"requires_positive_weights": true, 
+    "requires_positive_capacity": false, 
+    "requires_connected": true, 
+    "requires_dag": false}},
+"result":{"path": [], "mst_edges": [], "coloring": {"node_colors": {}, "edge_colors"]: {}}, "flow": {"value": none, "augmenting_paths"]: [], "edge_flows": {}}, "components"]: [], "cycles"]: [], "distances"]: {"A"]: 0, "B"]: 1.0, "C"]: 2.0},("order"]: [],("tree_edges"]: [],("levels"]: {},("times"]: {}},("graph_properties"]: {})}

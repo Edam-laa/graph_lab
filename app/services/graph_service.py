@@ -140,7 +140,7 @@ def handle_eulerian(graph, params):
     #    res["special_paths"]["eulerian_circuit"] = tour
     #elif status_code == 1:
     #    res["special_paths"]["eulerian_path"] = tour
-    #return res
+    return res
 
 def handle_welsh_powell(graph, params):
     coloring = welsh_powell(graph)

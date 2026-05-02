@@ -19,8 +19,8 @@ ALGO_NAME_MAP = {
     "DFS": "dfs",
 
     # ─── Euler ─────────────────────────────
-    "Chemin Eulérien": "eulerian_path",
-    "Circuit Eulérien": "eulerian_circuit",
+    "Chemin Eulérien": "eulerian",
+    "Circuit Eulérien": "eulerian",
 
     # ─── Coloring ──────────────────────────
     "Welsh-Powell": "welsh_powell",
@@ -32,6 +32,16 @@ ALGO_NAME_MAP = {
 
     # ─── Fallback safety ───────────────────
 }
+COLOR_PALETTE = {
+    1: "#ff5555",
+    2: "#50fa7b",
+    3: "#8be9fd",
+    4: "#ffb86c",
+    5: "#bd93f9",
+    6: "#f1fa8c",
+    7: "#ff79c6",
+    8: "#6272a4"
+}
 def resolve_algorithm_name(front_name: str) -> str:
     if not front_name:
         #return "dijkstra"  # Default algorithm if none provided
@@ -40,18 +50,26 @@ def resolve_algorithm_name(front_name: str) -> str:
         print(f"[WARNING] Unknown algorithm from frontend: {front_name}")
 
     return ALGO_NAME_MAP.get(front_name, front_name.lower().replace(" ", "_"))
+def translate_colors(node_colors):
+    translated = {}
+
+    for node, color_id in node_colors.items():
+        color_id = int(color_id)+1  # Ensure it's an integer
+        translated[node] = COLOR_PALETTE.get(color_id, "#cccccc")  # fallback gray
+
+    return translated
 # ─────────────────────────────────────────────
 # FRONT ➜ BACKEND FORMAT TRANSLATOR
 # ─────────────────────────────────────────────
 def to_backend_format(data):
-    algo_name_raw = data.get("algo_name")
-
+    algo_name_raw = data.get("algorithm", {}).get("name")
+    print(data)
     return {
         "graph": data.get("graph", {}),
         "algorithm": {
             "name": resolve_algorithm_name(algo_name_raw),
-            "category": data.get("algo_category"),
-            "params": data.get("algo_params", {}),
+            "category": data.get("algorithm", {}).get("category"),
+            "params": data.get("algorithm", {}).get("params", {}),
 
             # You can later compute this dynamically if needed
             "constraints_check": {
@@ -110,16 +128,48 @@ def to_backend_format(data):
 def to_frontend_format(backend_result):
     res = backend_result.get("result", backend_result)
 
+    # 🎨 Handle coloring translation
+    coloring = res.get("coloring", {})
+    node_colors = coloring.get("node_colors", {})
+
+    # Convert IDs → HEX
+    translated_colors = translate_colors(node_colors) if node_colors else {}
+
     return {
-        "path": res.get("path", []),
-        "mst_edges": res.get("mst_edges", []),
-        "coloring": res.get("coloring", {}),
-        "flow": res.get("flow", {}),
-        "components": res.get("components", []),
-        "cycles": res.get("cycles", []),
-        "distances": res.get("distances", {}),
-        "traversal": res.get("traversal", {}),
-        "graph_properties": res.get("graph_properties", {})
+        "graph": backend_result.get("graph", {}),
+
+        "algorithm": backend_result.get("algorithm", {}),
+
+        "execution": backend_result.get("execution", {}),
+
+        "result": {
+            "type": res.get("type"),
+
+            "distances": res.get("distances", {}),
+            "predecessors": res.get("predecessors", {}),
+            "path": res.get("path", []),
+            "paths": res.get("paths", []),
+
+            "mst_edges": res.get("mst_edges", []),
+            "components": res.get("components", []),
+            "cycles": res.get("cycles", []),
+
+            "eulerian_path": res.get("eulerian_path", []),
+            "eulerian_circuit": res.get("eulerian_circuit", []),
+
+            "coloring": {
+                "node_colors": translated_colors,
+                "edge_colors": coloring.get("edge_colors", {})
+            },
+
+            "flow": res.get("flow", {}),
+
+            "traversal": res.get("traversal", {}),
+
+            "graph_properties": res.get("graph_properties", {}),
+
+            "steps": res.get("steps", [])
+        }
     }
 
 @app.route("/run-algorithm", methods=["POST"])
@@ -139,6 +189,7 @@ def run_algorithm():
         # 🔁 BACKEND → FRONTEND FORMAT
         frontend_result = to_frontend_format(backend_output)
         print("\n=== FRONTEND RESULT ===\n")
+        print(frontend_result)
         return jsonify({
             "status": "success",
             "result": frontend_result

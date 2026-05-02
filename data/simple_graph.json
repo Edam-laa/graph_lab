@@ -2,6 +2,14 @@
   "graph": {
 
     "nodes": ["S", "A", "B", "C", "D", "T"],
+    "node_positions": {
+      "S": { "x": 0, "y": 0 },
+      "A": { "x": 100, "y": 0 },
+      "B": { "x": 100, "y": 100 },
+      "C": { "x": 200, "y": 0 },
+      "D": { "x": 200, "y": 100 },
+      "T": { "x": 300, "y": 50 }
+    },
     "edges": [
       { "id": "e1", "from": "S", "to": "A", "weight": 4, "capacity": 10 },
       { "id": "e2", "from": "S", "to": "B", "weight": 2, "capacity": 8 },
@@ -21,11 +29,11 @@
   },
 
   "algorithm": {
-    "name": "dfs",
-    "category": "traversal",
+    "name": "dijkstra",
+    "category": "shortest_path",
     "params": {
       "source": "S",
-      "target": "T",
+      "target": "B",
       "sink": "T"
     },
     "constraints_check": {
@@ -56,7 +64,8 @@
     "eulerian_path": [],
     "eulerian_circuit": [],
     "coloring": {
-      "node_colors": {},
+      "node_colors": {
+        },
       "edge_colors": {}
     },
     "flow": {

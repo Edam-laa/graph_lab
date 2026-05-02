@@ -4,6 +4,7 @@ Full frontend: drag-and-drop nodes, weighted/directed edges,
 adjacency matrix, graph properties, algorithm buttons, JSON export.
 """
 
+from collections import defaultdict
 import sys
 import json
 import math
@@ -743,6 +744,7 @@ class GraphScene(QGraphicsScene):
         return labels, mat
 
     def get_properties(self) -> dict:
+        adj_undir = defaultdict(list)  # ALWAYS initialize
         n = len(self._nodes)
         m = len(self._edges)
         if n == 0:
