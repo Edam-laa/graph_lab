@@ -44,7 +44,8 @@ def assert_fixture_case(case_name, expected):
 		"adj_list": deepcopy(graph.adj_list),
 	}
 
-	assert strongly_connected_module.is_strongly_connected(graph) is expected
+	result = strongly_connected_module.is_strongly_connected(graph)
+	assert result["strongly_connected"] is expected
 	assert graph.nodes == original_snapshot["nodes"]
 	assert graph.adj_list == original_snapshot["adj_list"]
 
@@ -109,7 +110,8 @@ def test_graph_with_bidirectional_directed_edges_is_strongly_connected():
 		directed=True,
 	)
 
-	assert strongly_connected_module.is_strongly_connected(graph) is True
+	result = strongly_connected_module.is_strongly_connected(graph)
+	assert result["strongly_connected"] is True
 
 
 def test_start_node_choice_does_not_change_result():
@@ -124,5 +126,7 @@ def test_start_node_choice_does_not_change_result():
 		directed=True,
 	)
 
-	assert strongly_connected_module.is_strongly_connected(graph_one) is True
-	assert strongly_connected_module.is_strongly_connected(graph_two) is True
+	result_one = strongly_connected_module.is_strongly_connected(graph_one)
+	result_two = strongly_connected_module.is_strongly_connected(graph_two)
+	assert result_one["strongly_connected"] is True
+	assert result_two["strongly_connected"] is True

@@ -64,15 +64,13 @@ def load_graph_from_json(json_data):
     _validate_graph_payload(graph_data)
     # anas badel end
 
-    g = Graph(directed=graph_data["directed"])
+    g = Graph(directed=graph_data.get("directed", False))
     g.metadata = graph_data.get("metadata", {})
 
     if not isinstance(nodes, list):
         raise ValueError("'nodes' doit être une liste")
     if not isinstance(edges, list):
         raise ValueError("'edges' doit être une liste")
-
-    g = Graph(directed=graph_data.get("directed", False))
 
     # Ajout des nœuds
     for node in nodes:

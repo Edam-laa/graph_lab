@@ -73,7 +73,8 @@ def test_is_connected_from_fixture_collection(case_name, expected):
 		"adj_list": deepcopy(graph.adj_list),
 	}
 
-	assert is_connected(graph) is expected
+	result = is_connected(graph)
+	assert result["connected"] is expected
 	assert graph.nodes == original_snapshot["nodes"]
 	assert graph.adj_list == original_snapshot["adj_list"]
 
@@ -97,4 +98,5 @@ def test_directed_bidirectional_edges_remain_connected():
 		directed=True,
 	)
 
-	assert is_connected(graph) is True
+	result = is_connected(graph)
+	assert result["connected"] is True

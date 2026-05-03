@@ -381,8 +381,11 @@ def test_result_structure():
 	result = wp_module.welsh_powell(graph)
 	
 	assert isinstance(result, dict)
-	assert all(node in result for node in graph.get_nodes())
-	assert all(isinstance(color, int) for color in result.values())
+	assert "coloring" in result
+	assert "steps" in result
+	coloring = result["coloring"]
+	assert all(node in coloring for node in graph.get_nodes())
+	assert all(isinstance(color, int) for color in coloring.values())
 
 
 def test_all_nodes_colored():

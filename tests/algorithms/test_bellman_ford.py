@@ -306,7 +306,7 @@ def test_bellman_ford_source_vertex_missing():
 
 
 def test_bellman_ford_target_vertex_missing():
-	graph = load_bellman_graph("simple_directed")
+	graph = load_bellman_graph("invalid_destination_vertex")
 	with pytest.raises(ValueError):
 		bellman_ford_module.bellman_ford(graph, source="A")
 
