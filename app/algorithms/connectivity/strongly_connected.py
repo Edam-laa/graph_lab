@@ -7,7 +7,6 @@ def is_strongly_connected(graph):
             "steps": [...]
         }
     """
-
     steps = []
 
     def log(code, msg):
@@ -23,9 +22,6 @@ def is_strongly_connected(graph):
 
     # --- AJOUT : Validation de l'intégrité ---
     # On vérifie que chaque nœud déclaré possède une entrée dans la liste d'adjacence
-    for node in nodes:
-        if node not in adj:
-            raise ValueError(f"Missing adjacency entry for node: {node}")
     # ----------------------------------------
 
     if not nodes:
@@ -36,12 +32,18 @@ def is_strongly_connected(graph):
         }
 
     # If undirected graph → reuse simple connectivity
+
+    for node in nodes:
+        if node not in adj:
+            raise ValueError(f"Node '{node}' is missing from the adjacency list")
+
+    # If the graph is undirected, strong connectivity is just connectivity
     if not graph.directed:
         log("SC2", "Graph is undirected → fallback to connectivity check")
-        from connectivity import is_connected
+        from app.algorithms.connectivity.connected_components import is_connected
         result = is_connected(graph)
         return {
-            "strongly_connected": result["connected"],
+            "strongly_connected": result.get("connected", False),
             "steps": result["steps"]
         }
 
@@ -53,7 +55,7 @@ def is_strongly_connected(graph):
     # -------------------------
     log("SC4", "PASS 1: DFS on original graph")
 
-    if not _can_reach_all_with_steps(graph.adj_list, graph, start_node, steps, "SC5"):
+    if not _dfs_reach_all_with_steps(adj, start_node, nodes,steps, "SC5"):
         log("SC8", "Not all nodes reachable in original graph → not strongly connected")
         return {
             "strongly_connected": False,
@@ -69,14 +71,14 @@ def is_strongly_connected(graph):
 
     reversed_adj = {node: [] for node in nodes}
 
-    for u in graph.adj_list:
-        for v, w, c in graph.adj_list[u]:
+    for u in adj:
+        for v, w, c in adj[u]:
             reversed_adj[v].append((u, w, c))
             log("SC7", f"Reverse edge {u} → {v} becomes {v} → {u}")
 
     log("SC4", "PASS 2: DFS on reversed graph")
 
-    if not _can_reach_all_with_steps(reversed_adj, graph, start_node, steps, "SC5"):
+    if not _dfs_reach_all_with_steps(reversed_adj, start_node, nodes, steps, "SC5"):
         log("SC8", "Not all nodes reachable in reversed graph → not strongly connected")
         return {
             "strongly_connected": False,
@@ -91,3 +93,22 @@ def is_strongly_connected(graph):
         "strongly_connected": True,
         "steps": steps
     }
+def _dfs_reach_all_with_steps(adj, start, nodes, steps, code):
+    visited = set()
+    stack = [start]
+
+    while stack:
+        node = stack.pop()
+        if node not in visited:
+            visited.add(node)
+            steps.append({
+                "indexCode": code,
+                "message": f"Visit {node}"
+            })
+
+            for edge in adj.get(node, []):
+                neighbor = edge[0]
+                if neighbor not in visited:
+                    stack.append(neighbor)
+
+    return len(visited) == len(nodes)

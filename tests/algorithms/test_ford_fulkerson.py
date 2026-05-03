@@ -3,6 +3,7 @@ import json
 import pytest
 
 from app.algorithms.flow.ford_fulkerson import ford_fulkerson
+from app.core.graph import Graph
 from app.utils.file_loader import load_graph_from_json
 
 
@@ -59,22 +60,45 @@ def test_ford_fulkerson_output_structure_is_coherent():
 
 def test_invalid_graph_structure_raises():
     # invalid_graph_structure in fixture uses malformed nodes/edges
-    with pytest.raises(Exception):
+    with pytest.raises(ValueError):
         load_ford_graph("invalid_graph_structure")
 
 
-def test_missing_source_or_sink_returns_zero():
+def test_missing_source_or_sink_raises_value_error():
     g_invalid_source, meta = load_ford_graph("invalid_source_node")
-    # metadata requests a missing source
     source = meta.get("source")
     sink = meta.get("sink")
 
-    res = ford_fulkerson(g_invalid_source, source, sink)
-    assert res["max_flow"] == 0
+    with pytest.raises(ValueError):
+        ford_fulkerson(g_invalid_source, source, sink)
 
     g_invalid_sink, meta2 = load_ford_graph("invalid_sink_node")
     source2 = meta2.get("source")
     sink2 = meta2.get("sink")
 
-    res2 = ford_fulkerson(g_invalid_sink, source2, sink2)
-    assert res2["max_flow"] == 0
+    with pytest.raises(ValueError):
+        ford_fulkerson(g_invalid_sink, source2, sink2)
+
+
+def test_negative_capacity_raises_value_error():
+    graph = Graph(directed=True)
+    graph.add_edge("s", "t", 1, -1)
+
+    with pytest.raises(ValueError):
+        ford_fulkerson(graph, "s", "t")
+
+
+def test_missing_capacity_raises_value_error():
+    graph = Graph(directed=True)
+    graph.add_edge("s", "t", 1, None)
+
+    with pytest.raises(ValueError):
+        ford_fulkerson(graph, "s", "t")
+
+
+def test_undirected_graph_raises_value_error():
+    graph = Graph(directed=False)
+    graph.add_edge("s", "t", 1, 5)
+
+    with pytest.raises(ValueError):
+        ford_fulkerson(graph, "s", "t")

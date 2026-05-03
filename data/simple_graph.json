@@ -1,7 +1,7 @@
 {
   "graph": {
 
-    "nodes": ["S", "A", "B", "C", "D", "T"],
+    "nodes": ["A", "B", "C", "D"],
     "node_positions": {
       "S": { "x": 0, "y": 0 },
       "A": { "x": 100, "y": 0 },
@@ -11,14 +11,10 @@
       "T": { "x": 300, "y": 50 }
     },
     "edges": [
-      { "id": "e1", "from": "S", "to": "A", "weight": 4, "capacity": 10 },
-      { "id": "e2", "from": "S", "to": "B", "weight": 2, "capacity": 8 },
-      { "id": "e3", "from": "A", "to": "B", "weight": 5, "capacity": 5 },
-      { "id": "e4", "from": "A", "to": "C", "weight": 10, "capacity": 7 },
-      { "id": "e5", "from": "B", "to": "C", "weight": 3, "capacity": 6 },
-      { "id": "e6", "from": "B", "to": "D", "weight": 4, "capacity": 10 },
-      { "id": "e7", "from": "C", "to": "T", "weight": 11, "capacity": 10 },
-      { "id": "e8", "from": "D", "to": "T", "weight": 2, "capacity": 4 }
+      { "from": "A", "to": "B", "weight": 1, "capacity": 1 },
+      { "from": "B", "to": "C", "weight": 1, "capacity": 1 },
+      { "from": "C", "to": "D", "weight": 1, "capacity": 1 },
+      { "from": "D", "to": "A", "weight": 1, "capacity": 1 }
     ],
     "directed": true,
     "metadata": {
@@ -29,8 +25,8 @@
   },
 
   "algorithm": {
-    "name": "dijkstra",
-    "category": "shortest_path",
+    "name": "eulerian",
+    "category": "connectivity",
     "params": {
       "source": "S",
       "target": "B",

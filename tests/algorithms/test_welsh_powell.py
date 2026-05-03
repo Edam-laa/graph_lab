@@ -31,6 +31,7 @@ from pathlib import Path
 import pytest
 
 from app.algorithms.coloring import welsh_powell as wp_module
+from app.core.graph import Graph
 from app.utils.file_loader import load_graph_from_json
 
 
@@ -468,3 +469,21 @@ def test_coloring_with_metadata_chromatic_number():
 		
 		assert chromatic == expected_chromatic, \
 			f"{case_name}: expected {expected_chromatic} colors, got {chromatic}"
+
+
+def test_directed_graph_is_rejected():
+	graph = Graph(directed=True)
+	graph.add_edge("A", "B", 1)
+	graph.add_edge("B", "C", 1)
+
+	with pytest.raises(ValueError):
+		wp_module.welsh_powell(graph)
+
+
+def test_self_loop_is_rejected():
+	graph = Graph(directed=False)
+	graph.add_edge("A", "A", 1)
+	graph.add_edge("A", "B", 1)
+
+	with pytest.raises(ValueError):
+		wp_module.welsh_powell(graph)

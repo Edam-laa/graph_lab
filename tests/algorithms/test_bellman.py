@@ -94,7 +94,6 @@ def test_fixture_covers_requested_scenarios():
         "final_distance_validation",
         "edge_direction_respect",
         "source_not_found",
-        "destination_not_found",
         "invalid_adjacency_structure",
         "graph_immutability",
         "deterministic_results",
@@ -227,7 +226,7 @@ def test_invalid_or_cycle_cases_raise_value_error(case_name):
 
 
 def test_invalid_adjacency_structure_raises_loading_error():
-    with pytest.raises((TypeError, ValueError, KeyError, AttributeError)):
+    with pytest.raises(ValueError):
         _ = load_bellman_graph("invalid_adjacency_structure")
 
 

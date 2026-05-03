@@ -89,7 +89,7 @@ def test_is_strongly_connected_from_fixture_collection(case_name, expected):
 	assert_fixture_case(case_name, expected)
 
 
-def test_malformed_adjacency_missing_node_entries_is_handled():
+def test_malformed_adjacency_missing_node_entries_raises_value_error():
 	graph = Graph(directed=True)
 	graph.nodes = {"A", "B", "C"}
 	graph.adj_list = {
@@ -98,7 +98,8 @@ def test_malformed_adjacency_missing_node_entries_is_handled():
 		# Node C is intentionally missing from adj_list
 	}
 
-	assert strongly_connected_module.is_strongly_connected(graph) is False
+	with pytest.raises(ValueError):
+		strongly_connected_module.is_strongly_connected(graph)
 
 
 def test_graph_with_bidirectional_directed_edges_is_strongly_connected():

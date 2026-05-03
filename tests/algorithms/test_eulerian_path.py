@@ -64,20 +64,18 @@ def assert_tour_uses_each_edge_once(graph_data, tour):
 	assert len(tour) == len(graph_data["edges"]) + 1
 
 
-def test_empty_graph_returns_no_tour():
-	graph_data, graph = load_eulerian_graph("empty_graph")
+def test_empty_graph_raises_value_error():
+	_, graph = load_eulerian_graph("empty_graph")
 
-	pytest.xfail("Current implementation treats empty graphs as Eulerian circuits")
-	assert eulerian_module.check_eulerian_status(graph) == 0
-	assert eulerian_module.find_eulerian_tour(graph) is None
+	with pytest.raises(ValueError):
+		eulerian_module.find_eulerian_tour(graph)
 
 
-def test_single_vertex_graph_returns_no_tour():
-	graph_data, graph = load_eulerian_graph("single_vertex_graph")
+def test_single_vertex_graph_raises_value_error():
+	_, graph = load_eulerian_graph("single_vertex_graph")
 
-	pytest.xfail("Current implementation treats single-vertex graphs with no edges as Eulerian circuits")
-	assert eulerian_module.check_eulerian_status(graph) == 0
-	assert eulerian_module.find_eulerian_tour(graph) is None
+	with pytest.raises(ValueError):
+		eulerian_module.find_eulerian_tour(graph)
 
 
 @pytest.mark.parametrize(
@@ -118,13 +116,10 @@ def test_undirected_eulerian_graphs(case_name, expected_status, expected_start, 
 	],
 )
 def test_undirected_non_eulerian_or_disconnected_graphs(case_name):
-	graph_data, graph = load_eulerian_graph(case_name)
+	_, graph = load_eulerian_graph(case_name)
 
-	if case_name == "zero_edge_graph":
-		pytest.xfail("Current implementation treats zero-edge graphs as Eulerian circuits")
-
-	assert eulerian_module.check_eulerian_status(graph) == 0
-	assert eulerian_module.find_eulerian_tour(graph) is None
+	with pytest.raises(ValueError):
+		eulerian_module.find_eulerian_tour(graph)
 
 
 def test_returned_path_endpoints_validation():
@@ -250,9 +245,8 @@ def test_directed_graph_with_dead_end():
 		[("A", "B", 1), ("B", "C", 1), ("C", "A", 1), ("C", "D", 1)],
 	)
 
-	pytest.xfail("Current implementation does not enforce strong connectivity for directed Eulerian paths")
-	assert eulerian_module.check_eulerian_status(graph) == 0
-	assert eulerian_module.find_eulerian_tour(graph) is None
+	with pytest.raises(ValueError):
+		eulerian_module.find_eulerian_tour(graph)
 
 
 def test_invalid_connectivity_for_directed_graph():
@@ -261,9 +255,8 @@ def test_invalid_connectivity_for_directed_graph():
 		[("A", "B", 1), ("B", "A", 1), ("B", "C", 1)],
 	)
 
-	pytest.xfail("Current implementation only checks weak connectivity for directed graphs")
-	assert eulerian_module.check_eulerian_status(graph) == 0
-	assert eulerian_module.find_eulerian_tour(graph) is None
+	with pytest.raises(ValueError):
+		eulerian_module.find_eulerian_tour(graph)
 
 
 def test_large_sparse_graph():

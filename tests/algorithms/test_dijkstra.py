@@ -128,13 +128,11 @@ def test_dijkstra_multiple_edges_choose_minimum_weight_edge():
     assert reconstruct_path(result["previous"], "A", "C") == ["A", "B", "C"]
 
 
-def test_dijkstra_self_loop_does_not_change_source_distance():
+def test_dijkstra_self_loop_is_rejected():
     graph = load_dijkstra_graph("self_loop")
-    result = dijkstra(graph, start="A")
 
-    assert result["distances"]["A"] == 0
-    assert result["distances"]["C"] == 2
-    assert reconstruct_path(result["previous"], "A", "C") == ["A", "B", "C"]
+    with pytest.raises(ValueError):
+        dijkstra(graph, start="A")
 
 
 def test_dijkstra_large_weights_remain_stable():
@@ -290,3 +288,28 @@ def test_dijkstra_light_performance_sparse_graph():
     path = reconstruct_path(result["previous"], "N0", "N999")
     assert path[0] == "N0"
     assert path[-1] == "N999"
+
+
+def test_dijkstra_invalid_adjacency_reference_raises():
+    graph = Graph(directed=True)
+    graph.nodes = {"A", "B"}
+    graph.adj_list = {
+        "A": [("Z", 1, None)],
+        "B": [],
+    }
+
+    with pytest.raises(ValueError):
+        dijkstra(graph, start="A")
+
+
+def test_dijkstra_non_numeric_weight_raises():
+    graph = Graph(directed=True)
+    graph.add_node("A")
+    graph.add_node("B")
+    graph.adj_list = {
+        "A": [("B", "bad", None)],
+        "B": [],
+    }
+
+    with pytest.raises(ValueError):
+        dijkstra(graph, start="A")

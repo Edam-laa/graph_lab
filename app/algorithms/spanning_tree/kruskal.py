@@ -62,6 +62,10 @@ def kruskal(graph):
     if not nodes:
         raise ValueError("Graph is empty.")
 
+    for u, v, w, c in graph.get_edges():
+        if u == v:
+            raise ValueError("Graph contains self-loops.")
+
     # ---------------------------
     # INITIALIZATION
     # ---------------------------
@@ -122,6 +126,7 @@ def kruskal(graph):
     # ---------------------------
     return {
         "mst_edges":    mst_edges,
+        "edges":        mst_edges,
         "total_weight": total_weight,
         "steps":        steps
     }

@@ -19,7 +19,7 @@ def prim(graph, start=None):
         dict avec :
             "mst_edges"    (list)        : arêtes du MST [(u, v, poids), ...]
             "total_weight" (int/float)   : poids total du MST
-            "steps"        (list)        : étapes numérotées de l'algorithme
+            "steps"        (list)        : étapes de l'algorithme
 
     Lève:
         ValueError : si le graphe est orienté ou non connexe
@@ -35,6 +35,10 @@ def prim(graph, start=None):
     if not nodes:
         raise ValueError("Graph is empty.")
 
+    for u, v, w, c in graph.get_edges():
+        if u == v:
+            raise ValueError("Graph contains self-loops.")
+
     # ---------------------------
     # INITIALIZATION
     # ---------------------------
@@ -47,7 +51,6 @@ def prim(graph, start=None):
     mst_edges    = []
     total_weight = 0
     steps        = []
-    iteration    = 0
 
     # Tas min : (poids, sommet_origine, sommet_destination)
     # get_neighbors() retourne [(neighbor, weight, capacity)]
@@ -57,37 +60,23 @@ def prim(graph, start=None):
     ]
     heapq.heapify(heap)
 
-    steps.append(
-        f"[Init] Depart depuis '{start}' | {len(nodes)} noeuds au total "
-        f"| tas initial = {sorted(heap)}"
-    )
+    steps.append(f"Start from node '{start}'")
 
     # ---------------------------
     # MAIN LOOP
     # ---------------------------
     while heap and len(visited) < len(nodes):
         w, u, v = heapq.heappop(heap)
-        iteration += 1
 
         if v in visited:
-            steps.append(
-                f"[{iteration}] SKIP   ({u}-{v}, w={w}) → '{v}' deja visite "
-                f"| visites={sorted(visited)} | heap size={len(heap)}"
-            )
+            steps.append(f"Skip edge ({u}–{v}) → '{v}' already visited")
             continue
 
         # Nouveau sommet ajouté au MST
         visited.add(v)
         mst_edges.append((u, v, w))
         total_weight += w
-
-        steps.append(
-            f"[{iteration}] ADD    ({u}-{v}, w={w}) → '{v}' rejoint le MST "
-            f"| MST={len(mst_edges)}/{len(nodes) - 1} aretes "
-            f"| total_weight={total_weight} "
-            f"| visites={sorted(visited)} "
-            f"| heap size={len(heap)}"
-        )
+        steps.append(f"Add edge ({u}–{v}, weight={w}) → '{v}' joins MST")
 
         # Pousser les voisins non visités dans le tas
         for neighbor, weight, capacity in graph.get_neighbors(v):
@@ -99,14 +88,6 @@ def prim(graph, start=None):
     # ---------------------------
     if len(mst_edges) < len(nodes) - 1:
         raise ValueError("Graph is not connected: MST is impossible.")
-
-    # ---------------------------
-    # RÉCAPITULATIF FINAL
-    # ---------------------------
-    steps.append(
-        f"[Final] MST = {mst_edges} | poids total = {total_weight} "
-        f"| noeuds visites = {sorted(visited)}"
-    )
 
     # ---------------------------
     # RETURN RESULT

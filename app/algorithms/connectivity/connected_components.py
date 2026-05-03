@@ -27,6 +27,16 @@ def is_connected(graph):
         }
 
     # Build undirected adjacency
+        return True
+    
+    # Validation: Check that all neighbors referenced in adj_list exist in nodes
+    nodes_set = set(nodes)
+    for u in graph.adj_list:
+        for v, _, _ in graph.adj_list[u]:
+            if v not in nodes_set:
+                raise ValueError(f"Invalid adjacency reference: neighbor '{v}' does not exist in the graph nodes")
+    
+    # Build a temporary undirected mapping to check total connectivity
     undirected_adj = {node: set() for node in nodes}
 
     for u in graph.adj_list:

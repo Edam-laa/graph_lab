@@ -29,6 +29,7 @@ from pathlib import Path
 import pytest
 
 from app.algorithms.spanning_tree import prim as prim_module
+from app.core.graph import Graph
 from app.utils.file_loader import load_graph_from_json
 
 
@@ -478,17 +479,22 @@ def test_mst_coherence_across_key_cases():
 		assert _is_connected(graph.get_nodes(), edges)
 
 
-def test_self_loop_is_ignored_or_skipped():
+def test_self_loop_is_rejected():
 	graph = load_prim_graph("self_loop")
-	result = prim_module.prim(graph)
-
-	edges = _get_result_edges(result)
-	assert len(edges) == 2
-	assert _get_total_weight(result) == 5
-	assert not _contains_cycle(graph.get_nodes(), edges)
+	with pytest.raises(ValueError):
+		prim_module.prim(graph)
 
 
 def test_dominant_component_raises_on_isolated_vertex():
 	graph = load_prim_graph("dominant_component")
+	with pytest.raises(ValueError):
+		prim_module.prim(graph)
+
+
+def test_directed_graph_raises():
+	graph = Graph(directed=True)
+	graph.add_edge("A", "B", 1)
+	graph.add_edge("B", "C", 2)
+
 	with pytest.raises(ValueError):
 		prim_module.prim(graph)

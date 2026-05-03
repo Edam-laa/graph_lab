@@ -78,7 +78,7 @@ def test_is_connected_from_fixture_collection(case_name, expected):
 	assert graph.adj_list == original_snapshot["adj_list"]
 
 
-def test_malformed_adjacency_references_raise_key_error():
+def test_malformed_adjacency_references_raise_value_error():
 	graph = Graph(directed=False)
 	graph.nodes = ["A", "B"]
 	graph.adj_list = {
@@ -86,7 +86,7 @@ def test_malformed_adjacency_references_raise_key_error():
 		"B": [],
 	}
 
-	with pytest.raises(KeyError):
+	with pytest.raises(ValueError):
 		is_connected(graph)
 
 

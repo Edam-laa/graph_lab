@@ -2,8 +2,17 @@ def welsh_powell(graph):
     """
     Welsh-Powell graph coloring with validation and step-by-step trace.
     """
-
     # --- VALIDATIONS ---
+    if graph.directed:
+        raise ValueError("Welsh-Powell only works on undirected graphs.")
+
+    for u, v, w, c in graph.get_edges():
+        if u == v:
+            raise ValueError("Graph contains self-loops.")
+
+    # 1. Récupérer tous les nœuds avec leur degré et les trier par ordre décroissant
+    # On utilise la méthode .degree(node) de votre classe
+    nodes_sorted = sorted(graph.get_nodes(), key=lambda x: graph.degree(x), reverse=True)
     
     # 1. Vérification si le graphe est orienté
     if graph.directed:

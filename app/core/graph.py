@@ -167,10 +167,13 @@ class Graph:
         for u in self.adj_list:
             for v, w,c in self.adj_list[u]:
                 edge=(u, v, w,c)
-                reverse=(v, u, w,c)
-                if self.directed or reverse not in seen:
+                if self.directed:
                     edges.append(edge)
-                    seen.add(edge)
+                else:
+                    key = (tuple(sorted((u, v))), w, c) if u != v else ((u, u), w, c)
+                    if key not in seen:
+                        edges.append(edge)
+                        seen.add(key)
         return edges
 
     # ---------------------------
@@ -179,8 +182,11 @@ class Graph:
     def has_negative_weights(self):
         for u in self.adj_list:
             for v, w,c in self.adj_list[u]:
-                if w < 0:
-                    return True
+                try:
+                    if float(w) < 0:
+                        return True
+                except (TypeError, ValueError):
+                    return False
         return False
 
     def is_weighted(self):

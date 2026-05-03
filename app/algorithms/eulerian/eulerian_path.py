@@ -4,16 +4,36 @@ def check_eulerian_status(graph):
     # 1. Graphe vide
     if not nodes:
         raise ValueError("Le graphe est vide.")
-    
     # 2. Graphe à sommet unique sans arêtes
+
+    # CAS 1b: Detect truly isolated vertices (for directed: no in/out edges; for undirected: no edges)
+    has_edges = any(graph.adj_list.get(node) for node in nodes)
+    # CAS 2: Graphe sans arêtes (tous les nœuds isolés)
+    if not has_edges:
+        raise ValueError("Le graphe ne contient aucune arête.")
+    if graph.directed:
+        # For directed graphs, compute in-degrees to find truly isolated nodes
+        in_degree = {node: 0 for node in nodes}
+        for u in graph.adj_list:
+            for v, _, _ in graph.adj_list[u]:
+                in_degree[v] += 1
+            
+        truly_isolated = {node for node in nodes if not graph.adj_list.get(node) and in_degree[node] == 0}
+        if truly_isolated:
+            return 0
+    else:
+        # For undirected graphs, a node is isolated if it has no edges at all
+        isolated_nodes = {node for node in nodes if not graph.adj_list.get(node)}
+        if isolated_nodes:
+            return 0
+    # CAS 3: Graphe avec un seul nœud
     if len(nodes) == 1:
         if not graph.adj_list.get(nodes[0]):
             raise ValueError("Graphe à sommet unique sans arêtes.")
     
     # 3. Graphe sans aucune arête (plusieurs nœuds mais 0 arête)
     has_edges = any(graph.adj_list.get(node) for node in nodes)
-    if not has_edges:
-        raise ValueError("Le graphe ne contient aucune arête.")
+
     
     # 4. Vérification des degrés et Dead Ends
     if graph.directed:
@@ -94,10 +114,77 @@ def _is_connected_undirected(graph):
     nodes = graph.get_nodes()
     nodes_with_edges = [n for n in nodes if graph.adj_list.get(n)]
     if not nodes_with_edges: return False
-    
     visited = set()
     stack = [nodes_with_edges[0]]
+
+    while stack:
+        u = stack.pop()
+        if u not in visited:
+            visited.add(u)
+            for v, _, _ in graph.adj_list.get(u, []):
+                if v not in visited:
+                    stack.append(v)
+
+    return all(n in visited for n in nodes_with_edges)
+
+'''def find_eulerian_tour(graph):
+    """
+    Trouve le chemin/circuit eulérien avec l'algorithme de Hierholzer.
     
+    Returns:
+        Liste des nœuds formant le tour eulérien, ou None si impossible
+    """
+    # anas badel begin
+    nodes = graph.get_nodes()
+    
+    # Validation 1: Empty graph
+    if not nodes:
+        raise ValueError("Graph contains no vertices")
+    
+    # Validation 2: Single vertex with no edges
+    if len(nodes) == 1:
+        if not graph.adj_list.get(nodes[0]):
+            raise ValueError("Single vertex graph must have at least one edge")
+    
+    # Validation 3: Check for specific invalid structures BEFORE status check
+    has_edges = any(graph.adj_list.get(node) for node in nodes)
+    
+    # No edges at all - invalid
+    if not has_edges:
+        raise ValueError("Graph contains no edges")
+    
+    # For directed graphs: check for dead ends (nodes with only incoming edges when part of path)
+    if graph.directed:
+        in_degree = {node: 0 for node in nodes}
+        out_degree = {node: 0 for node in nodes}
+        
+        for u in graph.adj_list:
+            for v, _, _ in graph.adj_list[u]:
+                out_degree[u] += 1
+                in_degree[v] += 1
+        
+        # Check for nodes with only incoming edges (dead ends) - these are invalid structures
+        # ONLY if there are edges in the graph
+        for node in nodes:
+            if in_degree[node] > 0 and out_degree[node] == 0:
+                # This node has incoming edges but no outgoing - potential dead end
+                # Check if this is part of an Eulerian issue
+                start_nodes = sum(1 for n in nodes if out_degree[n] > in_degree[n])
+                end_nodes = sum(1 for n in nodes if in_degree[n] > out_degree[n])
+                # If there's a dead end and it's not balanced, it's invalid
+                if not (start_nodes == 0 and end_nodes == 0) and not (start_nodes == 1 and end_nodes == 1):
+                    raise ValueError("Directed graph has invalid structure (dead end)")
+    
+    # Validation 4: Check Eulerian status
+    status = check_eulerian_status(graph)
+    if status == 0:
+        # Not Eulerian - this is okay, just return None
+        # Don't raise for non-Eulerian cases, only for genuinely invalid structures
+        return None
+    
+    # anas badel end
+    visited = set()
+    stack = [nodes_with_edges[0]]
     while stack:
         u = stack.pop()
         if u not in visited:
@@ -107,7 +194,7 @@ def _is_connected_undirected(graph):
                     stack.append(v)
     
     return all(n in visited for n in nodes_with_edges)
-
+'''
 def _is_eulerian_connected_directed(graph):
     """Vérifie la connexité faible (graphe sous-jacent) pour les nœuds non isolés."""
     nodes = graph.get_nodes()
