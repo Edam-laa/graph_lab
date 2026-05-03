@@ -66,6 +66,10 @@ def bellman(graph, source):
     if _detect_self_loops(graph.adj_list):
         raise ValueError("Graph contains self-loops (u → u)")
     
+    # Validation 4: Detect cycles
+    if _detect_cycle_dfs(graph.adj_list, nodes):
+        raise ValueError("Graph contains a cycle")
+    
     distances = {node: float("inf") for node in nodes}
     previous = {node: None for node in nodes}
     steps = []
