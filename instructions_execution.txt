@@ -1,0 +1,35 @@
+Instructions d’exécution — GraphAlgo Pro
+
+1. Lancer le serveur backend :
+   GraphAlgoPro_Server.exe
+
+2. Attendre le lancement du serveur sur :
+   http://127.0.0.1:5000
+
+3. Lancer l’interface graphique :
+   GraphAlgoPro_Front.exe
+
+4. Créer un graphe dans l’interface :
+   - ajouter des sommets ;
+   - ajouter des arêtes/arcs ;
+   - définir les poids si nécessaire.
+
+5. Choisir un algorithme :
+   - Dijkstra
+   - Bellman-Ford
+   - Kruskal
+   - Prim
+   - Welsh-Powell
+   - BFS / DFS
+   - Ford-Fulkerson
+   - Connexité / CFC
+
+6. Cliquer sur le bouton de l’algorithme.
+
+7. La fenêtre de résultat s’ouvre automatiquement avec :
+   - visualisation du graphe ;
+   - chemin ou résultat coloré ;
+   - temps d’exécution ;
+   - complexité ;
+   - distances ;
+   - étapes d’exécution.

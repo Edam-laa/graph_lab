@@ -1,0 +1,6 @@
+Flask        → serveur backend
+flask-cors   → communication frontend/backend si nécessaire
+PySide6      → interface graphique
+requests     → le front envoie des requêtes au serveur
+pytest       → tests
+pyinstaller  → création des exécutables
