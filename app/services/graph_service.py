@@ -4,7 +4,10 @@ from app.algorithms.shortest_path.dijkstra import dijkstra, reconstruct_path
 from app.algorithms.shortest_path.bellman_ford import bellman_ford
 from app.algorithms.shortest_path.bellman import bellman
 from app.algorithms.flow.ford_fulkerson import ford_fulkerson
-
+from app.algorithms.connectivity.connected_components import is_connected
+from app.algorithms.connectivity.strongly_connected import is_strongly_connected
+from app.algorithms.eulerian.eulerian_path import check_eulerian_status, find_eulerian_tour
+from app.algorithms.coloring.welsh_powell import welsh_powell
 from app.algorithms.connectivity.connected_components import is_connected
 from app.algorithms.connectivity.strongly_connected import is_strongly_connected
 from app.algorithms.eulerian.eulerian_path import check_eulerian_status, find_eulerian_tour
@@ -105,28 +108,34 @@ def handle_ford_fulkerson(graph, params):
         "complexity": "O(E * max_flow)"
     }
 def handle_connectivity(graph, params):
+    result=is_connected(graph)
+    print(result)
+    print("aa")
     return {
         "type": "connectivity_check",
-        "components": [list(graph.nodes)] if is_connected(graph) else [],
+        "components": [list(graph.nodes)] if result["connected"] else [], # Simplified
+        "steps":result["steps"],
         "graph_properties": {
-            "is_connected": is_connected(graph)
+            "is_connected": result["connected"]
         },
         "complexity": "O(V + E)"
     }
 
 def handle_strong_connectivity(graph, params):
+    result=is_strongly_connected(graph)
     return {
         "type": "strong_connectivity_check",
         "graph_properties": {
-            "is_strongly_connected": is_strongly_connected(graph)
+            "is_strongly_connected": result["strongly_connected"]
         },
+        "steps":result["steps"],
         "complexity": "O(V + E)"
     }
 
 def handle_eulerian(graph, params):
     status_code = check_eulerian_status(graph)
-    tour = find_eulerian_tour(graph) if status_code > 0 else []
-    
+    result = find_eulerian_tour(graph) if status_code > 0 else []
+    tour=result["tour"]
     # Map to your JSON result fields
     res = {
         "type": "eulerian_analysis",
@@ -142,11 +151,13 @@ def handle_eulerian(graph, params):
     #    res["special_paths"]["eulerian_path"] = tour
     return res
 
+
 def handle_welsh_powell(graph, params):
-    coloring = welsh_powell(graph)
+    result= welsh_powell(graph)
     return {
         "type": "graph_coloring",
-        "coloring": {"node_colors": coloring},
+        "coloring": {"node_colors": result["coloring"]},
+        "steps": result["steps"],
         "complexity": "O(V² + V log V)"
     }
 def handle_bfs(graph, params):
@@ -208,7 +219,7 @@ def execute_algorithm(json_data):
         
         algo_name = json_data["algorithm"]["name"].lower()
         params = json_data["algorithm"].get("params", {})
-
+        print("XDDDD")
         if algo_name not in ALGO_REGISTRY:
             raise ValueError(f"Algorithm '{algo_name}' is not registered.")
 
@@ -218,10 +229,10 @@ def execute_algorithm(json_data):
         # 3. Run selected function from dict
         handler = ALGO_REGISTRY[algo_name]
         output = handler(graph, params)
-
+        print(output)
         # 4. Stop timer
         end_time = time.time()
-
+        print("XDDDD")
         # 5. Fill Execution metadata
         json_data["execution"].update({
             "execution_time": round(end_time - start_time, 6),

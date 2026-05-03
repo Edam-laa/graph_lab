@@ -120,6 +120,7 @@ class Graph:
     # ---------------------------
     # ADD NODES & EDGES
     # ---------------------------
+
     def add_node(self, node):
         if node not in self.nodes:
             self.nodes.add(node)
