@@ -7,14 +7,16 @@ ALGO_NAME_MAP = {
     # ─── Shortest Path ─────────────────────
     "Dijkstra": "dijkstra",
     "Bellman-Ford": "bellman_ford",
-    "Bellman": "bellman_ford",
+    "Bellman": "bellman",
 
     # ─── MST ───────────────────────────────
     "Kruskal": "kruskal",
     "Prim": "prim",
 
     # ─── Traversal / Connectivity ──────────
-    "Composantes Connexes": "connected_components",
+    "Composantes Connexes": "connectivity",
+    "Strong Connectivity": "strong_connectivity",
+    "Connexite Forte": "strong_connectivity",
     "BFS": "bfs",
     "DFS": "dfs",
 
@@ -24,7 +26,7 @@ ALGO_NAME_MAP = {
 
     # ─── Coloring ──────────────────────────
     "Welsh-Powell": "welsh_powell",
-    "Greedy Coloring": "graph_coloring",
+    "Greedy Coloring": "welsh_powell",
 
     # ─── Flow ──────────────────────────────
     "Ford-Fulkerson": "ford_fulkerson",
@@ -54,8 +56,17 @@ def translate_colors(node_colors):
     translated = {}
 
     for node, color_id in node_colors.items():
-        color_id = int(color_id)+1  # Ensure it's an integer
-        translated[node] = COLOR_PALETTE.get(color_id, "#cccccc")  # fallback gray
+        if isinstance(color_id, str) and color_id.startswith("#"):
+            translated[node] = color_id
+            continue
+
+        try:
+            palette_id = int(color_id) + 1
+        except (TypeError, ValueError):
+            translated[node] = "#cccccc"
+            continue
+
+        translated[node] = COLOR_PALETTE.get(palette_id, "#cccccc")  # fallback gray
 
     return translated
 # ─────────────────────────────────────────────
@@ -63,13 +74,19 @@ def translate_colors(node_colors):
 # ─────────────────────────────────────────────
 def to_backend_format(data):
     algo_name_raw = data.get("algorithm", {}).get("name")
-    print("Backend result:", json.dumps(data, indent=2))
+    params = dict(data.get("algorithm", {}).get("params", {}))
+    resolved_name = resolve_algorithm_name(algo_name_raw)
+
+    if resolved_name in {"dijkstra", "bellman_ford", "bellman"} and "target" not in params:
+        if "sink" in params:
+            params["target"] = params["sink"]
+
     return {
         "graph": data.get("graph", {}),
         "algorithm": {
-            "name": resolve_algorithm_name(algo_name_raw),
+            "name": resolved_name,
             "category": data.get("algorithm", {}).get("category"),
-            "params": data.get("algorithm", {}).get("params", {}),
+            "params": params,
 
             # You can later compute this dynamically if needed
             "constraints_check": {
@@ -144,13 +161,15 @@ def to_frontend_format(backend_result):
 
         "result": {
             "type": res.get("type"),
+            "objective": res.get("objective"),
 
             "distances": res.get("distances", {}),
             "predecessors": res.get("predecessors", {}),
             "path": res.get("path", []),
-            "paths": res.get("paths", []),
+            "paths": res.get("paths", {}),
 
             "mst_edges": res.get("mst_edges", []),
+            "total_weight": res.get("total_weight"),
             "components": res.get("components", []),
             "cycles": res.get("cycles", []),
 

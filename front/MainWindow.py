@@ -889,7 +889,12 @@ class MainWindow(QMainWindow):
                 adj.setdefault(t, []).append((f, w, c))
         return adj
     def _handle_backend_result(self, result):
-        res = result.get("result", {})
+        if result.get("status") == "error":
+            self._log(result.get("message", "Backend returned an error"), "error")
+            return
+
+        frontend_result = result.get("result", result)
+        res = frontend_result.get("result", {})
         # Clear old styles first
         self._reset_graph_style()
 
@@ -902,20 +907,20 @@ class MainWindow(QMainWindow):
             self._highlight_edges(res["mst_edges"])
 
         # Coloring
-        if res.get("coloring"):
-            self._apply_coloring(res["coloring"]["node_colors"])
+        node_colors = res.get("coloring", {}).get("node_colors", {})
+        if node_colors:
+            self._apply_coloring(node_colors)
 
         self._log("Graph updated with backend result", "result")
         
         # ── open ResultWindow automatically ──
         # Merge backend result with graph data
         if self._last_graph_data:
-            backend_response = result.get("result", {})  # Get the nested result structure
             complete_data = self._last_graph_data.copy()
-            complete_data["result"] = backend_response.get("result", {})
-            complete_data["execution"] = backend_response.get("execution", {})
-            complete_data["algorithm"] = backend_response.get("algorithm", {})
-            complete_data["graph"] = backend_response.get("graph", {})
+            complete_data["result"] = frontend_result.get("result", {})
+            complete_data["execution"] = frontend_result.get("execution", {})
+            complete_data["algorithm"] = frontend_result.get("algorithm", {})
+            complete_data["graph"] = frontend_result.get("graph", complete_data.get("graph", {}))
 
             self._last_result_data = complete_data
             self._ensure_result_window().set_result_data(complete_data)
@@ -935,15 +940,32 @@ class MainWindow(QMainWindow):
         pairs = list(zip(path, path[1:]))
 
         for e in self._scene._edges:
-            if (e.src.label, e.dst.label) in pairs:
+            if (e.src.label, e.dst.label) in pairs or \
+               (not self._scene._directed_graph and (e.dst.label, e.src.label) in pairs):
                 e.setPen(QPen(QColor("#ff5555"), 4))
     def _highlight_edges(self, edges):
-        edge_set = {(e["from"], e["to"]) for e in edges}
+        edge_set = set()
+        for edge in edges:
+            if isinstance(edge, dict):
+                edge_set.add((edge.get("from"), edge.get("to")))
+            elif isinstance(edge, (list, tuple)) and len(edge) >= 2:
+                edge_set.add((edge[0], edge[1]))
 
         for e in self._scene._edges:
-            if (e.src.label, e.dst.label) in edge_set:
+            if (e.src.label, e.dst.label) in edge_set or \
+               (not self._scene._directed_graph and (e.dst.label, e.src.label) in edge_set):
                 e.setPen(QPen(QColor("#50fa7b"), 4))
     def _apply_coloring(self, colors):
+        palette = [
+            "#ff5555", "#50fa7b", "#8be9fd", "#ffb86c",
+            "#bd93f9", "#f1fa8c", "#ff79c6", "#6272a4"
+        ]
         for node in self._scene._nodes.values():
             if node.label in colors:
-                node.setBrush(QBrush(QColor(colors[node.label])))
+                color = colors[node.label]
+                if not (isinstance(color, str) and color.startswith("#")):
+                    try:
+                        color = palette[int(color) % len(palette)]
+                    except (TypeError, ValueError):
+                        color = "#cccccc"
+                node.setBrush(QBrush(QColor(color)))

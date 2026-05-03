@@ -108,11 +108,23 @@ class ResultWindow(QDialog):
 
     def set_result_data(self, data):
         """Load a frontend-style result payload into the window."""
+        data = self._coerce_result_payload(data)
         self._current_data = data
         self.draw_graph(data)
         self.apply_result(data)
         self._populate_info(data)
         self._check_and_log_errors(data)
+
+    def _coerce_result_payload(self, data):
+        """Accept either the frontend payload or the Flask response envelope."""
+        if not isinstance(data, dict):
+            return {}
+
+        inner = data.get("result")
+        if isinstance(inner, dict) and {"graph", "algorithm", "execution", "result"} <= set(inner.keys()):
+            return inner
+
+        return data
 
     def _build_info_panel(self):
         panel = QWidget()
@@ -138,11 +150,12 @@ class ResultWindow(QDialog):
         self._result_labels = {}
         for key, display in [
             ("algo",        "Algorithm"),
+            ("objective",   "Objective"),
             ("status",      "Status"),
             ("complexity",  "Complexity"),
             ("exec_time",   "Exec. Time"),
-            ("path",        "Path"),
-            ("total_cost",  "Total Cost"),
+            ("path",        "Primary Result"),
+            ("total_cost",  "Cost / Value"),
         ]:
             row = QHBoxLayout()
             k = QLabel(display + ":")
@@ -167,14 +180,30 @@ class ResultWindow(QDialog):
 
         layout.addWidget(res_grp)
 
-        # Distances
-        dist_grp = QGroupBox("Distances from Source")
-        dist_grp.setObjectName("infoGroup")
-        dist_layout = QVBoxLayout(dist_grp)
+        # Algorithm-specific details
+        details_grp = QGroupBox("Result Details")
+        details_grp.setObjectName("infoGroup")
+        details_layout = QVBoxLayout(details_grp)
+        details_layout.setSpacing(0)
+
+        self._details_log = QPlainTextEdit()
+        self._details_log.setReadOnly(True)
+        self._details_log.setFont(QFont("Consolas", 9))
+        self._details_log.setFixedHeight(130)
+        self._details_log.setStyleSheet(f"""
+            QPlainTextEdit {{ background: {BG_DARK}; color: {TEXT_MAIN};
+                              border: none; padding: 6px; }}
+        """)
+        details_layout.addWidget(self._details_log)
+        layout.addWidget(details_grp)
+
+        # Metrics table
+        self._dist_group = QGroupBox("Metrics")
+        self._dist_group.setObjectName("infoGroup")
+        dist_layout = QVBoxLayout(self._dist_group)
         dist_layout.setSpacing(2)
 
         self._dist_table = QTableWidget(0, 2)
-        self._dist_table.setHorizontalHeaderLabels(["Node", "Distance"])
         self._dist_table.setEditTriggers(QAbstractItemView.NoEditTriggers)
         self._dist_table.setSelectionMode(QAbstractItemView.NoSelection)
         self._dist_table.setFixedHeight(160)
@@ -188,7 +217,7 @@ class ResultWindow(QDialog):
         self._dist_table.horizontalHeader().setSectionResizeMode(QHeaderView.Stretch)
         self._dist_table.verticalHeader().hide()
         dist_layout.addWidget(self._dist_table)
-        layout.addWidget(dist_grp)
+        layout.addWidget(self._dist_group)
 
         # Steps log
         steps_grp = QGroupBox("Execution Steps")
@@ -305,28 +334,36 @@ class ResultWindow(QDialog):
         self.scene._nodes.clear()
         self.scene._edges.clear()
 
-        positions = data["graph"]["node_positions"]
-        category  = data.get("algorithm", {}).get("category", "")
-        path      = data.get("result", {}).get("path", [])
-        components = data.get("result", {}).get("components", [])
+        graph = data.get("graph", {})
+        result = data.get("result", {})
+        positions = graph.get("node_positions", {})
+        nodes = graph.get("nodes", [])
+        edges = graph.get("edges", [])
+        directed = graph.get("directed", True)
+        fallback_positions = self._fallback_positions(nodes)
+
+        category = data.get("algorithm", {}).get("category", "")
+        result_type = result.get("type", "")
+        path = result.get("path", [])
 
         # For shortest_path results, only render nodes/edges on the path
-        if category == "shortest_path" and len(path) >= 2:
+        if (category == "shortest_path" or result_type == "shortest_path") and len(path) >= 2:
             visible_nodes = set(path)
             path_pairs    = set(zip(path, path[1:]))
 
-            nodes_to_draw = [lbl for lbl in data["graph"]["nodes"] if lbl in visible_nodes]
+            nodes_to_draw = [lbl for lbl in nodes if lbl in visible_nodes]
             edges_to_draw = [
-                e for e in data["graph"]["edges"]
+                e for e in edges
                 if (e["from"], e["to"]) in path_pairs
+                or (not directed and (e["to"], e["from"]) in path_pairs)
             ]
         else:
-            nodes_to_draw = data["graph"]["nodes"]
-            edges_to_draw = data["graph"]["edges"]
+            nodes_to_draw = nodes
+            edges_to_draw = edges
 
         # Create nodes — scale positions for better visibility
         for i, label in enumerate(nodes_to_draw):
-            pos = positions[label]
+            pos = positions.get(label, fallback_positions.get(label, {"x": 0, "y": 0}))
             node = NodeItem(i, label, pos["x"] * 2, pos["y"] * 2, self.scene)
             self.scene.addItem(node)
             self.scene._nodes[i] = node
@@ -344,97 +381,81 @@ class ResultWindow(QDialog):
                 dst,
                 e.get("weight", 1),
                 e.get("capacity", 1),
-                data["graph"]["directed"]
+                directed
             )
             self.scene.addItem(edge)
             edge.update_path()
             self.scene._edges.append(edge)
 
-        self.view.fitInView(self.scene.itemsBoundingRect(), Qt.KeepAspectRatio)
+        bounds = self.scene.itemsBoundingRect()
+        if not bounds.isEmpty():
+            self.view.fitInView(bounds.adjusted(-40, -40, 40, 40), Qt.KeepAspectRatio)
 
     def apply_result(self, data):
-        result   = data.get("result", {})
-        category = data.get("algorithm", {}).get("category", "")
-
+        result = data.get("result", {})
+        graph = data.get("graph", {})
+        directed = graph.get("directed", True)
+        result_type = result.get("type", "")
         path = result.get("path", [])
 
-        # In shortest_path mode the canvas only contains path nodes/edges —
-        # no need to reset the whole graph first.
-        if category != "shortest_path":
-            for e in self.scene._edges:
-                e.setPen(QPen(QColor("#6272a4"), 2.5))
-            for n in self.scene._nodes.values():
-                n._update_appearance()
+        self._legend_label.setText("")
+        for e in self.scene._edges:
+            e.setPen(QPen(QColor("#6272a4"), 2.5))
+        for n in self.scene._nodes.values():
+            n._update_appearance()
 
-        # ── 1. Shortest Path ─────────────────────────────────────────────────
+        # 1. Shortest path
         if path and len(path) >= 2:
-            path_pairs = set(zip(path, path[1:]))
-            path_nodes = set(path)
+            self._highlight_node_path(path, "#ff5555", directed)
+            self._legend_label.setText("Source: green | Via: amber | Target: red | Path: red")
 
-            for e in self.scene._edges:
-                if (e.src.label, e.dst.label) in path_pairs:
-                    e.setPen(QPen(QColor("#ff5555"), 4))
-
-            for node in self.scene._nodes.values():
-                if node.label == path[0]:
-                    # Source: green
-                    node.setBrush(QBrush(QColor("#50fa7b")))
-                    node.setPen(QPen(QColor("#50fa7b"), 2))
-                elif node.label == path[-1]:
-                    # Target: red
-                    node.setBrush(QBrush(QColor("#ff5555")))
-                    node.setPen(QPen(QColor("#ff5555"), 2))
-                elif node.label in path_nodes:
-                    # Intermediate: orange
-                    node.setBrush(QBrush(QColor("#ffb86c")))
-                    node.setPen(QPen(QColor("#ffb86c"), 2))
-
-            self._legend_label.setText(
-                "  \U0001f7e2 Source   \U0001f7e0 Via   \U0001f534 Target   \u2501\u2501 Path"
-            )
-
-        # ── 2. MST edges ─────────────────────────────────────────────────────
-        mst = result.get("mst_edges", [])
+        # 2. MST edges
+        mst = [self._normalize_edge(edge) for edge in result.get("mst_edges", [])]
         if mst:
-            mst_set = {(e["from"], e["to"]) for e in mst}
-            for e in self.scene._edges:
-                if (e.src.label, e.dst.label) in mst_set or \
-                   (e.dst.label, e.src.label) in mst_set:
-                    e.setPen(QPen(QColor("#50fa7b"), 4))
-            self._legend_label.setText("  \U0001f7e2 MST Edges")
+            self._highlight_edge_set(mst, QColor("#50fa7b"), 4, directed=False)
+            self._legend_label.setText("MST edges highlighted in green")
 
-        # ── 3. Traversal tree edges (only if no path result) ─────────────────
+        # 3. Traversal tree edges
         traversal = result.get("traversal", {})
-        tree_edges = traversal.get("tree_edges", [])
+        tree_edges = [self._normalize_edge(edge) for edge in traversal.get("tree_edges", [])]
         if tree_edges and not path:
-            tree_set = {(e["from"], e["to"]) for e in tree_edges}
-            for e in self.scene._edges:
-                if (e.src.label, e.dst.label) in tree_set:
-                    e.setPen(QPen(QColor("#8be9fd"), 3))
-            self._legend_label.setText("  \U0001f535 Traversal Tree Edges")
+            self._highlight_edge_set(tree_edges, QColor("#8be9fd"), 3, directed=directed)
+            for label in traversal.get("order", []):
+                node = self._node_by_label(label)
+                if node:
+                    node.setPen(QPen(QColor("#8be9fd"), 2))
+            self._legend_label.setText("Traversal tree edges highlighted in cyan")
 
-        # ── 4. Node coloring ─────────────────────────────────────────────────
+        # 4. Node coloring
         coloring = result.get("coloring", {})
         node_colors = coloring.get("node_colors", {})
         if node_colors:
             for node in self.scene._nodes.values():
                 if node.label in node_colors:
-                    node.setBrush(QBrush(QColor(node_colors[node.label])))
-            self._legend_label.setText("  \U0001f3a8 Node Coloring Applied")
+                    node.setBrush(QBrush(QColor(self._color_value(node_colors[node.label]))))
+            self._legend_label.setText("Node coloring applied")
 
-        # ── 5. Flow edges ─────────────────────────────────────────────────────
+        # 5. Flow edges
         flow = result.get("flow", {})
         edge_flows = flow.get("edge_flows", {})
         if edge_flows:
             for e in self.scene._edges:
                 key = f"{e.src.label}->{e.dst.label}"
-                if key in edge_flows and edge_flows[key] > 0:
+                if edge_flows.get(key, 0) > 0:
                     e.setPen(QPen(QColor("#bd93f9"), 4))
-            self._legend_label.setText("  \U0001f7e3 Flow Edges")
 
-        # ── 6. Connected Components - highlight each component differently ─────
+            source = data.get("algorithm", {}).get("params", {}).get("source")
+            sink = data.get("algorithm", {}).get("params", {}).get("sink")
+            for label, color in [(source, "#50fa7b"), (sink, "#ff5555")]:
+                node = self._node_by_label(label)
+                if node:
+                    node.setBrush(QBrush(QColor(color)))
+                    node.setPen(QPen(QColor(color), 2))
+            self._legend_label.setText("Positive flow edges highlighted in purple")
+
+        # 6. Connected components
         components = result.get("components", [])
-        if components and len(components) > 1:
+        if components:
             component_colors = [
                 "#ff5555", "#50fa7b", "#8be9fd", "#ffb86c",
                 "#bd93f9", "#f1fa8c", "#ff79c6", "#6272a4"
@@ -445,25 +466,102 @@ class ResultWindow(QDialog):
                     if node.label in component_nodes:
                         node.setBrush(QBrush(QColor(color)))
                         node.setPen(QPen(QColor(color), 2))
-            self._legend_label.setText(f"  \U0001f535 {len(components)} Connected Components")
+            if len(components) > 1 or result_type == "connectivity_check":
+                self._legend_label.setText(f"{len(components)} connected component(s)")
 
-        # ── 7. Eulerian Path/Circuit ─────────────────────────────────────────
+        # 7. Eulerian path/circuit
         eulerian_path = result.get("eulerian_path", [])
         eulerian_circuit = result.get("eulerian_circuit", [])
         if eulerian_path and len(eulerian_path) >= 2:
-            euler_pairs = set(zip(eulerian_path, eulerian_path[1:]))
-            for e in self.scene._edges:
-                if (e.src.label, e.dst.label) in euler_pairs or \
-                   (e.dst.label, e.src.label) in euler_pairs:
-                    e.setPen(QPen(QColor("#ffb86c"), 4))
-            self._legend_label.setText("  \U0001f5e3 Eulerian Path")
+            self._highlight_node_path(eulerian_path, "#ffb86c", directed)
+            self._legend_label.setText("Eulerian path highlighted in amber")
         elif eulerian_circuit and len(eulerian_circuit) >= 2:
-            euler_pairs = set(zip(eulerian_circuit, eulerian_circuit[1:]))
-            for e in self.scene._edges:
-                if (e.src.label, e.dst.label) in euler_pairs or \
-                   (e.dst.label, e.src.label) in euler_pairs:
-                    e.setPen(QPen(QColor("#f1fa8c"), 4))
-            self._legend_label.setText("  \U0001f5e3 Eulerian Circuit")
+            self._highlight_node_path(eulerian_circuit, "#f1fa8c", directed)
+            self._legend_label.setText("Eulerian circuit highlighted in yellow")
+
+    def _fallback_positions(self, nodes):
+        if not nodes:
+            return {}
+
+        radius = max(80, 28 * len(nodes))
+        result = {}
+        for index, label in enumerate(nodes):
+            angle = (2 * math.pi * index) / len(nodes)
+            result[label] = {
+                "x": round(math.cos(angle) * radius, 2),
+                "y": round(math.sin(angle) * radius, 2),
+            }
+        return result
+
+    def _node_by_label(self, label):
+        if not label:
+            return None
+        for node in self.scene._nodes.values():
+            if node.label == label:
+                return node
+        return None
+
+    def _normalize_edge(self, edge):
+        if isinstance(edge, dict):
+            return {
+                "from": edge.get("from"),
+                "to": edge.get("to"),
+                "weight": edge.get("weight"),
+                "capacity": edge.get("capacity"),
+            }
+
+        if isinstance(edge, (list, tuple)):
+            if len(edge) >= 4:
+                return {"from": edge[0], "to": edge[1], "weight": edge[2], "capacity": edge[3]}
+            if len(edge) == 3:
+                return {"from": edge[0], "to": edge[1], "weight": edge[2], "capacity": None}
+            if len(edge) == 2:
+                return {"from": edge[0], "to": edge[1], "weight": None, "capacity": None}
+
+        return {"from": None, "to": None, "weight": None, "capacity": None}
+
+    def _edge_matches(self, scene_edge, result_edge, directed=True):
+        src = result_edge.get("from")
+        dst = result_edge.get("to")
+        if scene_edge.src.label == src and scene_edge.dst.label == dst:
+            return True
+        return not directed and scene_edge.src.label == dst and scene_edge.dst.label == src
+
+    def _highlight_edge_set(self, edges, color, width, directed=True):
+        for scene_edge in self.scene._edges:
+            if any(self._edge_matches(scene_edge, result_edge, directed) for result_edge in edges):
+                scene_edge.setPen(QPen(color, width))
+
+    def _highlight_node_path(self, path, edge_color, directed=True):
+        path_edges = [
+            {"from": src, "to": dst}
+            for src, dst in zip(path, path[1:])
+        ]
+        self._highlight_edge_set(path_edges, QColor(edge_color), 4, directed=directed)
+
+        path_nodes = set(path)
+        for node in self.scene._nodes.values():
+            if node.label == path[0]:
+                node.setBrush(QBrush(QColor("#50fa7b")))
+                node.setPen(QPen(QColor("#50fa7b"), 2))
+            elif node.label == path[-1]:
+                node.setBrush(QBrush(QColor("#ff5555")))
+                node.setPen(QPen(QColor("#ff5555"), 2))
+            elif node.label in path_nodes:
+                node.setBrush(QBrush(QColor("#ffb86c")))
+                node.setPen(QPen(QColor("#ffb86c"), 2))
+
+    def _color_value(self, color):
+        palette = [
+            "#ff5555", "#50fa7b", "#8be9fd", "#ffb86c",
+            "#bd93f9", "#f1fa8c", "#ff79c6", "#6272a4"
+        ]
+        if isinstance(color, str) and color.startswith("#"):
+            return color
+        try:
+            return palette[int(color) % len(palette)]
+        except (TypeError, ValueError):
+            return "#cccccc"
 
     def _populate_info(self, data):
         result = data.get("result", {})
@@ -474,62 +572,331 @@ class ResultWindow(QDialog):
         if algo_name:
             self._algo_badge.setText(f"  {algo_name}  ")
             self._algo_badge.show()
+        else:
+            self._algo_badge.hide()
 
         self._result_labels["algo"].setText(algo_name or "--")
+        self._result_labels["objective"].setText(
+            result.get("objective") or self._build_objective_text(algo, result) or "--"
+        )
         self._result_labels["status"].setText(exec_.get("status", "--"))
         self._result_labels["complexity"].setText(exec_.get("complexity", "--"))
 
         t = exec_.get("execution_time")
         self._result_labels["exec_time"].setText(f"{t:.4f}s" if t is not None else "--")
 
-        path = result.get("path", [])
-        self._result_labels["path"].setText(" -> ".join(path) if path else "--")
+        primary_text, value_text = self._primary_summary(algo, result)
+        self._result_labels["path"].setText(primary_text or "--")
+        self._result_labels["total_cost"].setText(value_text or "--")
 
-        distances = result.get("distances", {})
-        if path and distances and path[-1] in distances:
-            self._result_labels["total_cost"].setText(str(distances[path[-1]]))
+        self._details_log.clear()
+        details = self._detail_lines(algo, result)
+        if details:
+            for line in details:
+                self._details_log.appendPlainText(line)
         else:
-            self._result_labels["total_cost"].setText("--")
+            self._details_log.appendPlainText("No algorithm-specific details.")
 
-        # Distances table
-        self._dist_table.setRowCount(0)
-        if distances:
-            path_nodes = set(path)
-            sorted_dists = sorted(distances.items(), key=lambda x: (x[1] if x[1] != float('inf') else 99999))
-            for node_label, dist in sorted_dists:
-                row = self._dist_table.rowCount()
-                self._dist_table.insertRow(row)
-
-                n_item = QTableWidgetItem(node_label)
-                n_item.setTextAlignment(Qt.AlignCenter)
-                if node_label in path_nodes:
-                    if node_label == path[0]:
-                        n_item.setForeground(QBrush(QColor("#50fa7b")))
-                    elif node_label == path[-1]:
-                        n_item.setForeground(QBrush(QColor("#ff5555")))
-                    else:
-                        n_item.setForeground(QBrush(QColor("#ffb86c")))
-
-                d_item = QTableWidgetItem(str(dist) if dist != float('inf') else "INF")
-                d_item.setTextAlignment(Qt.AlignCenter)
-                if node_label in path_nodes:
-                    d_item.setForeground(QBrush(QColor(ACCENT_AMBER)))
-                    d_item.setFont(QFont("Consolas", 9, QFont.Bold))
-
-                self._dist_table.setItem(row, 0, n_item)
-                self._dist_table.setItem(row, 1, d_item)
+        self._populate_metric_table(algo, result)
 
         # Steps log
         self._steps_log.clear()
         steps = result.get("steps", [])
         if steps:
             for step in steps:
-                self._steps_log.appendPlainText(f"  > {step}")
+                self._steps_log.appendPlainText(f"  > {self._format_step(step)}")
         else:
-            self._steps_log.appendPlainText("  · No steps recorded.")
+            self._steps_log.appendPlainText("  - No steps recorded.")
 
         # Display full JSON response
         self._display_json_response(data)
+
+    def _primary_summary(self, algo, result):
+        result_type = result.get("type", "")
+        distances = result.get("distances", {})
+        path = result.get("path", [])
+
+        if result_type == "shortest_path":
+            if path:
+                value = distances.get(path[-1], "--")
+                return self._format_path(path), self._format_value(value)
+            source = algo.get("params", {}).get("source")
+            return f"Distances from {source}" if source else "Distances computed", "--"
+
+        if result_type == "mst":
+            edges = result.get("mst_edges", [])
+            weight = result.get("total_weight")
+            return f"{len(edges)} MST edge(s)", self._format_value(weight)
+
+        if result_type == "max_flow":
+            flow = result.get("flow", {})
+            return "Maximum flow", self._format_value(flow.get("value"))
+
+        if result_type == "traversal":
+            order = result.get("traversal", {}).get("order", [])
+            return self._format_path(order), f"{len(order)} visited"
+
+        if result_type == "graph_coloring":
+            colors = result.get("coloring", {}).get("node_colors", {})
+            color_count = len(set(colors.values())) if colors else 0
+            return f"{color_count} color(s)", f"{len(colors)} node(s)"
+
+        if result_type == "connectivity_check":
+            props = result.get("graph_properties", {})
+            return self._bool_text(props.get("is_connected")), f"{len(result.get('components', []))} component(s)"
+
+        if result_type == "strong_connectivity_check":
+            props = result.get("graph_properties", {})
+            return self._bool_text(props.get("is_strongly_connected")), "--"
+
+        if result_type == "eulerian_analysis":
+            tour = result.get("eulerian_circuit") or result.get("eulerian_path") or []
+            label = "Eulerian circuit" if result.get("eulerian_circuit") else "Eulerian path"
+            if tour:
+                return self._format_path(tour), f"{max(len(tour) - 1, 0)} edge(s)"
+            return f"No {label.lower()} found", "--"
+
+        return "--", "--"
+
+    def _detail_lines(self, algo, result):
+        result_type = result.get("type", "")
+        lines = []
+
+        if result_type == "shortest_path":
+            path = result.get("path", [])
+            distances = result.get("distances", {})
+            predecessors = result.get("predecessors", {})
+            params = algo.get("params", {})
+            if path:
+                lines.append(f"Path: {self._format_path(path)}")
+                lines.append(f"Total distance: {self._format_value(distances.get(path[-1]))}")
+            elif params.get("target") or params.get("sink"):
+                target = params.get("target") or params.get("sink")
+                lines.append(f"No reachable path to {target}.")
+            lines.append(f"Reachable nodes: {sum(1 for d in distances.values() if not self._is_inf(d))}/{len(distances)}")
+            if predecessors:
+                lines.append("Predecessors:")
+                for node, prev in sorted(predecessors.items()):
+                    lines.append(f"  {node}: {prev or '-'}")
+
+        elif result_type == "mst":
+            lines.append(f"Total weight: {self._format_value(result.get('total_weight'))}")
+            for edge in result.get("mst_edges", []):
+                e = self._normalize_edge(edge)
+                lines.append(f"{e['from']} - {e['to']} (w={self._format_value(e.get('weight'))})")
+
+        elif result_type == "max_flow":
+            flow = result.get("flow", {})
+            lines.append(f"Max flow value: {self._format_value(flow.get('value'))}")
+            augmenting_paths = flow.get("augmenting_paths", [])
+            if augmenting_paths:
+                lines.append("Augmenting paths:")
+                for index, path_result in enumerate(augmenting_paths, start=1):
+                    path = path_result.get("path", [])
+                    lines.append(f"  {index}. {self._format_path(path)} | flow={self._format_value(path_result.get('flow'))}")
+            edge_flows = flow.get("edge_flows", {})
+            if edge_flows:
+                lines.append("Edge flows:")
+                for edge_key, amount in sorted(edge_flows.items()):
+                    lines.append(f"  {edge_key}: {self._format_value(amount)}")
+
+        elif result_type == "traversal":
+            traversal = result.get("traversal", {})
+            lines.append(f"Order: {self._format_path(traversal.get('order', []))}")
+            for edge in traversal.get("tree_edges", []):
+                e = self._normalize_edge(edge)
+                lines.append(f"Tree edge: {e['from']} -> {e['to']}")
+
+        elif result_type == "graph_coloring":
+            colors = result.get("coloring", {}).get("node_colors", {})
+            lines.append(f"Colors used: {len(set(colors.values())) if colors else 0}")
+            for node, color in sorted(colors.items()):
+                lines.append(f"{node}: {color}")
+
+        elif result_type in {"connectivity_check", "strong_connectivity_check"}:
+            props = result.get("graph_properties", {})
+            if "is_connected" in props:
+                lines.append(f"Connected: {self._bool_text(props.get('is_connected'))}")
+            if "is_strongly_connected" in props:
+                lines.append(f"Strongly connected: {self._bool_text(props.get('is_strongly_connected'))}")
+            components = result.get("components", [])
+            if components:
+                lines.append(f"Components: {len(components)}")
+                for index, component in enumerate(components, start=1):
+                    lines.append(f"  C{index}: {', '.join(str(node) for node in component)}")
+
+        elif result_type == "eulerian_analysis":
+            props = result.get("graph_properties", {})
+            lines.append(f"Eulerian: {self._bool_text(props.get('is_eulerian'))}")
+            path = result.get("eulerian_path", [])
+            circuit = result.get("eulerian_circuit", [])
+            if circuit:
+                lines.append(f"Circuit: {self._format_path(circuit)}")
+            elif path:
+                lines.append(f"Path: {self._format_path(path)}")
+            else:
+                lines.append("No Eulerian path or circuit exists.")
+
+        return lines
+
+    def _populate_metric_table(self, algo, result):
+        result_type = result.get("type", "")
+
+        if result_type == "shortest_path":
+            distances = result.get("distances", {})
+            path_nodes = set(result.get("path", []))
+            rows = [
+                [node, self._format_value(distance)]
+                for node, distance in sorted(distances.items(), key=lambda item: self._distance_sort_key(item[1]))
+            ]
+            self._set_table("Distances From Source", ["Node", "Distance"], rows, path_nodes)
+            return
+
+        if result_type == "traversal":
+            traversal = result.get("traversal", {})
+            if traversal.get("levels"):
+                rows = [[node, self._format_value(level)] for node, level in sorted(traversal["levels"].items())]
+                self._set_table("Traversal Levels", ["Node", "Level"], rows, set(traversal.get("order", [])))
+                return
+            if traversal.get("times"):
+                rows = [
+                    [node, self._format_value(times.get("discover")), self._format_value(times.get("finish"))]
+                    for node, times in sorted(traversal["times"].items())
+                ]
+                self._set_table("DFS Times", ["Node", "Discover", "Finish"], rows, set(traversal.get("order", [])))
+                return
+
+        if result_type == "graph_coloring":
+            colors = result.get("coloring", {}).get("node_colors", {})
+            rows = [[node, str(color)] for node, color in sorted(colors.items())]
+            self._set_table("Node Colors", ["Node", "Color"], rows, set(colors.keys()))
+            return
+
+        if result_type == "max_flow":
+            edge_flows = result.get("flow", {}).get("edge_flows", {})
+            rows = [[edge, self._format_value(amount)] for edge, amount in sorted(edge_flows.items())]
+            self._set_table("Edge Flows", ["Edge", "Flow"], rows)
+            return
+
+        if result_type == "mst":
+            rows = []
+            for edge in result.get("mst_edges", []):
+                e = self._normalize_edge(edge)
+                rows.append([f"{e['from']}-{e['to']}", self._format_value(e.get("weight"))])
+            self._set_table("MST Edges", ["Edge", "Weight"], rows)
+            return
+
+        components = result.get("components", [])
+        if components:
+            rows = [
+                [f"C{index}", ", ".join(str(node) for node in component)]
+                for index, component in enumerate(components, start=1)
+            ]
+            self._set_table("Components", ["Component", "Nodes"], rows)
+            return
+
+        self._set_table("Metrics", ["Metric", "Value"], [])
+
+    def _set_table(self, title, columns, rows, highlighted_nodes=None):
+        highlighted_nodes = highlighted_nodes or set()
+        self._dist_group.setTitle(title)
+        self._dist_table.clear()
+        self._dist_table.setColumnCount(len(columns))
+        self._dist_table.setHorizontalHeaderLabels(columns)
+        self._dist_table.setRowCount(0)
+
+        for row_values in rows:
+            row = self._dist_table.rowCount()
+            self._dist_table.insertRow(row)
+            for col, value in enumerate(row_values):
+                item = QTableWidgetItem(str(value))
+                item.setTextAlignment(Qt.AlignCenter)
+                if row_values and row_values[0] in highlighted_nodes:
+                    item.setForeground(QBrush(QColor(ACCENT_AMBER)))
+                    item.setFont(QFont("Consolas", 9, QFont.Bold))
+                self._dist_table.setItem(row, col, item)
+
+    def _format_step(self, step):
+        if isinstance(step, dict):
+            code = step.get("indexCode") or step.get("code")
+            message = step.get("message") or step.get("detail") or step
+            return f"[{code}] {message}" if code else str(message)
+        if isinstance(step, (list, tuple)):
+            return " -> ".join(str(item) for item in step)
+        return str(step)
+
+    def _format_path(self, path):
+        return " -> ".join(str(node) for node in path) if path else "--"
+
+    def _format_value(self, value):
+        if value is None:
+            return "--"
+        if self._is_inf(value):
+            return "INF"
+        return str(value)
+
+    def _is_inf(self, value):
+        return isinstance(value, float) and math.isinf(value)
+
+    def _distance_sort_key(self, value):
+        if self._is_inf(value):
+            return float("inf")
+        try:
+            return float(value)
+        except (TypeError, ValueError):
+            return float("inf")
+
+    def _bool_text(self, value):
+        if value is True:
+            return "Yes"
+        if value is False:
+            return "No"
+        return "--"
+
+    def _build_objective_text(self, algo, result):
+        name = (algo.get("name") or "").lower()
+        params = algo.get("params", {})
+        source = params.get("source")
+        target = params.get("target") or params.get("sink")
+        sink = params.get("sink")
+
+        if name in {"dijkstra", "bellman_ford", "bellman"}:
+            if source and target:
+                return f"Shortest path from {source} to {target}"
+            if source:
+                return f"Shortest paths from source {source}"
+            return "Shortest path"
+
+        if name == "ford_fulkerson":
+            if source and sink:
+                return f"Maximum flow from {source} to {sink}"
+            return "Maximum flow"
+
+        if name in {"kruskal", "prim"}:
+            return "Minimum spanning tree"
+
+        if name in {"bfs", "dfs"}:
+            if source:
+                return f"Traversal from source {source}"
+            return "Graph traversal"
+
+        if name in {"connectivity", "connected_components"}:
+            return "Connectivity check"
+
+        if name in {"strong_connectivity", "strongly_connected"}:
+            return "Strong connectivity check"
+
+        if name == "eulerian":
+            if result.get("eulerian_circuit"):
+                return "Find an Eulerian circuit"
+            if result.get("eulerian_path"):
+                return "Find an Eulerian path"
+            return "Eulerian analysis"
+
+        if name == "welsh_powell":
+            return "Graph coloring"
+
+        return "Algorithm result"
 
     def _check_and_log_errors(self, data):
         """Check if execution status indicates an error and log it to MainWindow."""
