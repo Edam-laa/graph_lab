@@ -1,0 +1,167 @@
+ {
+  "result": {
+    "algorithm": {
+      "name": "welsh_powell",
+      "category": "coloring",
+      "constraints_check": {
+        "requires_connected": false,
+        "requires_dag": false,
+        "requires_positive_capacity": false,
+        "requires_positive_weights": false
+      },
+      "params": {}
+    },
+    "execution": {
+      "complexity": "O(V\u00b2 + V log V)",
+      "execution_time": 0.000464,
+      "message": "welsh_powell executed successfully",
+      "status": "success",
+      "warnings": []
+    },
+    "graph": {
+      "directed": false,
+      "edges": [
+        {
+          "capacity": 1,
+          "from": "A",
+          "to": "B",
+          "weight": 1.0
+        },
+        {
+          "capacity": 1,
+          "from": "B",
+          "to": "C",
+          "weight": 1.0
+        }
+      ],
+      "metadata": {
+        "allow_negative_weights": true,
+        "description": "",
+        "name": "",
+        "weighted": true
+      },
+      "node_positions": {
+        "A": {
+          "x": -148.0,
+          "y": -177.0
+        },
+        "B": {
+          "x": -9.0,
+          "y": -48.0
+        },
+        "C": {
+          "x": -244.0,
+          "y": 10.0
+        }
+      },
+      "nodes": [
+        "A",
+        "B",
+        "C"
+      ]
+    },
+    "result": {
+      "coloring": {
+        "edge_colors": {},
+        "node_colors": {
+          "A": "#50fa7b",
+          "B": "#ff5555",
+          "C": "#50fa7b"
+        }
+      },
+      "components": [],
+      "cycles": [],
+      "distances": {},
+      "eulerian_circuit": [],
+      "eulerian_path": [],
+      "flow": {
+        "augmenting_paths": [],
+        "edge_flows": {},
+        "value": null
+      },
+      "graph_properties": {},
+      "mst_edges": [],
+      "path": [],
+      "paths": {},
+      "predecessors": {},
+      "steps": [
+        {
+          "indexCode": "WP0",
+          "message": "Start Welsh-Powell algorithm"
+        },
+        {
+          "indexCode": "WP1",
+          "message": "Nodes sorted by degree: ['B', 'A', 'C']"
+        },
+        {
+          "indexCode": "WP2",
+          "message": "Starting coloring phase with color 0"
+        },
+        {
+          "indexCode": "WP3",
+          "message": "Checking node B, neighbors = ['A', 'C']"
+        },
+        {
+          "indexCode": "WP5",
+          "message": "Assign color 0 to node B"
+        },
+        {
+          "indexCode": "WP3",
+          "message": "Checking node A, neighbors = ['B']"
+        },
+        {
+          "indexCode": "WP4",
+          "message": "Conflict: A cannot take color 0 because neighbor B has same color"
+        },
+        {
+          "indexCode": "WP3",
+          "message": "Checking node C, neighbors = ['B']"
+        },
+        {
+          "indexCode": "WP4",
+          "message": "Conflict: C cannot take color 0 because neighbor B has same color"
+        },
+        {
+          "indexCode": "WP6",
+          "message": "Moving to next color \u2192 1"
+        },
+        {
+          "indexCode": "WP2",
+          "message": "Starting coloring phase with color 1"
+        },
+        {
+          "indexCode": "WP3",
+          "message": "Checking node A, neighbors = ['B']"
+        },
+        {
+          "indexCode": "WP5",
+          "message": "Assign color 1 to node A"
+        },
+        {
+          "indexCode": "WP3",
+          "message": "Checking node C, neighbors = ['B']"
+        },
+        {
+          "indexCode": "WP5",
+          "message": "Assign color 1 to node C"
+        },
+        {
+          "indexCode": "WP6",
+          "message": "Moving to next color \u2192 2"
+        },
+        {
+          "indexCode": "WP7",
+          "message": "Final coloring completed: {'B': 0, 'A': 1, 'C': 1}"
+        }
+      ],
+      "traversal": {
+        "levels": {},
+        "order": [],
+        "times": {},
+        "tree_edges": []
+      },
+      "type": "graph_coloring"
+    }
+  },
+  "status": "success"
+}

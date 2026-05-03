@@ -99,6 +99,11 @@ class ResultWindow(QDialog):
         body.setSizes([640, 260])
 
         layout.addWidget(body, 1)
+
+        # JSON Display Panel
+        json_panel = self._build_json_panel()
+        layout.addWidget(json_panel)
+
         self._apply_style()
 
     def _build_info_panel(self):
@@ -202,7 +207,66 @@ class ResultWindow(QDialog):
         outer.addWidget(scroll)
         return panel
 
+    def _build_json_panel(self):
+        """Build a panel to display raw backend JSON response."""
+        panel = QWidget()
+        panel.setFixedHeight(180)
+        panel.setStyleSheet(f"background: {BG_PANEL}; border-top: 1px solid {BORDER};")
+        
+        layout = QVBoxLayout(panel)
+        layout.setContentsMargins(0, 0, 0, 0)
+        layout.setSpacing(0)
+        
+        # Header
+        header = QWidget()
+        header.setFixedHeight(28)
+        hlay = QHBoxLayout(header)
+        hlay.setContentsMargins(12, 4, 12, 4)
+        hlay.setSpacing(8)
+        
+        title = QLabel("📋  Backend Response JSON")
+        title.setFont(QFont("Consolas", 10, QFont.Bold))
+        title.setStyleSheet(f"color: {TEXT_DIM};")
+        hlay.addWidget(title)
+        
+        btn_copy = QPushButton("📋 Copy")
+        btn_copy.setFont(QFont("Consolas", 9))
+        btn_copy.setFixedHeight(24)
+        btn_copy.setFixedWidth(70)
+        btn_copy.setCursor(Qt.PointingHandCursor)
+        btn_copy.setStyleSheet(f"""
+            QPushButton {{ background: {ACCENT_CYAN}22; color: {ACCENT_CYAN};
+                           border: 1px solid {ACCENT_CYAN}55; border-radius: 4px; }}
+            QPushButton:hover {{ background: {ACCENT_CYAN}44; border-color: {ACCENT_CYAN}; }}
+        """)
+        btn_copy.clicked.connect(self._copy_json)
+        hlay.addWidget(btn_copy)
+        
+        hlay.addStretch()
+        
+        layout.addWidget(header)
+        
+        # JSON Display
+        self._json_display = QPlainTextEdit()
+        self._json_display.setReadOnly(True)
+        self._json_display.setFont(QFont("Consolas", 8))
+        self._json_display.setStyleSheet(f"""
+            QPlainTextEdit {{ background: {BG_DARK}; color: {TEXT_MAIN};
+                              border: none; padding: 6px; }}
+        """)
+        layout.addWidget(self._json_display, 1)
+        
+        return panel
+
+    def _copy_json(self):
+        """Copy JSON to clipboard."""
+        from PySide6.QtWidgets import QApplication
+        clipboard = QApplication.clipboard()
+        clipboard.setText(self._json_display.toPlainText())
+        QMessageBox.information(self, "Info", "JSON copied to clipboard!")
+
     def _apply_style(self):
+        """Apply stylesheet to the dialog."""
         self.setStyleSheet(f"""
             QDialog, QWidget {{ background: {BG_DARK}; color: {TEXT_MAIN}; }}
             QGroupBox#infoGroup {{
@@ -240,6 +304,7 @@ class ResultWindow(QDialog):
         positions = data["graph"]["node_positions"]
         category  = data.get("algorithm", {}).get("category", "")
         path      = data.get("result", {}).get("path", [])
+        components = data.get("result", {}).get("components", [])
 
         # For shortest_path results, only render nodes/edges on the path
         if category == "shortest_path" and len(path) >= 2:
@@ -363,6 +428,39 @@ class ResultWindow(QDialog):
                     e.setPen(QPen(QColor("#bd93f9"), 4))
             self._legend_label.setText("  \U0001f7e3 Flow Edges")
 
+        # ── 6. Connected Components - highlight each component differently ─────
+        components = result.get("components", [])
+        if components and len(components) > 1:
+            component_colors = [
+                "#ff5555", "#50fa7b", "#8be9fd", "#ffb86c",
+                "#bd93f9", "#f1fa8c", "#ff79c6", "#6272a4"
+            ]
+            for comp_idx, component_nodes in enumerate(components):
+                color = component_colors[comp_idx % len(component_colors)]
+                for node in self.scene._nodes.values():
+                    if node.label in component_nodes:
+                        node.setBrush(QBrush(QColor(color)))
+                        node.setPen(QPen(QColor(color), 2))
+            self._legend_label.setText(f"  \U0001f535 {len(components)} Connected Components")
+
+        # ── 7. Eulerian Path/Circuit ─────────────────────────────────────────
+        eulerian_path = result.get("eulerian_path", [])
+        eulerian_circuit = result.get("eulerian_circuit", [])
+        if eulerian_path and len(eulerian_path) >= 2:
+            euler_pairs = set(zip(eulerian_path, eulerian_path[1:]))
+            for e in self.scene._edges:
+                if (e.src.label, e.dst.label) in euler_pairs or \
+                   (e.dst.label, e.src.label) in euler_pairs:
+                    e.setPen(QPen(QColor("#ffb86c"), 4))
+            self._legend_label.setText("  \U0001f5e3 Eulerian Path")
+        elif eulerian_circuit and len(eulerian_circuit) >= 2:
+            euler_pairs = set(zip(eulerian_circuit, eulerian_circuit[1:]))
+            for e in self.scene._edges:
+                if (e.src.label, e.dst.label) in euler_pairs or \
+                   (e.dst.label, e.src.label) in euler_pairs:
+                    e.setPen(QPen(QColor("#f1fa8c"), 4))
+            self._legend_label.setText("  \U0001f5e3 Eulerian Circuit")
+
     def _populate_info(self, data):
         result = data.get("result", {})
         algo   = data.get("algorithm", {})
@@ -426,6 +524,9 @@ class ResultWindow(QDialog):
         else:
             self._steps_log.appendPlainText("  · No steps recorded.")
 
+        # Display full JSON response
+        self._display_json_response(data)
+
     def _check_and_log_errors(self, data):
         """Check if execution status indicates an error and log it to MainWindow."""
         exec_ = data.get("execution", {})
@@ -441,6 +542,19 @@ class ResultWindow(QDialog):
             self.parent_window._log(f"ERROR in Result Panel: Status = {status}", kind="error")
             if message:
                 self.parent_window._log(f"Message: {message}", kind="error")
+
+    def _display_json_response(self, data):
+        """Display the full backend response as formatted JSON."""
+        # Create a response object containing only result and execution info
+        response = {
+            "algorithm": data.get("algorithm", {}),
+            "result": data.get("result", {}),
+            "execution": data.get("execution", {})
+        }
+        
+        # Format as indented JSON
+        json_str = json.dumps(response, indent=2, default=str)
+        self._json_display.setPlainText(json_str)
 
     def _on_status_clicked(self):
         """Handle status label click to log any errors."""

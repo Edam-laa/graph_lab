@@ -847,6 +847,9 @@ class MainWindow(QMainWindow):
             algo_params=params,
         )
 
+        # Store data for result window
+        self._last_graph_data = data
+
         self._log(f"Sending graph to backend...", "info")
 
         try:
@@ -876,13 +879,6 @@ class MainWindow(QMainWindow):
                 adj.setdefault(t, []).append((f, w, c))
         return adj
     def _handle_backend_result(self, result):
-        # Check execution status for errors
-        execution = result.get("execution", {})
-        if execution.get("status") == "error":
-            error_message = execution.get("message", "Unknown error occurred")
-            self._log(f"Error: {error_message}", "error")
-            return
-
         res = result.get("result", {})
         # Clear old styles first
         self._reset_graph_style()
@@ -900,6 +896,26 @@ class MainWindow(QMainWindow):
             self._apply_coloring(res["coloring"]["node_colors"])
 
         self._log("Graph updated with backend result", "result")
+        
+        # ── open ResultWindow automatically ──
+        self._result_window = ResultWindow(self)
+        
+        # Merge backend result with graph data
+        if self._last_graph_data:
+            complete_data = self._last_graph_data.copy()
+            complete_data["result"] = res
+            complete_data["execution"] = result.get("execution", {})
+            
+            # Store the current data in ResultWindow for display
+            self._result_window._current_data = complete_data
+            
+            self._result_window.draw_graph(complete_data)
+            self._result_window.apply_result(complete_data)
+            self._result_window._populate_info(complete_data)
+        
+        self._result_window.show()
+
+        print("Backend result:", json.dumps(result, indent=2))
     def _reset_graph_style(self):
         for e in self._scene._edges:
             e.setPen(QPen(QColor("#6272a4"), 2.5))
