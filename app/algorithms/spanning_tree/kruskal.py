@@ -44,12 +44,12 @@ def kruskal(graph):
 
     Retourne:
         dict avec :
-            "mst_edges"    (list)        : arêtes du MST [(u, v, poids), ...]
+            "edges"        (list)        : arêtes du MST [(u, v, poids), ...]
             "total_weight" (int/float)   : poids total du MST
             "steps"        (list)        : étapes numérotées de l'algorithme
 
     Lève:
-        ValueError : si le graphe est orienté ou non connexe
+        ValueError : si le graphe est orienté, contient des boucles ou est non connexe
     """
     # ---------------------------
     # VALIDATION
@@ -61,6 +61,13 @@ def kruskal(graph):
 
     if not nodes:
         raise ValueError("Graph is empty.")
+
+    # ---------------------------
+    # VALIDATION SELF-LOOPS
+    # ---------------------------
+    for u, v, w, c in graph.get_edges():
+        if u == v:
+            raise ValueError(f"Graph contains a self-loop on node '{u}'.")
 
     # ---------------------------
     # INITIALIZATION
@@ -121,7 +128,7 @@ def kruskal(graph):
     # RETURN RESULT
     # ---------------------------
     return {
-        "mst_edges":    mst_edges,
+        "edges":        mst_edges,
         "total_weight": total_weight,
         "steps":        steps
     }
