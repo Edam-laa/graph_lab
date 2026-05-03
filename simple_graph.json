@@ -1,41 +1,33 @@
 {
   "graph": {
 
-    "nodes": ["A", "B", "C", "D"],
-    "node_positions": {
-      "S": { "x": 0, "y": 0 },
-      "A": { "x": 100, "y": 0 },
-      "B": { "x": 100, "y": 100 },
-      "C": { "x": 200, "y": 0 },
-      "D": { "x": 200, "y": 100 },
-      "T": { "x": 300, "y": 50 }
-    },
+    "nodes": ["S", "A", "B", "T"],
     "edges": [
-      { "from": "A", "to": "B", "weight": 1, "capacity": 1 },
-      { "from": "B", "to": "C", "weight": 1, "capacity": 1 },
-      { "from": "C", "to": "D", "weight": 1, "capacity": 1 },
-      { "from": "D", "to": "A", "weight": 1, "capacity": 1 }
+      {"from": "S", "to": "A", "capacity": 10},
+      {"from": "S", "to": "B", "capacity": 5},
+      {"from": "A", "to": "B", "capacity": 15},
+      {"from": "A", "to": "T", "capacity": 10},
+      {"from": "B", "to": "T", "capacity": 10}
     ],
     "directed": true,
     "metadata": {
-      "name": "Test Graph",
-      "description": "Graph for testing all algorithms",
-      "allow_negative_weights": false
+      "name": "",
+      "description": "",
+      "allow_negative_weights": true
     }
   },
 
   "algorithm": {
-    "name": "eulerian",
-    "category": "connectivity",
+    "name": "ford_fulkerson",
+    "category": "max_flow",
     "params": {
       "source": "S",
-      "target": "B",
       "sink": "T"
     },
     "constraints_check": {
       "requires_positive_weights": false,
-      "requires_positive_capacity": false,
-      "requires_connected": false,
+      "requires_positive_capacity": true,
+      "requires_connected": true,
       "requires_dag": false
     }
   },
@@ -51,7 +43,6 @@
   "result": {
     "type": null,
     "distances": {},
-    "predecessors": {},
     "path": [],
     "paths": {},
     "mst_edges": [],
@@ -60,8 +51,7 @@
     "eulerian_path": [],
     "eulerian_circuit": [],
     "coloring": {
-      "node_colors": {
-        },
+      "node_colors": {},
       "edge_colors": {}
     },
     "flow": {
@@ -71,9 +61,7 @@
     },
     "traversal": {
       "order": [],
-      "tree_edges": [],
-      "levels": {},
-      "times": {}
+      "tree_edges": []
     },
     "graph_properties": {
       "is_connected": null,

@@ -1,12 +1,53 @@
 import heapq
 
 
+def _detect_self_loops(graph):
+    """Detect if there are any self-loops in the graph."""
+    for node in graph.get_nodes():
+        neighbors = graph.get_neighbors(node)
+        for neighbor, _, _ in neighbors:
+            if node == neighbor:
+                return True
+    return False
+
+
+def _validate_adjacency(graph):
+    """Verify that all neighbors referenced exist in the nodes list."""
+    nodes_set = set(graph.get_nodes())
+    for node in graph.get_nodes():
+        neighbors = graph.get_neighbors(node)
+        for neighbor, _, _ in neighbors:
+            if neighbor not in nodes_set:
+                raise ValueError(f"Invalid adjacency reference: neighbor '{neighbor}' does not exist in the graph nodes")
+
+
+def _validate_numeric_weights(graph):
+    """Verify that all weights are numeric."""
+    for node in graph.get_nodes():
+        neighbors = graph.get_neighbors(node)
+        for neighbor, weight, _ in neighbors:
+            try:
+                float(weight)
+            except (TypeError, ValueError):
+                raise ValueError(f"Non-numeric weight detected: edge {node}->{neighbor} has weight '{weight}'")
+
+
 def dijkstra(graph, start):
     # ---------------------------
     # VALIDATION
     # ---------------------------
     if start not in graph.get_nodes():
         raise ValueError("Start node does not exist")
+
+    # Validation: Detect self-loops
+    if _detect_self_loops(graph):
+        raise ValueError("Graph contains self-loops (u → u)")
+    
+    # Validation: Check adjacency references
+    _validate_adjacency(graph)
+    
+    # Validation: Check numeric weights
+    _validate_numeric_weights(graph)
 
     if graph.has_negative_weights():
         raise ValueError("Dijkstra cannot run on graphs with negative weights")
