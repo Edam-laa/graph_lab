@@ -173,28 +173,6 @@ def _is_eulerian_connected_directed(graph):
     if not has_edges:
         raise ValueError("Graph contains no edges")
     
-    if graph.directed:
-        # For directed graphs: disconnected structures are invalid for the tour builder
-        if not _is_eulerian_connected_directed(graph):
-            raise ValueError("Le graphe orienté n'est pas connecté (faiblement).")
-
-        # For directed graphs: compute degrees and detect strict dead-ends
-        in_degree = {node: 0 for node in nodes}
-        out_degree = {node: 0 for node in nodes}
-
-        for u in graph.adj_list:
-            for v, _, _ in graph.adj_list[u]:
-                out_degree[u] += 1
-                in_degree[v] += 1
-
-        # Strict dead-end: incoming edges but no outgoing edges is only allowed
-        # for simple Eulerian paths without branching; otherwise it is invalid.
-        dead_end_nodes = [node for node in nodes if in_degree.get(node, 0) > 0 and out_degree.get(node, 0) == 0]
-        if dead_end_nodes:
-            has_branching = any(out_degree[node] > 1 or in_degree[node] > 1 for node in nodes)
-            if has_branching:
-                raise ValueError("Dead end detected in directed graph")
-
     # Special-case: undirected graphs that have isolated vertices
     # Tests expect find_eulerian_tour to return None when isolated nodes exist
     if not graph.directed:
@@ -208,11 +186,6 @@ def _is_eulerian_connected_directed(graph):
         # For undirected graphs non-eulerian or disconnected is considered an error
         if not graph.directed:
             raise ValueError("Les degrés des sommets ne permettent pas un chemin/circuit eulérien.")
-
-        # For directed graphs, isolated vertices or disconnected components are errors;
-        # degree-only failures on a connected graph still return None.
-        if any(not graph.adj_list.get(node) for node in nodes) or not _is_eulerian_connected_directed(graph):
-            raise ValueError("Le graphe orienté n'est pas connecté (faiblement).")
 
         return None
 

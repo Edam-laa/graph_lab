@@ -205,15 +205,26 @@ def test_results_are_stable_and_deterministic():
 
 
 @pytest.mark.parametrize(
+    "case_name,target,expected_distance",
+    [
+        ("simple_cycle_rejected", "C", 2),
+        ("directed_cycle_detected", "T", 3),
+        ("topological_order_impossible", "D", 3),
+    ],
+)
+def test_normal_cycles_without_negative_weight_are_allowed(case_name, target, expected_distance):
+    _, _, result = run_case(case_name)
+
+    assert result["distances"][target] == expected_distance
+
+
+@pytest.mark.parametrize(
     "case_name",
     [
         "source_not_found",
         "destination_not_found",
-        "simple_cycle_rejected",
-        "directed_cycle_detected",
         "self_loop_rejected",
         "negative_cycle_rejected",
-        "topological_order_impossible",
     ],
 )
 def test_invalid_or_cycle_cases_raise_value_error(case_name):

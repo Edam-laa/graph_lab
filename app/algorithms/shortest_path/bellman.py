@@ -53,15 +53,15 @@ def _detect_self_loops(adj_list):
 
 def bellman(graph, source):
     """
-    Bellman-Ford algorithm for finding shortest paths in a weighted directed graph.
+    Bellman-Ford style algorithm for finding shortest paths in a weighted graph.
     
     Args:
         graph: Graph object with adjacency list
         source: Starting node for shortest path calculation
     
     Raises:
-        ValueError: If graph is empty, source doesn't exist, cycles are detected,
-                   self-loops exist, or negative cycles are detected
+        ValueError: If graph is empty, source doesn't exist, self-loops exist,
+                   or a reachable negative-weight cycle is detected
     
     Returns:
         dict: Contains 'distances', 'previous', and 'steps' keys
@@ -86,10 +86,6 @@ def bellman(graph, source):
     # Validation 3: Detect self-loops
     if _detect_self_loops(graph.adj_list):
         raise ValueError("Graph contains self-loops (u → u)")
-    
-    # Validation 4: Detect cycles using DFS
-    if _detect_cycle_dfs(graph.adj_list, nodes):
-        raise ValueError("Graph contains a cycle")
     
     distances = {node: float("inf") for node in nodes}
     previous = {node: None for node in nodes}

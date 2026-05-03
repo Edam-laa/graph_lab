@@ -71,15 +71,21 @@ class EdgeItem(QGraphicsPathItem):
 
         # Weight / capacity label
         mid_pt = path.pointAtPercent(0.5)
-        w = self.weight
+        w = self.weight if self.weight is not None else 1
         c = self.capacity
-        w_txt = str(int(w)) if w == int(w) else str(w)
-        c_txt = str(int(c)) if c == int(c) else str(c)
+
+        def fmt_number(value):
+            if value is None:
+                return ""
+            return str(int(value)) if value == int(value) else str(value)
+
+        w_txt = fmt_number(w)
+        c_txt = fmt_number(c)
         
         # Show based on scene settings
         scene = self.scene()
         show_w = getattr(scene, '_weighted_graph', True) if scene else True
-        show_c = getattr(scene, '_capacity_graph', True) if scene else True
+        show_c = (getattr(scene, '_capacity_graph', True) if scene else True) and c is not None
         
         if show_w and show_c:
             label_txt = f"{w_txt}/{c_txt}" if c != 1 else w_txt

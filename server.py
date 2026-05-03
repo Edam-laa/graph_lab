@@ -1,5 +1,5 @@
 import traceback
-from flask import Flask, json, request, jsonify
+from flask import Flask, request, jsonify
 from app.services.graph_service import execute_algorithm
 
 app = Flask(__name__)
@@ -16,6 +16,7 @@ ALGO_NAME_MAP = {
     # ─── Traversal / Connectivity ──────────
     "Composantes Connexes": "connectivity",
     "Strong Connectivity": "strong_connectivity",
+    "Strongly Connected": "strong_connectivity",
     "Connexite Forte": "strong_connectivity",
     "BFS": "bfs",
     "DFS": "dfs",
@@ -207,9 +208,6 @@ def run_algorithm():
 
         # 🔁 BACKEND → FRONTEND FORMAT
         frontend_result = to_frontend_format(backend_output)
-        print("\n=== FRONTEND RESULT ===\n")
-        print("Backend result:", json.dumps(frontend_result, indent=2))
-
         return jsonify({
             "status": "success",
             "result": frontend_result

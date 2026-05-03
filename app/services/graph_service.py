@@ -128,10 +128,10 @@ def _build_objective(algo_name, params, output):
             return f"Traversal from source {source}"
         return "Graph traversal"
 
-    if algo_name == "connectivity":
+    if algo_name in {"connectivity", "connected_components"}:
         return "Connectivity check"
 
-    if algo_name == "strong_connectivity":
+    if algo_name in {"strong_connectivity", "strongly_connected"}:
         return "Strong connectivity check"
 
     if algo_name == "eulerian":
@@ -258,11 +258,13 @@ def handle_connectivity(graph, params):
 
 def handle_strong_connectivity(graph, params):
     result=is_strongly_connected(graph)
+    components = _weak_components(graph)
     return {
         "type": "strong_connectivity_check",
+        "components": components,
         "graph_properties": {
             "is_strongly_connected": result["strongly_connected"],
-            "component_count": len(_weak_components(graph)),
+            "component_count": len(components),
         },
         "steps":result["steps"],
         "complexity": "O(V + E)"

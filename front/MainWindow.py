@@ -28,6 +28,7 @@ ALGO_DEFS = [
     ("Kruskal",            "spanning_tree",  ACCENT_CYAN),
     ("Prim",               "spanning_tree",  ACCENT_CYAN),
     ("Composantes Connexes","connectivity",  ACCENT_AMBER),
+    ("Strongly Connected",  "connectivity",  ACCENT_AMBER),
     ("Chemin Eulérien",    "euler",          ACCENT_PINK),
     ("Welsh-Powell",       "coloring",       ACCENT_PURPLE),
 ]
@@ -787,6 +788,7 @@ class MainWindow(QMainWindow):
             "Kruskal":               n > 0 and m > 0 and not directed,
             "Prim":                  n > 0 and m > 0 and not directed,
             "Composantes Connexes":  n > 0,
+            "Strongly Connected":    n > 0,
             "Chemin Eulérien":       n > 0 and eulerian,
             "Welsh-Powell":          n > 0,
         }
@@ -904,7 +906,23 @@ class MainWindow(QMainWindow):
 
         # MST
         if res.get("mst_edges"):
-            self._highlight_edges(res["mst_edges"])
+            self._highlight_edges(res["mst_edges"], QColor("#50fa7b"))
+
+        traversal_edges = res.get("traversal", {}).get("tree_edges", [])
+        if traversal_edges:
+            self._highlight_edges(traversal_edges, QColor("#8be9fd"))
+
+        eulerian_path = res.get("eulerian_path") or res.get("eulerian_circuit") or []
+        if eulerian_path:
+            self._highlight_path(eulerian_path, QColor("#ffb86c"))
+
+        edge_flows = res.get("flow", {}).get("edge_flows", {})
+        if edge_flows:
+            self._highlight_flow_edges(edge_flows)
+
+        components = res.get("components", [])
+        if len(components) > 1:
+            self._apply_component_colors(components)
 
         # Coloring
         node_colors = res.get("coloring", {}).get("node_colors", {})
@@ -928,22 +946,22 @@ class MainWindow(QMainWindow):
         self._ensure_result_window().show()
         self._result_window.raise_()
         self._result_window.activateWindow()
-
-        print("Backend result:", json.dumps(result, indent=2))
     def _reset_graph_style(self):
         for e in self._scene._edges:
             e.setPen(QPen(QColor("#6272a4"), 2.5))
 
         for n in self._scene._nodes.values():
             n._update_appearance()
-    def _highlight_path(self, path):
+    def _highlight_path(self, path, color=None):
+        color = color or QColor("#ff5555")
         pairs = list(zip(path, path[1:]))
 
         for e in self._scene._edges:
             if (e.src.label, e.dst.label) in pairs or \
                (not self._scene._directed_graph and (e.dst.label, e.src.label) in pairs):
-                e.setPen(QPen(QColor("#ff5555"), 4))
-    def _highlight_edges(self, edges):
+                e.setPen(QPen(color, 4))
+    def _highlight_edges(self, edges, color=None):
+        color = color or QColor("#50fa7b")
         edge_set = set()
         for edge in edges:
             if isinstance(edge, dict):
@@ -954,7 +972,12 @@ class MainWindow(QMainWindow):
         for e in self._scene._edges:
             if (e.src.label, e.dst.label) in edge_set or \
                (not self._scene._directed_graph and (e.dst.label, e.src.label) in edge_set):
-                e.setPen(QPen(QColor("#50fa7b"), 4))
+                e.setPen(QPen(color, 4))
+    def _highlight_flow_edges(self, edge_flows):
+        for e in self._scene._edges:
+            key = f"{e.src.label}->{e.dst.label}"
+            if edge_flows.get(key, 0) > 0:
+                e.setPen(QPen(QColor("#bd93f9"), 4))
     def _apply_coloring(self, colors):
         palette = [
             "#ff5555", "#50fa7b", "#8be9fd", "#ffb86c",
@@ -969,3 +992,14 @@ class MainWindow(QMainWindow):
                     except (TypeError, ValueError):
                         color = "#cccccc"
                 node.setBrush(QBrush(QColor(color)))
+    def _apply_component_colors(self, components):
+        palette = [
+            "#50fa7b", "#ff5555", "#8be9fd", "#ffb86c",
+            "#bd93f9", "#f1fa8c", "#ff79c6", "#6272a4"
+        ]
+        for index, component in enumerate(components):
+            color = QColor(palette[index % len(palette)])
+            for node in self._scene._nodes.values():
+                if node.label in component:
+                    node.setBrush(QBrush(color))
+                    node.setPen(QPen(color, 2))

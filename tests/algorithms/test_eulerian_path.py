@@ -230,7 +230,7 @@ def test_directed_cycle_graph():
 	assert_tour_uses_each_edge_once(graph_data, tour)
 
 
-def test_directed_graph_with_dead_end():
+def test_directed_eulerian_path_with_terminal_node():
 	graph_data = {
 		"directed": True,
 		"edges": [
@@ -245,18 +245,34 @@ def test_directed_graph_with_dead_end():
 		[("A", "B", 1), ("B", "C", 1), ("C", "A", 1), ("C", "D", 1)],
 	)
 
-	with pytest.raises(ValueError):
-		eulerian_module.find_eulerian_tour(graph)
+	tour = eulerian_module.find_eulerian_tour(graph)
+
+	assert eulerian_module.check_eulerian_status(graph) == 1
+	assert tour[0] == "C"
+	assert tour[-1] == "D"
+	assert_tour_uses_each_edge_once(graph_data, tour)
 
 
-def test_invalid_connectivity_for_directed_graph():
+def test_directed_eulerian_path_with_cycle_then_terminal_node():
+	graph_data = {
+		"directed": True,
+		"edges": [
+			{"from": "A", "to": "B"},
+			{"from": "B", "to": "A"},
+			{"from": "B", "to": "C"},
+		],
+	}
 	graph = build_directed_graph(
 		["A", "B", "C"],
 		[("A", "B", 1), ("B", "A", 1), ("B", "C", 1)],
 	)
 
-	with pytest.raises(ValueError):
-		eulerian_module.find_eulerian_tour(graph)
+	tour = eulerian_module.find_eulerian_tour(graph)
+
+	assert eulerian_module.check_eulerian_status(graph) == 1
+	assert tour[0] == "B"
+	assert tour[-1] == "C"
+	assert_tour_uses_each_edge_once(graph_data, tour)
 
 
 def test_large_sparse_graph():
