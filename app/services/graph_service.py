@@ -73,6 +73,47 @@ def _weak_components(graph):
 
     return components
 
+def _strongly_connected_components(graph):
+    visited = set()
+    stack = []
+
+    # Step 1: fill order
+    def dfs(u):
+        visited.add(u)
+        for v, _, _ in graph.adj_list.get(u, []):
+            if v not in visited:
+                dfs(v)
+        stack.append(u)
+
+    for node in graph.get_nodes():
+        if node not in visited:
+            dfs(node)
+
+    # Step 2: transpose graph
+    transpose = {n: [] for n in graph.get_nodes()}
+    for u in graph.adj_list:
+        for v, w, c in graph.adj_list[u]:
+            transpose[v].append((u, w, c))
+
+    # Step 3: DFS on transpose
+    visited.clear()
+    components = []
+
+    def dfs_transpose(u, comp):
+        visited.add(u)
+        comp.append(u)
+        for v, _, _ in transpose.get(u, []):
+            if v not in visited:
+                dfs_transpose(v, comp)
+
+    while stack:
+        node = stack.pop()
+        if node not in visited:
+            comp = []
+            dfs_transpose(node, comp)
+            components.append(comp)
+
+    return components
 
 def _augmenting_path_to_frontend(path_result):
     raw_edges = path_result.get("path", [])
@@ -128,10 +169,10 @@ def _build_objective(algo_name, params, output):
             return f"Traversal from source {source}"
         return "Graph traversal"
 
-    if algo_name in {"connectivity", "connected_components"}:
+    if algo_name == "connectivity":
         return "Connectivity check"
-
     if algo_name in {"strong_connectivity", "strongly_connected"}:
+
         return "Strong connectivity check"
 
     if algo_name == "eulerian":
@@ -258,7 +299,7 @@ def handle_connectivity(graph, params):
 
 def handle_strong_connectivity(graph, params):
     result=is_strongly_connected(graph)
-    components = _weak_components(graph)
+    components = _strongly_connected_components(graph)
     return {
         "type": "strong_connectivity_check",
         "components": components,
