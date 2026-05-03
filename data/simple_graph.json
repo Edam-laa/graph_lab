@@ -16,7 +16,7 @@
       { "from": "C", "to": "D", "weight": 1, "capacity": 1 },
       { "from": "D", "to": "A", "weight": 1, "capacity": 1 }
     ],
-    "directed": true,
+    "directed": false,
     "metadata": {
       "name": "Test Graph",
       "description": "Graph for testing all algorithms",
@@ -25,11 +25,11 @@
   },
 
   "algorithm": {
-    "name": "eulerian",
+    "name": "kruskal",
     "category": "connectivity",
     "params": {
-      "source": "S",
-      "target": "B",
+      "source": "A",
+      "target": "c",
       "sink": "T"
     },
     "constraints_check": {

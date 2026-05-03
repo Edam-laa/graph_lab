@@ -1,4 +1,4 @@
-def _detect_cycle_dfs(adj_list, nodes):
+'''def _detect_cycle_dfs(adj_list, nodes):
     """Detect if a cycle exists in the graph using DFS."""
     WHITE, GRAY, BLACK = 0, 1, 2
     color = {node: WHITE for node in nodes}
@@ -18,8 +18,29 @@ def _detect_cycle_dfs(adj_list, nodes):
         if color[node] == WHITE:
             if dfs(node):
                 return True
-    return False
+    return False'''
+def _detect_cycle_dfs(adj_list, nodes):
+    visited = set()
 
+    def dfs(node, parent):
+        visited.add(node)
+
+        if node in adj_list:
+            for neighbor, _, _ in adj_list[node]:
+                if neighbor not in visited:
+                    if dfs(neighbor, node):
+                        return True
+                elif neighbor != parent:
+                    return True  # real cycle
+
+        return False
+
+    for node in nodes:
+        if node not in visited:
+            if dfs(node, None):
+                return True
+
+    return False
 
 def _detect_self_loops(adj_list):
     """Detect if there are any self-loops in the graph."""

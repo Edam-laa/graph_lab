@@ -156,7 +156,7 @@ def _is_eulerian_connected_directed(graph):
 
     return all(n in visited for n in nodes_with_edges)
 
-def find_eulerian_tour(graph):
+'''def find_eulerian_tour(graph):
     nodes = graph.get_nodes()
 
     # Validation 1: Empty graph
@@ -257,7 +257,51 @@ def find_eulerian_tour(graph):
 
     log("E7", "Parcours eulérien terminé avec succès")
     return tour
+'''
+def find_eulerian_tour(graph):
+    steps = []
+    def log(code, msg): steps.append({"indexCode": code, "message": msg})
 
+    log("E0", "Initialisation de l'algorithme de Hierholzer")
+
+    # Cette étape lève les ValueError demandées
+    status = check_eulerian_status(graph)
+    log("E1", f"Statut eulérien validé : {'Circuit' if status == 2 else 'Chemin'}")
+
+    nodes = graph.get_nodes()
+    adj = {u: list(graph.adj_list.get(u, [])) for u in nodes}
+
+    # Choix du nœud de départ (impair ou out > in si chemin)
+    start = _find_start_node(graph, adj, status)
+    log("E4", f"Nœud de départ : {start}")
+
+    stack = [start]
+    tour = []
+
+    while stack:
+        u = stack[-1]
+        if adj[u]:
+            v, w, c = adj[u].pop()
+            log("E5", f"Traversée de l'arête {u} -> {v}")
+            if not graph.directed:
+                _remove_reverse_edge(adj, v, u)
+            stack.append(v)
+        else:
+            popped = stack.pop()
+            tour.append(popped)
+            log("E6", f"Retour en arrière, ajout de {popped} au parcours")
+
+    tour.reverse()
+    
+    # Validation finale du nombre d'arêtes
+    total_edges = sum(len(graph.adj_list.get(n, [])) for n in nodes)
+    if not graph.directed: total_edges //= 2
+
+    if len(tour) - 1 != total_edges:
+        raise ValueError("Le parcours n'a pas pu visiter toutes les arêtes (graphe déconnecté).")
+
+    log("E7", "Parcours eulérien terminé avec succès")
+    return {"tour": tour, "steps": steps}
 def _find_start_node(graph, adj, status):
     nodes = graph.get_nodes()
     if status == 1: # Chemin : on cherche le début spécifique
