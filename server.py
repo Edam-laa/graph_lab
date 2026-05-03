@@ -1,5 +1,5 @@
 import traceback
-from flask import Flask, request, jsonify
+from flask import Flask, json, request, jsonify
 from app.services.graph_service import execute_algorithm
 
 app = Flask(__name__)
@@ -63,7 +63,7 @@ def translate_colors(node_colors):
 # ─────────────────────────────────────────────
 def to_backend_format(data):
     algo_name_raw = data.get("algorithm", {}).get("name")
-    print(data)
+    print("Backend result:", json.dumps(data, indent=2))
     return {
         "graph": data.get("graph", {}),
         "algorithm": {
@@ -189,7 +189,8 @@ def run_algorithm():
         # 🔁 BACKEND → FRONTEND FORMAT
         frontend_result = to_frontend_format(backend_output)
         print("\n=== FRONTEND RESULT ===\n")
-        print(frontend_result)
+        print("Backend result:", json.dumps(frontend_result, indent=2))
+
         return jsonify({
             "status": "success",
             "result": frontend_result

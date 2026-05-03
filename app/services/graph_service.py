@@ -134,8 +134,15 @@ def handle_strong_connectivity(graph, params):
 
 def handle_eulerian(graph, params):
     status_code = check_eulerian_status(graph)
-    result = find_eulerian_tour(graph) if status_code > 0 else []
-    tour=result["tour"]
+    result = find_eulerian_tour(graph) if status_code > 0 else None
+
+    if isinstance(result, dict):
+        tour = result.get("tour", [])
+        steps = result.get("steps", [])
+    else:
+        tour = result or []
+        steps = []
+
     # Map to your JSON result fields
     res = {
         "type": "eulerian_analysis",
@@ -144,6 +151,7 @@ def handle_eulerian(graph, params):
         "graph_properties": {
             "is_eulerian": status_code > 0
         },
+        "steps": steps,
         "complexity": "O(V + E)"}
     #if status_code == 2:
     #    res["special_paths"]["eulerian_circuit"] = tour
