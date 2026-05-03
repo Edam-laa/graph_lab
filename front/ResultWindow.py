@@ -357,6 +357,16 @@ class ResultWindow(QDialog):
                 if (e["from"], e["to"]) in path_pairs
                 or (not directed and (e["to"], e["from"]) in path_pairs)
             ]
+        elif result_type == "mst" and result.get("mst_edges"):
+            mst_edges = [self._normalize_edge(edge) for edge in result.get("mst_edges", [])]
+            visible_nodes = {
+                label
+                for edge in mst_edges
+                for label in (edge.get("from"), edge.get("to"))
+                if label is not None
+            }
+            nodes_to_draw = [lbl for lbl in nodes if lbl in visible_nodes]
+            edges_to_draw = mst_edges
         else:
             nodes_to_draw = nodes
             edges_to_draw = edges
@@ -457,7 +467,7 @@ class ResultWindow(QDialog):
         components = result.get("components", [])
         if components:
             component_colors = [
-                "#ff5555", "#50fa7b", "#8be9fd", "#ffb86c",
+                "#50fa7b", "#ff5555", "#8be9fd", "#ffb86c",
                 "#bd93f9", "#f1fa8c", "#ff79c6", "#6272a4"
             ]
             for comp_idx, component_nodes in enumerate(components):
@@ -466,7 +476,7 @@ class ResultWindow(QDialog):
                     if node.label in component_nodes:
                         node.setBrush(QBrush(QColor(color)))
                         node.setPen(QPen(QColor(color), 2))
-            if len(components) > 1 or result_type == "connectivity_check":
+            if len(components) > 1 or result_type in {"connectivity_check", "strong_connectivity_check"}:
                 self._legend_label.setText(f"{len(components)} connected component(s)")
 
         # 7. Eulerian path/circuit
