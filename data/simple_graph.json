@@ -1,7 +1,7 @@
 {
   "graph": {
 
-    "nodes": ["A", "B", "C", "D"],
+    "nodes": ["A", "B", "C", "D","E"],
     "node_positions": {
       "S": { "x": 0, "y": 0 },
       "A": { "x": 100, "y": 0 },
@@ -14,9 +14,9 @@
       { "from": "A", "to": "B", "weight": 1, "capacity": 1 },
       { "from": "B", "to": "C", "weight": 1, "capacity": 1 },
       { "from": "C", "to": "D", "weight": 1, "capacity": 1 },
-      { "from": "D", "to": "A", "weight": 1, "capacity": 1 }
+      { "from": "E", "to": "D", "weight": 1, "capacity": 1 }
     ],
-    "directed": false,
+    "directed": true,
     "metadata": {
       "name": "Test Graph",
       "description": "Graph for testing all algorithms",
@@ -25,11 +25,11 @@
   },
 
   "algorithm": {
-    "name": "kruskal",
+    "name": "bellman",
     "category": "connectivity",
     "params": {
       "source": "A",
-      "target": "c",
+      "target": "D",
       "sink": "T"
     },
     "constraints_check": {

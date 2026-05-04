@@ -1,16 +1,15 @@
-'''def _detect_cycle_dfs(adj_list, nodes):
+def _detect_cycle_dfs_directed(adj_list, nodes):
     """Detect if a cycle exists in the graph using DFS."""
     WHITE, GRAY, BLACK = 0, 1, 2
     color = {node: WHITE for node in nodes}
     
     def dfs(node):
         color[node] = GRAY
-        if node in adj_list:
-            for neighbor, _, _ in adj_list[node]:
-                if color[neighbor] == GRAY:
-                    return True  # Back edge found, cycle detected
-                if color[neighbor] == WHITE and dfs(neighbor):
-                    return True
+        for neighbor, _, _ in adj_list.get(node,[]):
+            if color[neighbor] == GRAY:
+                return True  # Back edge found, cycle detected
+            if color[neighbor] == WHITE and dfs(neighbor):
+                return True
         color[node] = BLACK
         return False
     
@@ -18,23 +17,20 @@
         if color[node] == WHITE:
             if dfs(node):
                 return True
-    return False'''
-def _detect_cycle_dfs(adj_list, nodes):
+    return False
+def _detect_cycle_dfs_undirected(adj_list, nodes):
     visited = set()
 
     def dfs(node, parent):
         visited.add(node)
-
-        if node in adj_list:
-            for neighbor, _, _ in adj_list[node]:
-                if neighbor not in visited:
-                    if dfs(neighbor, node):
-                        return True
-                elif neighbor != parent:
-                    return True  # real cycle
+        for neighbor, _, _ in adj_list.get(node,[]):
+            if neighbor not in visited:
+                if dfs(neighbor, node):
+                    return True
+            elif neighbor != parent:
+                return True  # real cycle
 
         return False
-
     for node in nodes:
         if node not in visited:
             if dfs(node, None):
@@ -88,8 +84,12 @@ def bellman(graph, source):
         raise ValueError("Graph contains self-loops (u → u)")
     
     # Validation 4: Detect cycles using DFS
-    if _detect_cycle_dfs(graph.adj_list, nodes):
-        raise ValueError("Graph contains a cycle")
+    if graph.directed:
+        if _detect_cycle_dfs_directed(graph.adj_list, nodes):
+            raise ValueError("Graph contains a cycle")
+    else:
+        if _detect_cycle_dfs_undirected(graph.adj_list, nodes):
+            raise ValueError("Graph contains a cycle")
     
     distances = {node: float("inf") for node in nodes}
     previous = {node: None for node in nodes}
