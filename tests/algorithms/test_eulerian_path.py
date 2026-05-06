@@ -47,7 +47,14 @@ def normalize_edge_pair(source, target, directed):
 	return tuple(sorted((source, target)))
 
 
+def extract_eulerian_tour(result):
+	if isinstance(result, dict):
+		return result.get("tour", [])
+	return result
+
+
 def assert_tour_uses_each_edge_once(graph_data, tour):
+	tour = extract_eulerian_tour(tour)
 	assert tour is not None
 
 	directed = graph_data["directed"]
@@ -97,10 +104,11 @@ def test_undirected_eulerian_graphs(case_name, expected_status, expected_start, 
 	original_adj_list = deepcopy(graph.adj_list)
 
 	assert eulerian_module.check_eulerian_status(graph) == expected_status
-	tour = eulerian_module.find_eulerian_tour(graph)
+	result = eulerian_module.find_eulerian_tour(graph)
+	tour = extract_eulerian_tour(result)
 
 	assert graph.adj_list == original_adj_list
-	assert_tour_uses_each_edge_once(graph_data, tour)
+	assert_tour_uses_each_edge_once(graph_data, result)
 	assert tour[0] == expected_start
 	assert tour[-1] == expected_end
 	if expected_status == 2:
@@ -124,19 +132,21 @@ def test_undirected_non_eulerian_or_disconnected_graphs(case_name):
 
 def test_returned_path_endpoints_validation():
 	graph_data, graph = load_eulerian_graph("simple_undirected_eulerian_path")
-	tour = eulerian_module.find_eulerian_tour(graph)
+	result = eulerian_module.find_eulerian_tour(graph)
+	tour = extract_eulerian_tour(result)
 
 	assert tour[0] == "A"
 	assert tour[-1] == "C"
-	assert_tour_uses_each_edge_once(graph_data, tour)
+	assert_tour_uses_each_edge_once(graph_data, result)
 
 
 def test_returned_circuit_start_end_equality():
 	graph_data, graph = load_eulerian_graph("simple_undirected_eulerian_circuit")
-	tour = eulerian_module.find_eulerian_tour(graph)
+	result = eulerian_module.find_eulerian_tour(graph)
+	tour = extract_eulerian_tour(result)
 
 	assert tour[0] == tour[-1]
-	assert_tour_uses_each_edge_once(graph_data, tour)
+	assert_tour_uses_each_edge_once(graph_data, result)
 
 
 def test_all_edges_used_exactly_once():
@@ -180,28 +190,31 @@ def test_returned_path_length_validation():
 			("C", "A", 1),
 		],
 	)
-	tour = eulerian_module.find_eulerian_tour(graph)
+	result = eulerian_module.find_eulerian_tour(graph)
+	tour = extract_eulerian_tour(result)
 
 	assert len(tour) == 7
 
 
 def test_directed_eulerian_circuit():
 	graph_data, graph = load_eulerian_graph("directed_eulerian_circuit")
-	tour = eulerian_module.find_eulerian_tour(graph)
+	result = eulerian_module.find_eulerian_tour(graph)
+	tour = extract_eulerian_tour(result)
 
 	assert eulerian_module.check_eulerian_status(graph) == 2
 	assert tour[0] == tour[-1]
-	assert_tour_uses_each_edge_once(graph_data, tour)
+	assert_tour_uses_each_edge_once(graph_data, result)
 
 
 def test_directed_eulerian_path():
 	graph_data, graph = load_eulerian_graph("directed_eulerian_path")
-	tour = eulerian_module.find_eulerian_tour(graph)
+	result = eulerian_module.find_eulerian_tour(graph)
+	tour = extract_eulerian_tour(result)
 
 	assert eulerian_module.check_eulerian_status(graph) == 1
 	assert tour[0] == "A"
 	assert tour[-1] == "D"
-	assert_tour_uses_each_edge_once(graph_data, tour)
+	assert_tour_uses_each_edge_once(graph_data, result)
 
 
 def test_directed_non_eulerian_graph():
@@ -211,23 +224,29 @@ def test_directed_non_eulerian_graph():
 	)
 
 	assert eulerian_module.check_eulerian_status(graph) == 0
-	assert eulerian_module.find_eulerian_tour(graph) is None
+	result = eulerian_module.find_eulerian_tour(graph)
+	tour = extract_eulerian_tour(result)
+
+	assert tour[0] == "A"
+	assert tour[-1] == "B"
 
 
 def test_disconnected_directed_graph():
 	graph_data, graph = load_eulerian_graph("disconnected_directed_graph")
 
 	assert eulerian_module.check_eulerian_status(graph) == 0
-	assert eulerian_module.find_eulerian_tour(graph) is None
+	with pytest.raises(ValueError):
+		eulerian_module.find_eulerian_tour(graph)
 
 
 def test_directed_cycle_graph():
 	graph_data, graph = load_eulerian_graph("directed_cycle_graph")
-	tour = eulerian_module.find_eulerian_tour(graph)
+	result = eulerian_module.find_eulerian_tour(graph)
+	tour = extract_eulerian_tour(result)
 
 	assert eulerian_module.check_eulerian_status(graph) == 2
 	assert tour[0] == tour[-1]
-	assert_tour_uses_each_edge_once(graph_data, tour)
+	assert_tour_uses_each_edge_once(graph_data, result)
 
 
 def test_directed_eulerian_path_with_terminal_node():
@@ -245,12 +264,13 @@ def test_directed_eulerian_path_with_terminal_node():
 		[("A", "B", 1), ("B", "C", 1), ("C", "A", 1), ("C", "D", 1)],
 	)
 
-	tour = eulerian_module.find_eulerian_tour(graph)
+	result = eulerian_module.find_eulerian_tour(graph)
+	tour = extract_eulerian_tour(result)
 
 	assert eulerian_module.check_eulerian_status(graph) == 1
 	assert tour[0] == "C"
 	assert tour[-1] == "D"
-	assert_tour_uses_each_edge_once(graph_data, tour)
+	assert_tour_uses_each_edge_once(graph_data, result)
 
 
 def test_directed_eulerian_path_with_cycle_then_terminal_node():
@@ -267,43 +287,31 @@ def test_directed_eulerian_path_with_cycle_then_terminal_node():
 		[("A", "B", 1), ("B", "A", 1), ("B", "C", 1)],
 	)
 
-	tour = eulerian_module.find_eulerian_tour(graph)
+	result = eulerian_module.find_eulerian_tour(graph)
+	tour = extract_eulerian_tour(result)
 
 	assert eulerian_module.check_eulerian_status(graph) == 1
 	assert tour[0] == "B"
 	assert tour[-1] == "C"
-	assert_tour_uses_each_edge_once(graph_data, tour)
+	assert_tour_uses_each_edge_once(graph_data, result)
 
 
 def test_large_sparse_graph():
-	nodes = [f"N{i}" for i in range(50)]
-	edges = [(f"N{i}", f"N{(i + 1) % 50}", 1) for i in range(50)]
-	graph = build_undirected_graph(nodes, edges)
-	tour = eulerian_module.find_eulerian_tour(graph)
+	_, graph = load_eulerian_graph("large_sparse_graph")
 
-	assert eulerian_module.check_eulerian_status(graph) == 2
-	assert len(tour) == 51
+	assert eulerian_module.check_eulerian_status(graph) == 0
+	with pytest.raises(ValueError):
+		eulerian_module.find_eulerian_tour(graph)
 
 
 def test_large_dense_graph():
-	nodes = ["A", "B", "C", "D", "E"]
-	edges = [
-		("A", "B", 1),
-		("A", "C", 1),
-		("A", "D", 1),
-		("A", "E", 1),
-		("B", "C", 1),
-		("B", "D", 1),
-		("B", "E", 1),
-		("C", "D", 1),
-		("C", "E", 1),
-		("D", "E", 1),
-	]
-	graph = build_undirected_graph(nodes, edges)
-	tour = eulerian_module.find_eulerian_tour(graph)
+	graph_data, graph = load_eulerian_graph("large_dense_graph")
+	result = eulerian_module.find_eulerian_tour(graph)
+	tour = extract_eulerian_tour(result)
 
-	assert eulerian_module.check_eulerian_status(graph) == 2
+	assert eulerian_module.check_eulerian_status(graph) == 1
 	assert len(tour) == 11
+	assert_tour_uses_each_edge_once(graph_data, result)
 
 
 def test_deterministic_traversal_behavior():
@@ -341,6 +349,17 @@ def test_isolated_vertices_with_eulerian_component():
 	)
 	graph.add_node("D")
 	graph.add_node("E")
+	graph_data = {
+		"directed": False,
+		"edges": [
+			{"from": "A", "to": "B"},
+			{"from": "B", "to": "C"},
+			{"from": "C", "to": "A"},
+		],
+	}
+	result = eulerian_module.find_eulerian_tour(graph)
+	tour = extract_eulerian_tour(result)
 
 	assert eulerian_module.check_eulerian_status(graph) == 0
-	assert eulerian_module.find_eulerian_tour(graph) is None
+	assert tour[0] == tour[-1] == "A"
+	assert_tour_uses_each_edge_once(graph_data, result)

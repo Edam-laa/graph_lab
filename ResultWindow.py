@@ -410,8 +410,6 @@ class ResultWindow(QDialog):
 
         self._legend_label.setText("")
         for e in self.scene._edges:
-            if hasattr(e, "set_label_override"):
-                e.set_label_override(None)
             e.setPen(QPen(QColor("#6272a4"), 2.5))
         for n in self.scene._nodes.values():
             n._update_appearance()
@@ -448,22 +446,12 @@ class ResultWindow(QDialog):
             self._legend_label.setText("Node coloring applied")
 
         # 5. Flow edges
-        flow = self._flow_data(result)
+        flow = result.get("flow", {})
         edge_flows = flow.get("edge_flows", {})
-        has_flow_result = result_type == "max_flow" or flow.get("value") is not None or bool(edge_flows)
-        if has_flow_result:
-            has_positive_flow = False
+        if edge_flows:
             for e in self.scene._edges:
-                flow_amount = self._net_edge_flow(edge_flows, e.src.label, e.dst.label)
-                is_positive = self._is_positive_amount(flow_amount)
-                has_positive_flow = has_positive_flow or is_positive
-                label_color = "#bd93f9" if is_positive else ACCENT_AMBER
-                if hasattr(e, "set_label_override"):
-                    e.set_label_override(
-                        f"{self._format_value(flow_amount)}/{self._format_value(e.capacity)}",
-                        label_color,
-                    )
-                if is_positive:
+                key = f"{e.src.label}->{e.dst.label}"
+                if edge_flows.get(key, 0) > 0:
                     e.setPen(QPen(QColor("#bd93f9"), 4))
 
             source = data.get("algorithm", {}).get("params", {}).get("source")
@@ -473,10 +461,7 @@ class ResultWindow(QDialog):
                 if node:
                     node.setBrush(QBrush(QColor(color)))
                     node.setPen(QPen(QColor(color), 2))
-            if has_positive_flow:
-                self._legend_label.setText("Positive flow edges highlighted in purple")
-            else:
-                self._legend_label.setText("No positive flow | Source: green | Sink: red")
+            self._legend_label.setText("Positive flow edges highlighted in purple")
 
         # 6. Connected components
         components = result.get("components", [])
@@ -545,75 +530,6 @@ class ResultWindow(QDialog):
 
         return {"from": None, "to": None, "weight": None, "capacity": None}
 
-    def _flow_data(self, result):
-        flow = dict(result.get("flow", {}) or {})
-        if "value" not in flow and "max_flow" in result:
-            flow["value"] = result.get("max_flow")
-
-        edge_flows = flow.get("edge_flows") or result.get("edge_flows") or {}
-        edge_flows = dict(edge_flows) if isinstance(edge_flows, dict) else {}
-
-        augmenting_paths = flow.get("augmenting_paths") or result.get("augmenting_paths") or []
-        if not edge_flows and augmenting_paths:
-            edge_flows = self._edge_flows_from_augmenting_paths(augmenting_paths)
-
-        flow["edge_flows"] = edge_flows
-        flow["augmenting_paths"] = augmenting_paths
-        return flow
-
-    def _edge_flows_from_augmenting_paths(self, augmenting_paths):
-        edge_flows = {}
-        for path_result in augmenting_paths:
-            if not isinstance(path_result, dict):
-                continue
-            amount = path_result.get("flow", 0)
-            edges = path_result.get("edges") or self._path_to_edge_items(path_result.get("path", []))
-            for edge in edges:
-                normalized = self._normalize_edge(edge)
-                src = normalized.get("from")
-                dst = normalized.get("to")
-                if src is None or dst is None:
-                    continue
-                key = f"{src}->{dst}"
-                edge_flows[key] = edge_flows.get(key, 0) + amount
-        return edge_flows
-
-    def _path_to_edge_items(self, path):
-        if not path:
-            return []
-        if all(isinstance(item, (list, tuple)) and len(item) >= 2 for item in path):
-            return path
-        return list(zip(path, path[1:]))
-
-    def _net_edge_flow(self, edge_flows, src, dst):
-        forward = self._amount_value(edge_flows.get(f"{src}->{dst}", 0))
-        reverse = self._amount_value(edge_flows.get(f"{dst}->{src}", 0))
-        return self._clean_number(max(forward - reverse, 0))
-
-    def _display_edge_flows(self, edge_flows):
-        scene = getattr(self, "scene", None)
-        if scene is None or not scene._edges:
-            return edge_flows
-        return {
-            f"{edge.src.label}->{edge.dst.label}": self._net_edge_flow(edge_flows, edge.src.label, edge.dst.label)
-            for edge in scene._edges
-        }
-
-    def _amount_value(self, value):
-        try:
-            return float(value)
-        except (TypeError, ValueError):
-            return 0
-
-    def _clean_number(self, value):
-        return int(value) if isinstance(value, float) and value.is_integer() else value
-
-    def _is_positive_amount(self, value):
-        try:
-            return float(value) > 0
-        except (TypeError, ValueError):
-            return False
-
     def _edge_matches(self, scene_edge, result_edge, directed=True):
         src = result_edge.get("from")
         dst = result_edge.get("to")
@@ -648,12 +564,7 @@ class ResultWindow(QDialog):
     def _color_value(self, color):
         palette = [
             "#ff5555", "#50fa7b", "#8be9fd", "#ffb86c",
-            "#bd93f9", "#f1fa8c", "#ff79c6", "#6272a4",
-            "#00f5d4", "#ff006e", "#8338ec", "#3a86ff",
-            "#ffbe0b", "#fb5607", "#06d6a0", "#118ab2",
-            "#ef476f", "#ffd166", "#06d6a0", "#073b4c",
-            "#90dbf4", "#cdb4db", "#ffc8dd", "#bde0fe",
-            "#a0c4ff", "#d0f4de", "#fef9c3", "#fde2e4"
+            "#bd93f9", "#f1fa8c", "#ff79c6", "#6272a4"
         ]
         if isinstance(color, str) and color.startswith("#"):
             return color
@@ -728,7 +639,7 @@ class ResultWindow(QDialog):
             return f"{len(edges)} MST edge(s)", self._format_value(weight)
 
         if result_type == "max_flow":
-            flow = self._flow_data(result)
+            flow = result.get("flow", {})
             return "Maximum flow", self._format_value(flow.get("value"))
 
         if result_type == "traversal":
@@ -785,7 +696,7 @@ class ResultWindow(QDialog):
                 lines.append(f"{e['from']} - {e['to']} (w={self._format_value(e.get('weight'))})")
 
         elif result_type == "max_flow":
-            flow = self._flow_data(result)
+            flow = result.get("flow", {})
             lines.append(f"Max flow value: {self._format_value(flow.get('value'))}")
             augmenting_paths = flow.get("augmenting_paths", [])
             if augmenting_paths:
@@ -795,8 +706,8 @@ class ResultWindow(QDialog):
                     lines.append(f"  {index}. {self._format_path(path)} | flow={self._format_value(path_result.get('flow'))}")
             edge_flows = flow.get("edge_flows", {})
             if edge_flows:
-                lines.append("Net edge flows:")
-                for edge_key, amount in sorted(self._display_edge_flows(edge_flows).items()):
+                lines.append("Edge flows:")
+                for edge_key, amount in sorted(edge_flows.items()):
                     lines.append(f"  {edge_key}: {self._format_value(amount)}")
 
         elif result_type == "traversal":
@@ -872,9 +783,8 @@ class ResultWindow(QDialog):
             return
 
         if result_type == "max_flow":
-            edge_flows = self._flow_data(result).get("edge_flows", {})
-            display_flows = self._display_edge_flows(edge_flows)
-            rows = [[edge, self._format_value(amount)] for edge, amount in sorted(display_flows.items())]
+            edge_flows = result.get("flow", {}).get("edge_flows", {})
+            rows = [[edge, self._format_value(amount)] for edge, amount in sorted(edge_flows.items())]
             self._set_table("Edge Flows", ["Edge", "Flow"], rows)
             return
 

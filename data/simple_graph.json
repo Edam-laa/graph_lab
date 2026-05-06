@@ -1,7 +1,7 @@
 {
   "graph": {
 
-    "nodes": ["A", "B", "C", "D","E"],
+    "nodes": ["S", "A", "B", "T"],
     "node_positions": {
       "S": { "x": 0, "y": 0 },
       "A": { "x": 100, "y": 0 },
@@ -11,10 +11,11 @@
       "T": { "x": 300, "y": 50 }
     },
     "edges": [
-      { "from": "A", "to": "B", "weight": 1, "capacity": 1 },
-      { "from": "B", "to": "C", "weight": 1, "capacity": 1 },
-      { "from": "C", "to": "D", "weight": 1, "capacity": 1 },
-      { "from": "E", "to": "D", "weight": 1, "capacity": 1 }
+      {"from": "S", "to": "A", "capacity": 10},
+      {"from": "S", "to": "B", "capacity": 5},
+      {"from": "A", "to": "B", "capacity": 15},
+      {"from": "A", "to": "T", "capacity": 10},
+      {"from": "B", "to": "T", "capacity": 10}
     ],
     "directed": true,
     "metadata": {
@@ -25,11 +26,11 @@
   },
 
   "algorithm": {
-    "name": "bellman",
+    "name": "ford_fulkerson",
     "category": "connectivity",
     "params": {
-      "source": "A",
-      "target": "D",
+      "source": "S",
+      "target": "T",
       "sink": "T"
     },
     "constraints_check": {

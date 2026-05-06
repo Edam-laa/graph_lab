@@ -13,8 +13,6 @@ class EdgeItem(QGraphicsPathItem):
         self.weight   = weight
         self.capacity = capacity
         self.directed = directed
-        self.label_override = None
-        self.label_color = None
         self.setZValue(1)
         self.setFlag(QGraphicsItem.ItemIsSelectable, True)
         self._pen = QPen(QColor(EDGE_COLOR), 2.5, Qt.SolidLine, Qt.RoundCap)
@@ -81,39 +79,30 @@ class EdgeItem(QGraphicsPathItem):
                 return ""
             return str(int(value)) if value == int(value) else str(value)
 
-        if self.label_override is not None:
-            label_txt = self.label_override
+        w_txt = fmt_number(w)
+        c_txt = fmt_number(c)
+        
+        # Show based on scene settings
+        scene = self.scene()
+        show_w = getattr(scene, '_weighted_graph', True) if scene else True
+        show_c = (getattr(scene, '_capacity_graph', True) if scene else True) and c is not None
+        
+        if show_w and show_c:
+            label_txt = f"{w_txt}/{c_txt}" if c != 1 else w_txt
+        elif show_w:
+            label_txt = w_txt
+        elif show_c:
+            label_txt = c_txt
         else:
-            w_txt = fmt_number(w)
-            c_txt = fmt_number(c)
-            
-            # Show based on scene settings
-            scene = self.scene()
-            show_w = getattr(scene, '_weighted_graph', True) if scene else True
-            show_c = (getattr(scene, '_capacity_graph', True) if scene else True) and c is not None
-            
-            if show_w and show_c:
-                label_txt = f"{w_txt}/{c_txt}" if c != 1 else w_txt
-            elif show_w:
-                label_txt = w_txt
-            elif show_c:
-                label_txt = c_txt
-            else:
-                label_txt = ""
+            label_txt = ""
         
         self._weight_item.setPlainText(label_txt)
-        self._weight_item.setDefaultTextColor(QColor(self.label_color or ACCENT_AMBER))
         wr = self._weight_item.boundingRect()
         self._weight_item.setPos(
             mid_pt.x() - wr.width() / 2 - ny * (curve_offset * 0.6 + 8),
             mid_pt.y() - wr.height() / 2 + nx * (curve_offset * 0.6 + 8),
         )
         self.update()
-
-    def set_label_override(self, text=None, color=None):
-        self.label_override = text
-        self.label_color = color
-        self.update_path()
 
     def _get_curve_offset(self):
         """Return a curve offset so parallel edges between same nodes fan out."""

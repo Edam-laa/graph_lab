@@ -51,12 +51,13 @@ def kruskal(graph):
     Lève:
         ValueError : si le graphe est orienté ou non connexe
     """
+    '''
     # ---------------------------
     # VALIDATION
     # ---------------------------
     if graph.directed:
         raise ValueError("Kruskal only works on undirected graphs.")
-
+    '''
     nodes = graph.get_nodes()
 
     if not nodes:

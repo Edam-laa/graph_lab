@@ -791,7 +791,6 @@ class MainWindow(QMainWindow):
             "Strongly Connected":    n > 0,
             "Chemin Eulérien":       n > 0 and eulerian,
             "Welsh-Powell":          n > 0,
-            "Ford-Fulkerson":        n > 0 and m > 0 and directed,
         }
         for name, avail in availability.items():
             if name in self._algo_btns:
@@ -863,11 +862,6 @@ class MainWindow(QMainWindow):
         # Store data for result window
         self._last_graph_data = data
 
-        self._update_execution_info({
-            "status": "running",
-            "complexity": "--",
-            "execution_time": None,
-        })
         self._log(f"Sending graph to backend...", "info")
 
         try:
@@ -884,11 +878,6 @@ class MainWindow(QMainWindow):
             self._handle_backend_result(result)
 
         except Exception as e:
-            self._update_execution_info({
-                "status": "error",
-                "complexity": "--",
-                "execution_time": None,
-            })
             self._log(f"Backend error: {e}", "error")
     # ── Per-algorithm log writers ─────────────────────────────────────────────
 
@@ -926,6 +915,10 @@ class MainWindow(QMainWindow):
         eulerian_path = res.get("eulerian_path") or res.get("eulerian_circuit") or []
         if eulerian_path:
             self._highlight_path(eulerian_path, QColor("#ffb86c"))
+
+        edge_flows = res.get("flow", {}).get("edge_flows", {})
+        if edge_flows:
+            self._highlight_flow_edges(edge_flows)
 
         components = res.get("components", [])
         if len(components) > 1:
@@ -1044,7 +1037,6 @@ ALGO_DEFS = [
     ("Strongly Connected",  "connectivity",  ACCENT_AMBER),
     ("Chemin Eulérien",    "euler",          ACCENT_PINK),
     ("Welsh-Powell",       "coloring",       ACCENT_PURPLE),
-    ("Ford-Fulkerson",     "max_flow",       "#bd93f9"),
 ]
 
 class MainWindow(QMainWindow):
@@ -1805,7 +1797,6 @@ class MainWindow(QMainWindow):
             "Strongly Connected":    n > 0,
             "Chemin Eulérien":       n > 0 and eulerian,
             "Welsh-Powell":          n > 0,
-            "Ford-Fulkerson":        n > 0 and m > 0 and directed,
         }
         for name, avail in availability.items():
             if name in self._algo_btns:
@@ -1877,11 +1868,6 @@ class MainWindow(QMainWindow):
         # Store data for result window
         self._last_graph_data = data
 
-        self._update_execution_info({
-            "status": "running",
-            "complexity": "--",
-            "execution_time": None,
-        })
         self._log(f"Sending graph to backend...", "info")
 
         try:
@@ -1898,11 +1884,6 @@ class MainWindow(QMainWindow):
             self._handle_backend_result(result)
 
         except Exception as e:
-            self._update_execution_info({
-                "status": "error",
-                "complexity": "--",
-                "execution_time": None,
-            })
             self._log(f"Backend error: {e}", "error")
     # ── Per-algorithm log writers ─────────────────────────────────────────────
 
@@ -1915,51 +1896,16 @@ class MainWindow(QMainWindow):
             if not self._scene._directed_graph:
                 adj.setdefault(t, []).append((f, w, c))
         return adj
-    def _update_execution_info(self, execution=None):
-        execution = execution or {}
-        if not hasattr(self, "_exec_labels"):
-            return
-
-        status = execution.get("status") or "--"
-        complexity = execution.get("complexity") or "--"
-        exec_time = execution.get("execution_time")
-        if isinstance(exec_time, (int, float)):
-            exec_time_text = f"{exec_time:.4f}s"
-        elif exec_time is not None:
-            exec_time_text = str(exec_time)
-        else:
-            exec_time_text = "--"
-
-        status_color = {
-            "success": ACCENT_CYAN,
-            "running": ACCENT_AMBER,
-            "not_started": TEXT_DIM,
-            "error": ACCENT_PINK,
-            "failed": ACCENT_PINK,
-        }.get(str(status).lower(), TEXT_MAIN)
-
-        self._exec_labels["exec_status"].setText(str(status))
-        self._exec_labels["exec_status"].setStyleSheet(f"color: {status_color}; font-weight: bold;")
-        self._exec_labels["exec_complexity"].setText(str(complexity))
-        self._exec_labels["exec_complexity"].setStyleSheet(f"color: {TEXT_MAIN}; font-weight: bold;")
-        self._exec_labels["exec_time"].setText(exec_time_text)
-        self._exec_labels["exec_time"].setStyleSheet(f"color: {TEXT_MAIN}; font-weight: bold;")
     def _handle_backend_result(self, result):
         # Check top-level status
         if result.get("status") == "error":
             error_message = result.get("message", "Backend returned an error")
-            self._update_execution_info({
-                "status": "error",
-                "complexity": "--",
-                "execution_time": None,
-            })
             self._log(error_message, "error")
             print(f"[ERROR] {error_message}")
             return
 
         # Check nested execution status
         frontend_result = result.get("result", result)
-        self._update_execution_info(frontend_result.get("execution", {}))
         exec_status = frontend_result.get("execution", {}).get("status", "").lower()
         error_keywords = ["error", "failed", "exception", "invalid", "timeout"]
         
@@ -1988,6 +1934,10 @@ class MainWindow(QMainWindow):
         eulerian_path = res.get("eulerian_path") or res.get("eulerian_circuit") or []
         if eulerian_path:
             self._highlight_path(eulerian_path, QColor("#ffb86c"))
+
+        edge_flows = res.get("flow", {}).get("edge_flows", {})
+        if edge_flows:
+            self._highlight_flow_edges(edge_flows)
 
         components = res.get("components", [])
         if len(components) > 1:
@@ -2084,4 +2034,3 @@ class MainWindow(QMainWindow):
                 if node.label in component:
                     node.setBrush(QBrush(color))
                     node.setPen(QPen(color, 2))
-

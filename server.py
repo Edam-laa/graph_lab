@@ -43,7 +43,8 @@ COLOR_PALETTE = {
     5: "#bd93f9",
     6: "#f1fa8c",
     7: "#ff79c6",
-    8: "#6272a4"
+    8: "#6272a4",
+    9: "#00f5d4"
 }
 def resolve_algorithm_name(front_name: str) -> str:
     if not front_name:

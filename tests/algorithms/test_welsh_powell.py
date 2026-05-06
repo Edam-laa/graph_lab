@@ -474,13 +474,16 @@ def test_coloring_with_metadata_chromatic_number():
 			f"{case_name}: expected {expected_chromatic} colors, got {chromatic}"
 
 
-def test_directed_graph_is_rejected():
+def test_directed_graph_is_colored():
 	graph = Graph(directed=True)
 	graph.add_edge("A", "B", 1)
 	graph.add_edge("B", "C", 1)
 
-	with pytest.raises(ValueError):
-		wp_module.welsh_powell(graph)
+	result = wp_module.welsh_powell(graph)
+	coloring = _get_coloring_result(result)
+
+	assert set(coloring) == {"A", "B", "C"}
+	assert _is_valid_coloring(graph, coloring)
 
 
 def test_self_loop_is_rejected():
