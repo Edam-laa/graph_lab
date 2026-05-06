@@ -811,8 +811,13 @@ class GraphScene(QGraphicsScene):
 
         connected = components == 1
 
-        # Complete check
-        complete = all(len(adj_undir[i]) >= n-1 for i in ids)
+        # Complete check (direction-sensitive)
+        if self._directed_graph:
+            # For directed: need bidirectional edges between every pair of nodes
+            complete = all(len(adj[i]) == n - 1 and len(adj_in[i]) == n - 1 for i in ids)
+        else:
+            # For undirected: every node must be connected to all others
+            complete = all(len(adj_undir[i]) == n - 1 for i in ids)
 
         # Eulerian (undirected: all even degree; directed: in==out for all)
         if self._directed_graph:
