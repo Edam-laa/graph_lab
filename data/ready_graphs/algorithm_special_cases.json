@@ -1,0 +1,368 @@
+{
+  "graphs": {
+    "01_dijkstra_zero_edge_unreachable": {
+      "nodes": ["A", "B", "C", "D", "E", "F"],
+      "node_positions": {
+        "A": {"x": 0, "y": 60},
+        "B": {"x": 120, "y": 20},
+        "C": {"x": 120, "y": 110},
+        "D": {"x": 250, "y": 65},
+        "E": {"x": 380, "y": 65},
+        "F": {"x": 250, "y": 170}
+      },
+      "edges": [
+        {"from": "A", "to": "B", "weight": 4},
+        {"from": "A", "to": "C", "weight": 1},
+        {"from": "C", "to": "B", "weight": 0},
+        {"from": "B", "to": "D", "weight": 2},
+        {"from": "C", "to": "D", "weight": 7},
+        {"from": "D", "to": "E", "weight": 1},
+        {"from": "F", "to": "E", "weight": 3}
+      ],
+      "directed": true,
+      "metadata": {
+        "name": "Dijkstra zero edge with unreachable node",
+        "description": "Non-negative directed graph with a zero-weight shortcut and one node unreachable from the source.",
+        "weighted": true,
+        "source": "A",
+        "sink": "E"
+      }
+    },
+    "02_bellman_ford_negative_edge_no_cycle": {
+      "nodes": ["S", "A", "B", "C", "T"],
+      "node_positions": {
+        "S": {"x": 0, "y": 80},
+        "A": {"x": 120, "y": 25},
+        "B": {"x": 120, "y": 140},
+        "C": {"x": 260, "y": 80},
+        "T": {"x": 400, "y": 80}
+      },
+      "edges": [
+        {"from": "S", "to": "A", "weight": 4},
+        {"from": "S", "to": "B", "weight": 5},
+        {"from": "A", "to": "C", "weight": -2},
+        {"from": "B", "to": "C", "weight": 3},
+        {"from": "C", "to": "T", "weight": 2},
+        {"from": "B", "to": "T", "weight": 10}
+      ],
+      "directed": true,
+      "metadata": {
+        "name": "Bellman-Ford negative edge, no negative cycle",
+        "description": "Shortest path should use the negative edge A->C without forming a negative cycle.",
+        "weighted": true,
+        "source": "S",
+        "sink": "T"
+      }
+    },
+    "03_bellman_dag_negative_edges": {
+      "nodes": ["S", "A", "B", "C", "D", "T"],
+      "node_positions": {
+        "S": {"x": 0, "y": 90},
+        "A": {"x": 110, "y": 30},
+        "B": {"x": 110, "y": 150},
+        "C": {"x": 240, "y": 90},
+        "D": {"x": 360, "y": 90},
+        "T": {"x": 480, "y": 90}
+      },
+      "edges": [
+        {"from": "S", "to": "A", "weight": 2},
+        {"from": "S", "to": "B", "weight": 5},
+        {"from": "A", "to": "C", "weight": -4},
+        {"from": "B", "to": "C", "weight": 1},
+        {"from": "A", "to": "D", "weight": 7},
+        {"from": "C", "to": "D", "weight": 3},
+        {"from": "D", "to": "T", "weight": 2},
+        {"from": "B", "to": "T", "weight": 10}
+      ],
+      "directed": true,
+      "metadata": {
+        "name": "Bellman DAG with negative edges",
+        "description": "Acyclic graph for the Bellman implementation, including negative weights but no cycle.",
+        "weighted": true,
+        "source": "S",
+        "sink": "T"
+      }
+    },
+    "04_mst_equal_weight_ties": {
+      "nodes": ["A", "B", "C", "D", "E"],
+      "node_positions": {
+        "A": {"x": 0, "y": 90},
+        "B": {"x": 120, "y": 20},
+        "C": {"x": 120, "y": 160},
+        "D": {"x": 260, "y": 90},
+        "E": {"x": 390, "y": 90}
+      },
+      "edges": [
+        {"from": "A", "to": "B", "weight": 1},
+        {"from": "A", "to": "C", "weight": 1},
+        {"from": "B", "to": "C", "weight": 1},
+        {"from": "B", "to": "D", "weight": 2},
+        {"from": "C", "to": "D", "weight": 2},
+        {"from": "D", "to": "E", "weight": 1},
+        {"from": "C", "to": "E", "weight": 3}
+      ],
+      "directed": false,
+      "metadata": {
+        "name": "MST with equal-weight ties",
+        "description": "Kruskal and Prim must choose a valid MST while several edges have the same weight.",
+        "weighted": true,
+        "source": "A",
+        "sink": "E"
+      }
+    },
+    "05_mst_disconnected_error": {
+      "nodes": ["A", "B", "C", "D", "E"],
+      "node_positions": {
+        "A": {"x": 0, "y": 70},
+        "B": {"x": 120, "y": 70},
+        "C": {"x": 240, "y": 70},
+        "D": {"x": 120, "y": 190},
+        "E": {"x": 240, "y": 190}
+      },
+      "edges": [
+        {"from": "A", "to": "B", "weight": 2},
+        {"from": "B", "to": "C", "weight": 3},
+        {"from": "D", "to": "E", "weight": 1}
+      ],
+      "directed": false,
+      "metadata": {
+        "name": "Disconnected graph for MST error path",
+        "description": "Prim and Kruskal should report that an MST is impossible because the graph has two components.",
+        "weighted": true,
+        "source": "A",
+        "sink": "E"
+      }
+    },
+    "06_connected_components_isolated_nodes": {
+      "nodes": ["A", "B", "C", "D", "E", "F", "G"],
+      "node_positions": {
+        "A": {"x": 0, "y": 70},
+        "B": {"x": 100, "y": 70},
+        "C": {"x": 200, "y": 70},
+        "D": {"x": 0, "y": 190},
+        "E": {"x": 100, "y": 190},
+        "F": {"x": 250, "y": 190},
+        "G": {"x": 350, "y": 190}
+      },
+      "edges": [
+        {"from": "A", "to": "B"},
+        {"from": "B", "to": "C"},
+        {"from": "D", "to": "E"}
+      ],
+      "directed": false,
+      "metadata": {
+        "name": "Connected components with isolated nodes",
+        "description": "Three-node component, two-node component, and two isolated vertices.",
+        "weighted": false,
+        "source": "A",
+        "sink": "G"
+      }
+    },
+    "07_strongly_connected_two_sccs_and_sink": {
+      "nodes": ["A", "B", "C", "D", "E"],
+      "node_positions": {
+        "A": {"x": 0, "y": 70},
+        "B": {"x": 110, "y": 70},
+        "C": {"x": 230, "y": 70},
+        "D": {"x": 340, "y": 70},
+        "E": {"x": 460, "y": 70}
+      },
+      "edges": [
+        {"from": "A", "to": "B"},
+        {"from": "B", "to": "A"},
+        {"from": "B", "to": "C"},
+        {"from": "C", "to": "D"},
+        {"from": "D", "to": "C"},
+        {"from": "D", "to": "E"}
+      ],
+      "directed": true,
+      "metadata": {
+        "name": "Strong connectivity with two SCCs and a sink",
+        "description": "Weakly connected, but not strongly connected because the last component cannot return.",
+        "weighted": false,
+        "source": "A",
+        "sink": "E"
+      }
+    },
+    "08_eulerian_undirected_path_two_odd_vertices": {
+      "nodes": ["A", "B", "C", "D", "E"],
+      "node_positions": {
+        "A": {"x": 0, "y": 70},
+        "B": {"x": 120, "y": 20},
+        "C": {"x": 120, "y": 120},
+        "D": {"x": 250, "y": 120},
+        "E": {"x": 380, "y": 120}
+      },
+      "edges": [
+        {"from": "A", "to": "B"},
+        {"from": "B", "to": "C"},
+        {"from": "C", "to": "A"},
+        {"from": "C", "to": "D"},
+        {"from": "D", "to": "E"}
+      ],
+      "directed": false,
+      "metadata": {
+        "name": "Eulerian path but not circuit",
+        "description": "Exactly two odd-degree vertices, so an Eulerian path exists but not a circuit.",
+        "weighted": false,
+        "source": "C",
+        "sink": "E"
+      }
+    },
+    "09_eulerian_directed_circuit": {
+      "nodes": ["A", "B", "C", "D", "E"],
+      "node_positions": {
+        "A": {"x": 0, "y": 90},
+        "B": {"x": 120, "y": 20},
+        "C": {"x": 260, "y": 90},
+        "D": {"x": 120, "y": 170},
+        "E": {"x": -120, "y": 170}
+      },
+      "edges": [
+        {"from": "A", "to": "B"},
+        {"from": "B", "to": "C"},
+        {"from": "C", "to": "A"},
+        {"from": "A", "to": "D"},
+        {"from": "D", "to": "E"},
+        {"from": "E", "to": "A"}
+      ],
+      "directed": true,
+      "metadata": {
+        "name": "Directed Eulerian circuit",
+        "description": "Every node has balanced in-degree and out-degree in one weakly connected component.",
+        "weighted": false,
+        "source": "A",
+        "sink": "A"
+      }
+    },
+    "10_welsh_powell_complete_k4": {
+      "nodes": ["A", "B", "C", "D"],
+      "node_positions": {
+        "A": {"x": 0, "y": 0},
+        "B": {"x": 140, "y": 0},
+        "C": {"x": 140, "y": 140},
+        "D": {"x": 0, "y": 140}
+      },
+      "edges": [
+        {"from": "A", "to": "B"},
+        {"from": "A", "to": "C"},
+        {"from": "A", "to": "D"},
+        {"from": "B", "to": "C"},
+        {"from": "B", "to": "D"},
+        {"from": "C", "to": "D"}
+      ],
+      "directed": false,
+      "metadata": {
+        "name": "Welsh-Powell complete graph K4",
+        "description": "Complete graph requiring four different colors.",
+        "weighted": false,
+        "source": "A",
+        "sink": "D"
+      }
+    },
+    "11_welsh_powell_bipartite_k33": {
+      "nodes": ["U1", "U2", "U3", "V1", "V2", "V3"],
+      "node_positions": {
+        "U1": {"x": 0, "y": 0},
+        "U2": {"x": 0, "y": 100},
+        "U3": {"x": 0, "y": 200},
+        "V1": {"x": 260, "y": 0},
+        "V2": {"x": 260, "y": 100},
+        "V3": {"x": 260, "y": 200}
+      },
+      "edges": [
+        {"from": "U1", "to": "V1"},
+        {"from": "U1", "to": "V2"},
+        {"from": "U1", "to": "V3"},
+        {"from": "U2", "to": "V1"},
+        {"from": "U2", "to": "V2"},
+        {"from": "U2", "to": "V3"},
+        {"from": "U3", "to": "V1"},
+        {"from": "U3", "to": "V2"},
+        {"from": "U3", "to": "V3"}
+      ],
+      "directed": false,
+      "metadata": {
+        "name": "Welsh-Powell bipartite K3,3",
+        "description": "Dense bipartite graph that should still need only two colors.",
+        "weighted": false,
+        "source": "U1",
+        "sink": "V3"
+      }
+    },
+    "12_ford_fulkerson_residual_reroute": {
+      "nodes": ["S", "A", "B", "T"],
+      "node_positions": {
+        "S": {"x": 0, "y": 80},
+        "A": {"x": 130, "y": 20},
+        "B": {"x": 130, "y": 140},
+        "T": {"x": 300, "y": 80}
+      },
+      "edges": [
+        {"from": "S", "to": "A", "capacity": 10},
+        {"from": "S", "to": "B", "capacity": 5},
+        {"from": "A", "to": "B", "capacity": 15},
+        {"from": "A", "to": "T", "capacity": 10},
+        {"from": "B", "to": "T", "capacity": 10}
+      ],
+      "directed": true,
+      "metadata": {
+        "name": "Ford-Fulkerson residual reroute",
+        "description": "Forces a residual reverse step; A->B should display net flow after cancellation.",
+        "weighted": false,
+        "source": "S",
+        "sink": "T"
+      }
+    },
+    "13_ford_fulkerson_bottleneck_parallel_paths": {
+      "nodes": ["S", "A", "B", "C", "T"],
+      "node_positions": {
+        "S": {"x": 0, "y": 90},
+        "A": {"x": 120, "y": 25},
+        "B": {"x": 120, "y": 155},
+        "C": {"x": 260, "y": 90},
+        "T": {"x": 400, "y": 90}
+      },
+      "edges": [
+        {"from": "S", "to": "A", "capacity": 8},
+        {"from": "S", "to": "B", "capacity": 5},
+        {"from": "A", "to": "C", "capacity": 3},
+        {"from": "B", "to": "C", "capacity": 4},
+        {"from": "A", "to": "T", "capacity": 2},
+        {"from": "B", "to": "T", "capacity": 1},
+        {"from": "C", "to": "T", "capacity": 6}
+      ],
+      "directed": true,
+      "metadata": {
+        "name": "Ford-Fulkerson bottleneck and parallel paths",
+        "description": "Several source paths compete for a bottleneck into the sink.",
+        "weighted": false,
+        "source": "S",
+        "sink": "T"
+      }
+    },
+    "14_bellman_ford_negative_cycle_error": {
+      "nodes": ["A", "B", "C", "D"],
+      "node_positions": {
+        "A": {"x": 0, "y": 80},
+        "B": {"x": 130, "y": 20},
+        "C": {"x": 260, "y": 80},
+        "D": {"x": 130, "y": 160}
+      },
+      "edges": [
+        {"from": "A", "to": "B", "weight": 1},
+        {"from": "B", "to": "C", "weight": -3},
+        {"from": "C", "to": "A", "weight": 1},
+        {"from": "C", "to": "D", "weight": 2}
+      ],
+      "directed": true,
+      "metadata": {
+        "name": "Bellman-Ford negative cycle error",
+        "description": "Reachable negative cycle for testing error reporting.",
+        "weighted": true,
+        "source": "A",
+        "sink": "D"
+      }
+    }
+  }
+}

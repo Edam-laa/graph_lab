@@ -1797,13 +1797,13 @@ class MainWindow(QMainWindow):
             self._info_labels["regular"].setStyleSheet(f"color: #f76f8e; font-weight: bold;")
 
         ec = props.get("eulerian_circuit", False)
-        ep = props.get("eulerian_path", False)
+        #ep = props.get("eulerian_path", False)
         ec_txt, ec_col = bool_map.get(ec, ("—", TEXT_DIM))
-        ep_txt, ep_col = bool_map.get(ep, ("—", TEXT_DIM))
+        #ep_txt, ep_col = bool_map.get(ep, ("—", TEXT_DIM))
         self._euler_circuit_lbl.setText(ec_txt)
         self._euler_circuit_lbl.setStyleSheet(f"color: {ec_col}; font-weight: bold;")
-        self._euler_path_lbl.setText(ep_txt)
-        self._euler_path_lbl.setStyleSheet(f"color: {ep_col}; font-weight: bold;")
+        #self._euler_path_lbl.setText(ep_txt)
+        #self._euler_path_lbl.setStyleSheet(f"color: {ep_col}; font-weight: bold;")
 
     def _update_algo_buttons(self, props, graph_data):
         n = props.get("nodes", 0)
@@ -1820,7 +1820,7 @@ class MainWindow(QMainWindow):
             "Prim":                  n > 0 and m > 0 ,
             "Composantes Connexes":  n > 0,
             "Strongly Connected":    n > 0,
-            "Chemin Eulérien":       n > 0 and eulerian,
+            "Chemin Eulérien":       n > 0,
             "Welsh-Powell":          n > 0,
             "Ford-Fulkerson":        n > 0 and m > 0 and directed,
         }
