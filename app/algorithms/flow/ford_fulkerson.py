@@ -1,4 +1,4 @@
-from collections import defaultdict, deque
+from collections import defaultdict
 
 
 def _validate_ford_fulkerson_graph(graph, source, sink):
@@ -41,16 +41,21 @@ def ford_fulkerson(graph, source, sink):
         }
 
     # -----------------------------
-    # Build residual graph
+    # Build residual graph (keep parallel edges distinct)
     # -----------------------------
-    residual = defaultdict(lambda: defaultdict(int))
+    residual = {node: [] for node in nodes}
+
+    def add_edge(u, v, capacity):
+        forward_index = len(residual[u])
+        reverse_index = len(residual[v])
+        residual[u].append({"to": v, "rev": reverse_index, "cap": capacity})
+        residual[v].append({"to": u, "rev": forward_index, "cap": 0})
 
     for u in nodes:
         for v, _, capacity in graph.get_neighbors(u):
             if capacity is None:
                 continue
-            residual[u][v] += capacity
-            residual[v]  # ensure reverse exists
+            add_edge(u, v, capacity)
 
     steps = []
     flow_paths = []
@@ -61,38 +66,40 @@ def ford_fulkerson(graph, source, sink):
     # -----------------------------
     def dfs(u, visited, path_flow, path):
         if u == sink:
-            return path_flow, path
+            return path_flow
 
         visited.add(u)
 
-        for v in residual[u]:
-            if v not in visited and residual[u][v] > 0:
-                new_flow = min(path_flow, residual[u][v])
+        for edge in residual[u]:
+            if edge["cap"] <= 0:
+                continue
+            v = edge["to"]
+            if v in visited:
+                continue
 
-                result = dfs(v, visited, new_flow, path + [(u, v)])
+            new_flow = min(path_flow, edge["cap"])
+            pushed = dfs(v, visited, new_flow, path)
+            if pushed:
+                edge["cap"] -= pushed
+                residual[v][edge["rev"]]["cap"] += pushed
+                path.append((u, v))
+                return pushed
 
-                if result:
-                    return result
-
-        return None
+        return 0
 
     # -----------------------------
     # Main loop
     # -----------------------------
     while True:
         visited = set()
-        result = dfs(source, visited, float("inf"), [])
+        path = []
+        flow = dfs(source, visited, float("inf"), path)
 
-        if not result:
+        if not flow:
             break
 
-        flow, path = result
+        path.reverse()
         max_flow += flow
-
-        # update residual graph
-        for u, v in path:
-            residual[u][v] -= flow
-            residual[v][u] += flow
 
         flow_paths.append({
             "path": path,

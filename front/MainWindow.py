@@ -1014,10 +1014,12 @@ class MainWindow(QMainWindow):
 import sys
 import json
 import math
+import os
+import colorsys
 from PySide6.QtWidgets import ( QMainWindow, QWidget, QVBoxLayout, QHBoxLayout,
     QLabel, QPushButton,
     QFrame, QScrollArea, QTableWidget, QTableWidgetItem, QHeaderView, QMessageBox, QSplitter, QToolBar, QStatusBar,
-    QGroupBox,
+    QGroupBox, QDialog, QListWidget, QDialogButtonBox,
     QLineEdit, QComboBox, QAbstractItemView, QPlainTextEdit,
 )
 from PySide6.QtCore import Qt
@@ -1026,6 +1028,8 @@ from PySide6.QtGui import (
 )
 
 from front.GraphScene import GraphScene
+from front.EdgeItem import EdgeItem
+from front.NodeItem import NodeItem
 from front.WeightDialog import WeightDialog
 from front.GraphView import GraphView
 from front.ResultWindow import ResultWindow
@@ -1056,6 +1060,7 @@ class MainWindow(QMainWindow):
 
         self._scene = GraphScene()
         self._scene.graph_changed.connect(self._on_graph_changed)
+        self._loading_graph = False
 
         self._build_ui()
         self._apply_global_style()
@@ -1204,6 +1209,10 @@ class MainWindow(QMainWindow):
 
         # Actions
         layout.addWidget(section_label("Actions"))
+
+        self._btn_load_ready = self._action_btn("📂  Load Graph", ACCENT_BLUE)
+        self._btn_load_ready.clicked.connect(self._open_ready_graphs_dialog)
+        layout.addWidget(self._btn_load_ready)
 
         self._btn_clear = self._action_btn("⌫  Clear Graph", "#f76f8e")
         self._btn_clear.clicked.connect(self._clear_graph)
@@ -1684,6 +1693,10 @@ class MainWindow(QMainWindow):
     def _on_weighted_changed(self, checked):
         self._scene.set_weighted(checked)
 
+        if getattr(self, "_loading_graph", False):
+            self._scene.graph_changed.emit()
+            return
+
         # 🔥 RESET DES POIDS
         for e in self._scene._edges:
             if checked:
@@ -1694,6 +1707,10 @@ class MainWindow(QMainWindow):
 
     def _on_capacity_changed(self, checked):
         self._scene.set_capacity(checked)
+
+        if getattr(self, "_loading_graph", False):
+            self._scene.graph_changed.emit()
+            return
 
         # 🔥 RESET DES CAPACITÉS
         for e in self._scene._edges:
@@ -1843,6 +1860,220 @@ class MainWindow(QMainWindow):
             with open(path, "w", encoding="utf-8") as f:
                 json.dump(data, f, indent=2, ensure_ascii=False)
             QMessageBox.information(self, "Exported", f"Graph exported to:\n{path}")
+
+    def _open_ready_graphs_dialog(self):
+        folder = self._ready_graphs_dir()
+        if not os.path.isdir(folder):
+            QMessageBox.warning(self, "Ready Graphs", f"Folder not found:\n{folder}")
+            return
+
+        files = sorted([f for f in os.listdir(folder) if f.lower().endswith(".json")])
+        if not files:
+            QMessageBox.information(self, "Ready Graphs", "No JSON graphs found in ready_graphs.")
+            return
+
+        dlg = QDialog(self)
+        dlg.setWindowTitle("Ready Graphs")
+        dlg.setMinimumWidth(360)
+        layout = QVBoxLayout(dlg)
+
+        list_widget = QListWidget()
+        list_widget.addItems(files)
+        list_widget.setCurrentRow(0)
+        layout.addWidget(list_widget)
+
+        buttons = QDialogButtonBox(QDialogButtonBox.Ok | QDialogButtonBox.Cancel)
+        buttons.accepted.connect(dlg.accept)
+        buttons.rejected.connect(dlg.reject)
+        layout.addWidget(buttons)
+
+        if dlg.exec() != QDialog.Accepted:
+            return
+
+        selected = list_widget.currentItem()
+        if not selected:
+            return
+
+        self._load_graph_file(os.path.join(folder, selected.text()))
+
+    def _ready_graphs_dir(self):
+        base_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
+        return os.path.join(base_dir, "data", "ready_graphs")
+
+    def _load_graph_file(self, path):
+        try:
+            with open(path, "r", encoding="utf-8") as f:
+                data = json.load(f)
+        except (OSError, json.JSONDecodeError) as exc:
+            QMessageBox.warning(self, "Load Graph", f"Failed to read JSON:\n{exc}")
+            return
+
+        graph_data = None
+        case_name = None
+        if isinstance(data, dict) and isinstance(data.get("graphs"), dict):
+            case_name = self._select_graph_case(os.path.basename(path), data.get("graphs", {}))
+            if not case_name:
+                return
+            graph_data = data.get("graphs", {}).get(case_name)
+            if not isinstance(graph_data, dict):
+                QMessageBox.warning(self, "Load Graph", "Selected graph case is invalid.")
+                return
+            self._apply_graph_metadata_params(graph_data, prefer_existing=False)
+        else:
+            graph_data = self._extract_graph_payload(data)
+            if not graph_data:
+                QMessageBox.warning(self, "Load Graph", "Selected JSON does not contain a graph payload.")
+                return
+            self._apply_algo_params(data)
+            self._apply_graph_metadata_params(graph_data, prefer_existing=True)
+
+        self._load_graph_into_scene(graph_data)
+        label = os.path.basename(path)
+        if case_name:
+            label = f"{label} :: {case_name}"
+        self._status_lbl.setText(f"Loaded graph: {label}")
+
+    def _select_graph_case(self, filename, graphs):
+        if not graphs:
+            QMessageBox.information(self, "Ready Graphs", "No graph cases found in this file.")
+            return None
+
+        dlg = QDialog(self)
+        dlg.setWindowTitle(f"Choose Graph Case ({filename})")
+        dlg.setMinimumWidth(380)
+        layout = QVBoxLayout(dlg)
+
+        list_widget = QListWidget()
+        list_widget.addItems(sorted(graphs.keys()))
+        list_widget.setCurrentRow(0)
+        layout.addWidget(list_widget)
+
+        buttons = QDialogButtonBox(QDialogButtonBox.Ok | QDialogButtonBox.Cancel)
+        buttons.accepted.connect(dlg.accept)
+        buttons.rejected.connect(dlg.reject)
+        layout.addWidget(buttons)
+
+        if dlg.exec() != QDialog.Accepted:
+            return None
+
+        selected = list_widget.currentItem()
+        return selected.text() if selected else None
+
+    def _extract_graph_payload(self, data):
+        if isinstance(data, dict) and isinstance(data.get("graph"), dict):
+            return data.get("graph")
+        if isinstance(data, dict) and "nodes" in data and "edges" in data:
+            return data
+        return {}
+
+    def _apply_algo_params(self, data):
+        if not isinstance(data, dict):
+            return
+        params = data.get("algorithm", {}).get("params", {})
+        if not isinstance(params, dict):
+            return
+
+        source = params.get("source")
+        sink = params.get("sink") or params.get("target")
+        if source is not None:
+            self._param_source.setText(str(source))
+        if sink is not None:
+            self._param_sink.setText(str(sink))
+
+    def _apply_graph_metadata_params(self, graph_data, prefer_existing=True):
+        if not isinstance(graph_data, dict):
+            return
+        meta = graph_data.get("metadata", {})
+        if not isinstance(meta, dict):
+            return
+
+        source = meta.get("source")
+        sink = meta.get("sink") or meta.get("target")
+
+        if source is not None and (not prefer_existing or not self._param_source.text().strip()):
+            self._param_source.setText(str(source))
+        if sink is not None and (not prefer_existing or not self._param_sink.text().strip()):
+            self._param_sink.setText(str(sink))
+
+    def _load_graph_into_scene(self, graph_data):
+        nodes = graph_data.get("nodes", [])
+        edges = graph_data.get("edges", [])
+        if not isinstance(nodes, list) or not isinstance(edges, list):
+            QMessageBox.warning(self, "Load Graph", "Graph payload must contain 'nodes' and 'edges' lists.")
+            return
+
+        directed = bool(graph_data.get("directed", True))
+        weighted = self._infer_weighted(graph_data)
+        capacity_enabled = self._infer_capacity(graph_data)
+
+        self._loading_graph = True
+        self._chk_directed.setChecked(directed)
+        self._chk_weighted.setChecked(weighted)
+        self._chk_capacity.setChecked(capacity_enabled)
+        self._loading_graph = False
+
+        self._scene.clear()
+        self._scene._nodes.clear()
+        self._scene._edges.clear()
+        self._scene._node_counter = 0
+        self._scene._history = []
+
+        positions = graph_data.get("node_positions", {}) or {}
+        fallback_positions = self._fallback_positions(nodes)
+
+        for index, label in enumerate(nodes):
+            pos = positions.get(label) or fallback_positions.get(label, {"x": 0, "y": 0})
+            node = NodeItem(index, label, pos.get("x", 0), pos.get("y", 0), self._scene)
+            node.setAcceptHoverEvents(True)
+            self._scene.addItem(node)
+            self._scene._nodes[index] = node
+
+        self._scene._node_counter = len(nodes)
+        label_to_node = {n.label: n for n in self._scene._nodes.values()}
+
+        for edge in edges:
+            if not isinstance(edge, dict):
+                continue
+            src = label_to_node.get(edge.get("from"))
+            dst = label_to_node.get(edge.get("to"))
+            if src is None or dst is None:
+                continue
+
+            weight = edge.get("weight", 1)
+            capacity = edge.get("capacity", None)
+            edge_item = EdgeItem(src, dst, weight, capacity, self._scene._directed_graph)
+            self._scene.addItem(edge_item)
+            edge_item.update_path()
+            self._scene._edges.append(edge_item)
+            self._scene._refresh_parallel_edges(src, dst)
+
+        self._scene.graph_changed.emit()
+        self._on_graph_changed()
+
+    def _infer_weighted(self, graph_data):
+        meta = graph_data.get("metadata", {}) if isinstance(graph_data, dict) else {}
+        if isinstance(meta, dict) and "weighted" in meta:
+            return bool(meta.get("weighted"))
+        edges = graph_data.get("edges", []) if isinstance(graph_data, dict) else []
+        return any(isinstance(edge, dict) and edge.get("weight") is not None for edge in edges)
+
+    def _infer_capacity(self, graph_data):
+        edges = graph_data.get("edges", []) if isinstance(graph_data, dict) else []
+        return any(isinstance(edge, dict) and edge.get("capacity") is not None for edge in edges)
+
+    def _fallback_positions(self, nodes):
+        if not nodes:
+            return {}
+
+        radius = max(80, 28 * len(nodes))
+        result = {}
+        for index, label in enumerate(nodes):
+            angle = (2 * math.pi * index) / len(nodes)
+            result[label] = {
+                "x": round(math.cos(angle) * radius, 2),
+                "y": round(math.sin(angle) * radius, 2),
+            }
+        return result
 
     def _get_selected_algo_info(self, name=None):
         if name is None:
@@ -2047,39 +2278,45 @@ class MainWindow(QMainWindow):
             key = f"{e.src.label}->{e.dst.label}"
             if edge_flows.get(key, 0) > 0:
                 e.setPen(QPen(QColor("#bd93f9"), 4))
-    def _apply_coloring(self, colors):
+
+    def _color_from_index(self, index):
         palette = [
             "#50fa7b", "#ff5555", "#8be9fd", "#ffb86c",
             "#bd93f9", "#f1fa8c", "#ff79c6", "#6272a4",
-            
             "#00f5d4", "#ff006e", "#8338ec", "#3a86ff",
             "#ffbe0b", "#fb5607", "#06d6a0", "#118ab2",
             "#ef476f", "#ffd166", "#06d6a0", "#073b4c",
             "#90dbf4", "#cdb4db", "#ffc8dd", "#bde0fe",
             "#a0c4ff", "#d0f4de", "#fef9c3", "#fde2e4"
         ]
+        try:
+            idx = int(float(index))
+        except (TypeError, ValueError):
+            return "#cccccc"
+
+        if idx < 0:
+            idx = abs(idx)
+
+        if idx < len(palette):
+            return palette[idx]
+
+        hue = (idx * 0.61803398875) % 1.0
+        r, g, b = colorsys.hls_to_rgb(hue, 0.55, 0.65)
+        return "#{:02x}{:02x}{:02x}".format(int(r * 255), int(g * 255), int(b * 255))
+
+    def _resolve_color_value(self, color):
+        if isinstance(color, str) and color.startswith("#"):
+            return color
+        return self._color_from_index(color)
+
+    def _apply_coloring(self, colors):
         for node in self._scene._nodes.values():
             if node.label in colors:
-                color = colors[node.label]
-                if not (isinstance(color, str) and color.startswith("#")):
-                    try:
-                        color = palette[int(color) % len(palette)]
-                    except (TypeError, ValueError):
-                        color = "#cccccc"
+                color = self._resolve_color_value(colors[node.label])
                 node.setBrush(QBrush(QColor(color)))
     def _apply_component_colors(self, components):
-        palette = [
-            "#50fa7b", "#ff5555", "#8be9fd", "#ffb86c",
-            "#bd93f9", "#f1fa8c", "#ff79c6", "#6272a4",
-            
-            "#00f5d4", "#ff006e", "#8338ec", "#3a86ff",
-            "#ffbe0b", "#fb5607", "#06d6a0", "#118ab2",
-            "#ef476f", "#ffd166", "#06d6a0", "#073b4c",
-            "#90dbf4", "#cdb4db", "#ffc8dd", "#bde0fe",
-            "#a0c4ff", "#d0f4de", "#fef9c3", "#fde2e4"
-        ]
         for index, component in enumerate(components):
-            color = QColor(palette[index % len(palette)])
+            color = QColor(self._color_from_index(index))
             for node in self._scene._nodes.values():
                 if node.label in component:
                     node.setBrush(QBrush(color))

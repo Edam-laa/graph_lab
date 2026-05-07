@@ -7,6 +7,8 @@ adjacency matrix, graph properties, algorithm buttons, JSON export.
 import sys
 import json
 import math
+import colorsys
+from collections import defaultdict
 from PySide6.QtWidgets import (
     QApplication, QFileDialog, QMainWindow, QWidget, QVBoxLayout, QHBoxLayout,
     QLabel, QPushButton, QGraphicsView, QGraphicsScene, QGraphicsEllipseItem,
@@ -452,9 +454,13 @@ class ResultWindow(QDialog):
         edge_flows = flow.get("edge_flows", {})
         has_flow_result = result_type == "max_flow" or flow.get("value") is not None or bool(edge_flows)
         if has_flow_result:
+            edge_assignments = self._edge_flow_assignments(edge_flows)
             has_positive_flow = False
             for e in self.scene._edges:
-                flow_amount = self._net_edge_flow(edge_flows, e.src.label, e.dst.label)
+                flow_amount = edge_assignments.get(
+                    e,
+                    self._net_edge_flow(edge_flows, e.src.label, e.dst.label),
+                )
                 is_positive = self._is_positive_amount(flow_amount)
                 has_positive_flow = has_positive_flow or is_positive
                 label_color = "#bd93f9" if is_positive else ACCENT_AMBER
@@ -481,12 +487,8 @@ class ResultWindow(QDialog):
         # 6. Connected components
         components = result.get("components", [])
         if components:
-            component_colors = [
-                "#50fa7b", "#ff5555", "#8be9fd", "#ffb86c",
-                "#bd93f9", "#f1fa8c", "#ff79c6", "#6272a4"
-            ]
             for comp_idx, component_nodes in enumerate(components):
-                color = component_colors[comp_idx % len(component_colors)]
+                color = self._color_from_index(comp_idx)
                 for node in self.scene._nodes.values():
                     if node.label in component_nodes:
                         node.setBrush(QBrush(QColor(color)))
@@ -594,10 +596,51 @@ class ResultWindow(QDialog):
         scene = getattr(self, "scene", None)
         if scene is None or not scene._edges:
             return edge_flows
-        return {
-            f"{edge.src.label}->{edge.dst.label}": self._net_edge_flow(edge_flows, edge.src.label, edge.dst.label)
-            for edge in scene._edges
-        }
+
+        edge_assignments = self._edge_flow_assignments(edge_flows)
+        if not edge_assignments:
+            return edge_flows
+
+        counts = defaultdict(int)
+        display = {}
+        for edge in scene._edges:
+            base = f"{edge.src.label}->{edge.dst.label}"
+            counts[base] += 1
+            suffix = f"#{counts[base]}" if counts[base] > 1 else ""
+            display[f"{base}{suffix}"] = edge_assignments.get(edge, 0)
+
+        return display
+
+    def _edge_flow_assignments(self, edge_flows):
+        if not edge_flows:
+            return {}
+
+        scene = getattr(self, "scene", None)
+        if scene is None or not scene._edges:
+            return {}
+
+        groups = defaultdict(list)
+        for edge in scene._edges:
+            groups[(edge.src.label, edge.dst.label)].append(edge)
+
+        assignments = {}
+        for (src, dst), edges in groups.items():
+            remaining = self._amount_value(self._net_edge_flow(edge_flows, src, dst))
+            for edge in edges:
+                if remaining <= 0:
+                    assignments[edge] = 0
+                    continue
+
+                cap = edge.capacity
+                if cap is None:
+                    flow = remaining
+                else:
+                    flow = min(remaining, self._amount_value(cap))
+
+                assignments[edge] = self._clean_number(flow)
+                remaining -= self._amount_value(flow)
+
+        return assignments
 
     def _amount_value(self, value):
         try:
@@ -646,6 +689,11 @@ class ResultWindow(QDialog):
                 node.setPen(QPen(QColor("#ffb86c"), 2))
 
     def _color_value(self, color):
+        if isinstance(color, str) and color.startswith("#"):
+            return color
+        return self._color_from_index(color)
+
+    def _color_from_index(self, index):
         palette = [
             "#ff5555", "#50fa7b", "#8be9fd", "#ffb86c",
             "#bd93f9", "#f1fa8c", "#ff79c6", "#6272a4",
@@ -655,12 +703,20 @@ class ResultWindow(QDialog):
             "#90dbf4", "#cdb4db", "#ffc8dd", "#bde0fe",
             "#a0c4ff", "#d0f4de", "#fef9c3", "#fde2e4"
         ]
-        if isinstance(color, str) and color.startswith("#"):
-            return color
         try:
-            return palette[int(color) % len(palette)]
+            idx = int(float(index))
         except (TypeError, ValueError):
             return "#cccccc"
+
+        if idx < 0:
+            idx = abs(idx)
+
+        if idx < len(palette):
+            return palette[idx]
+
+        hue = (idx * 0.61803398875) % 1.0
+        r, g, b = colorsys.hls_to_rgb(hue, 0.55, 0.65)
+        return "#{:02x}{:02x}{:02x}".format(int(r * 255), int(g * 255), int(b * 255))
 
     def _populate_info(self, data):
         result = data.get("result", {})

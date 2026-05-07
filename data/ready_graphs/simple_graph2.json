@@ -1,0 +1,84 @@
+{
+  "graph": {
+
+    "nodes": ["S", "A", "B", "T"],
+    "edges": [
+      {"from": "S", "to": "A", "capacity": 10},
+      {"from": "S", "to": "B", "capacity": 5},
+      {"from": "A", "to": "B", "capacity": 15},
+      {"from": "A", "to": "T", "capacity": 10},
+      {"from": "B", "to": "T", "capacity": 10}
+    ],
+    "directed": true,
+    "metadata": {
+      "name": "",
+      "description": "",
+      "allow_negative_weights": true
+    }
+  },
+
+  "algorithm": {
+    "name": "ford_fulkerson",
+    "category": "max_flow",
+    "params": {
+      "source": "S",
+      "sink": "T"
+    },
+    "constraints_check": {
+      "requires_positive_weights": false,
+      "requires_positive_capacity": true,
+      "requires_connected": true,
+      "requires_dag": false
+    }
+  },
+
+  "execution": {
+    "execution_time": null,
+    "complexity": null,
+    "status": "not_started",
+    "message": "",
+    "warnings": []
+  },
+
+  "result": {
+    "type": null,
+    "distances": {},
+    "path": [],
+    "paths": {},
+    "mst_edges": [],
+    "components": [],
+    "cycles": [],
+    "eulerian_path": [],
+    "eulerian_circuit": [],
+    "coloring": {
+      "node_colors": {},
+      "edge_colors": {}
+    },
+    "flow": {
+      "value": null,
+      "augmenting_paths": [],
+      "edge_flows": {}
+    },
+    "traversal": {
+      "order": [],
+      "tree_edges": []
+    },
+    "graph_properties": {
+      "is_connected": null,
+      "is_strongly_connected": null,
+      "is_tree": null,
+      "is_bipartite": null,
+      "is_eulerian": null,
+      "has_cycle": null,
+      "is_weighted": null
+    },
+    "steps": []
+  },
+
+  "options": {
+    "return_path": true,
+    "return_steps": true,
+    "measure_time": true,
+    "visualize": false
+  }
+}

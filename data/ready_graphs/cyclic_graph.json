@@ -1,0 +1,167 @@
+{
+  "graph": {
+      "nodes": [
+          "S",
+          "A",
+          "B",
+          "C",
+          "D",
+          "T"
+      ],
+      "node_positions": {
+          "S": {
+              "x": 0,
+              "y": 0
+          },
+          "A": {
+              "x": 100,
+              "y": 0
+          },
+          "B": {
+              "x": 100,
+              "y": 100
+          },
+          "C": {
+              "x": 200,
+              "y": 0
+          },
+          "D": {
+              "x": 200,
+              "y": 100
+          },
+          "T": {
+              "x": 300,
+              "y": 50
+          }
+      },
+      "edges": [
+          {
+              "id": "e1",
+              "from": "S",
+              "to": "A",
+              "weight": 4,
+              "capacity": 10
+          },
+          {
+              "id": "e2",
+              "from": "S",
+              "to": "B",
+              "weight": 2,
+              "capacity": 8
+          },
+          {
+              "id": "e3",
+              "from": "A",
+              "to": "B",
+              "weight": 5,
+              "capacity": 5
+          },
+          {
+              "id": "e4",
+              "from": "A",
+              "to": "C",
+              "weight": 10,
+              "capacity": 7
+          },
+          {
+              "id": "e5",
+              "from": "B",
+              "to": "C",
+              "weight": 3,
+              "capacity": 6
+          },
+          {
+              "id": "e6",
+              "from": "B",
+              "to": "D",
+              "weight": 4,
+              "capacity": 10
+          },
+          {
+              "id": "e7",
+              "from": "C",
+              "to": "T",
+              "weight": 11,
+              "capacity": 10
+          },
+          {
+              "id": "e8",
+              "from": "D",
+              "to": "T",
+              "weight": 2,
+              "capacity": 4
+          }
+      ],
+      "directed": true,
+      "metadata": {
+          "name": "Test Graph",
+          "description": "Graph for testing all algorithms",
+          "allow_negative_weights": false
+      }
+  },
+  "algorithm": {
+      "name": "dijkstra",
+      "category": "shortest_path",
+      "params": {
+          "source": "",
+          "target": "B",
+          "sink": "T"
+      },
+      "constraints_check": {
+          "requires_positive_weights": false,
+          "requires_positive_capacity": false,
+          "requires_connected": false,
+          "requires_dag": false
+      }
+  },
+  "execution": {
+      "execution_time": 6e-06,
+      "complexity": null,
+      "status": "error",
+      "message": "Dijkstra requires a 'source' parameter.",
+      "warnings": []
+  },
+  "result": {
+      "type": null,
+      "distances": {},
+      "predecessors": {},
+      "path": [],
+      "paths": {},
+      "mst_edges": [],
+      "components": [],
+      "cycles": [],
+      "eulerian_path": [],
+      "eulerian_circuit": [],
+      "coloring": {
+          "node_colors": {},
+          "edge_colors": {}
+      },
+      "flow": {
+          "value": null,
+          "augmenting_paths": [],
+          "edge_flows": {}
+      },
+      "traversal": {
+          "order": [],
+          "tree_edges": [],
+          "levels": {},
+          "times": {}
+      },
+      "graph_properties": {
+          "is_connected": null,
+          "is_strongly_connected": null,
+          "is_tree": null,
+          "is_bipartite": null,
+          "is_eulerian": null,
+          "has_cycle": null,
+          "is_weighted": null
+      },
+      "steps": []
+  },
+  "options": {
+      "return_path": true,
+      "return_steps": true,
+      "measure_time": true,
+      "visualize": false
+  }
+}   
