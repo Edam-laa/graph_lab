@@ -1,413 +1,115 @@
 # GraphAlgo Pro
+**Interactive Graph Algorithms Laboratory · Python · PySide6 · Flask**
 
-Plateforme Python d'expérimentation et de visualisation des algorithmes de graphes, développée par l'équipe **GrafixLab**.
+GraphAlgo Pro is an academic graph-algorithm exploration application developed by the **GrafixLab team**. It combines an interactive desktop graph editor with a Python algorithm library and a local Flask HTTP service. Users can create graphs, choose an algorithm, and inspect returned paths, components, trees, colors, or flow-related results.
 
-GraphAlgo Pro combine un backend algorithmique, un serveur Flask et une interface graphique PySide6 afin de permettre la création de graphes, l'exécution d'algorithmes classiques et l'affichage visuel des résultats.
+> **Project type:** academic group project / desktop application. This repository contains source code and tests, but does not include a verified public installer or a running online demo.
 
----
+## What this project demonstrates
 
-## 1. Présentation du projet
+- A layered software architecture separating UI, HTTP adaptation, graph representation, and algorithm implementations.
+- An interactive **PySide6** graph editor and results UI.
+- Classical graph algorithms and parameterized test cases.
+- A local **Flask** endpoint bridging the desktop UI to the algorithm service.
+- Pytest test modules for algorithms and core components.
 
-GraphAlgo Pro est un projet académique orienté expérimentation, démonstration et intégration logicielle autour des graphes.
+## Architecture
 
-L'application permet de :
-
-- construire un graphe depuis une interface graphique
-- gérer les graphes orientés et non orientés
-- travailler avec des poids et des capacités
-- exécuter plusieurs familles d'algorithmes
-- visualiser les résultats dans une fenêtre dédiée
-- lancer des tests sur le backend et les composants principaux
-
----
-
-## 2. Équipe
-
-**Nom de l'équipe : GrafixLab**
-
-Le projet a été conçu comme une plateforme commune réunissant :
-
-- une partie backend pour les algorithmes
-- une partie frontend pour l'édition et la visualisation
-- une couche serveur pour la communication
-- une base de tests pour la validation
-
----
-
-## 3. Fonctionnalités principales
-
-- Édition graphique d'un graphe avec sommets et arêtes
-- Support des graphes orientés / non orientés
-- Support des poids et des capacités
-- Exécution des algorithmes depuis l'interface
-- Affichage des résultats de calcul
-- Visualisation des chemins, arbres, couleurs et propriétés
-- Mesure du temps d'exécution
-- Affichage de la complexité et des étapes de traitement
-- Packaging en exécutables Windows via PyInstaller
-
----
-
-## 4. Algorithmes implémentés
-
-### Plus court chemin
-
-- Dijkstra
-- Bellman-Ford
-- Bellman
-
-### Arbre couvrant minimum
-
-- Kruskal
-- Prim
-
-### Connexité
-
-- Composantes connexes
-- Composantes fortement connexes
-
-### Parcours
-
-- BFS
-- DFS
-
-### Autres algorithmes
-
-- Chemin eulérien
-- Circuit eulérien
-- Welsh-Powell
-- Ford-Fulkerson
-
----
-
-## 5. Technologies utilisées
-
-- **Python 3** pour le cœur du projet
-- **Flask** pour le serveur backend
-- **PySide6** pour l'interface graphique
-- **requests** pour les appels HTTP du frontend vers le backend
-- **pytest** pour les tests
-- **PyInstaller** pour la génération des exécutables
-
----
-
-## 6. Structure du projet
-
-```text
-graph_lab/
-├── app/
-│   ├── algorithms/
-│   │   ├── coloring/
-│   │   ├── connectivity/
-│   │   ├── eulerian/
-│   │   ├── flow/
-│   │   ├── shortest_path/
-│   │   ├── spanning_tree/
-│   │   └── traversal/
-│   ├── core/
-│   ├── services/
-│   └── utils/
-├── front/
-│   ├── theme/
-│   ├── widgets/
-│   ├── Main.py
-│   ├── MainWindow.py
-│   ├── GraphScene.py
-│   ├── GraphView.py
-│   ├── NodeItem.py
-│   ├── EdgeItem.py
-│   ├── ResultWindow.py
-│   ├── WeightDialog.py
-│   ├── Algobtn.py
-│   └── Toolbtn.py
-├── data/
-├── tests/
-│   ├── algorithms/
-│   └── core/
-├── dist/
-│   ├── GraphAlgoPro_Server.exe
-│   └── GraphAlgoPro_Front.exe
-├── build/
-├── server.py
-├── main.py
-├── requirements.txt
-├── GraphAlgoPro_Server.spec
-├── GraphAlgoPro_Front.spec
-├── instructions_execution.txt
-├── Structure.md
-└── EXPLICATION.md
+```mermaid
+flowchart LR
+  U["Graph editor<br/>PySide6"] -->|"HTTP POST /run-algorithm"| F["Flask adapter<br/>server.py"]
+  F --> S["Algorithm dispatcher<br/>app/services/graph_service.py"]
+  S --> G["Graph model<br/>app/core/graph.py"]
+  S --> A["Algorithm modules<br/>app/algorithms/"]
+  A --> S
+  S -->|"Structured result"| F
+  F -->|"JSON response"| R["PySide6 result window<br/>front/ResultWindow.py"]
 ```
 
-### Rôle des principaux éléments
+The diagram is a logical view of the implementation. The service and desktop interface run **locally**; this is not a deployed web application.
 
-| Élément | Rôle |
-|---|---|
-| `app/core/graph.py` | structure principale du graphe |
-| `app/algorithms/` | implémentation des algorithmes |
-| `app/services/graph_service.py` | orchestration de l'exécution des algorithmes |
-| `app/utils/file_loader.py` | conversion JSON vers objet `Graph` |
-| `server.py` | serveur Flask et point d'entrée backend |
-| `front/Main.py` | point d'entrée du frontend |
-| `front/MainWindow.py` | fenêtre principale de l'application |
-| `front/ResultWindow.py` | affichage du résultat |
-| `data/` | jeux de données JSON |
-| `tests/` | tests unitaires et de validation |
-| `dist/` | exécutables générés |
+## Algorithms in the repository
 
----
+| Family | Implementations | Key constraints / observations |
+| --- | --- | --- |
+| Shortest paths | Dijkstra, Bellman-Ford, Bellman (DAG) | Dijkstra requires non-negative weights; DAG methods require an acyclic directed graph |
+| Minimum spanning trees | Kruskal, Prim | Weighted undirected graphs; disconnected graphs may require forest handling |
+| Traversal | BFS, DFS | Explore reachable vertices |
+| Connectivity | Connected and strongly connected components | Directedness changes the meaning of connectivity |
+| Eulerian routes | Eulerian path / circuit | Degree and connectivity conditions apply |
+| Coloring | Welsh–Powell | Heuristic; not guaranteed to be optimal |
+| Maximum flow | Ford–Fulkerson | Non-negative capacities, specified source and sink |
 
-## 7. Installation depuis GitHub
+See [algorithm implementations](app/algorithms/) and [algorithm tests](tests/algorithms/). Having an implementation file does not imply every UI/algorithm combination has been manually checked; run tests and verify your chosen graph before drawing conclusions.
 
-Clonez le dépôt, puis placez-vous à la racine du projet.
+## Repository organization
+
+```text
+app/
+  algorithms/       # Graph algorithms grouped by category
+  core/graph.py     # Graph data representation
+  services/         # Execution / dispatch
+  utils/            # JSON loading and helpers
+front/              # PySide6 editor, graph scene, views and result window
+data/               # JSON example and test graphs
+tests/              # Pytest algorithm and core tests
+server.py           # Flask API entry point
+requirements.txt    # Python dependencies
+```
+
+## Run locally
+
+**Prerequisites:** Python 3 and a machine able to display Qt/PySide6 windows. Installation and execution have not been verified on every operating system.
 
 ```bash
-git clone <URL_DU_DEPOT>
+git clone https://github.com/Edam-laa/graph_lab.git
 cd graph_lab
-```
-
-Si vous avez cloné un dépôt parent contenant ce dossier, adaptez simplement le `cd` au chemin réel.
-
----
-
-## 8. Création d'un environnement virtuel
-
-### Windows PowerShell
-
-```powershell
 python -m venv .venv
-.venv\Scripts\Activate.ps1
+# Activate the environment for your shell, then:
+python -m pip install -r requirements.txt
 ```
 
-### Windows CMD
-
-```bat
-python -m venv .venv
-.venv\Scripts\activate.bat
-```
-
-### Linux / macOS
-
-```bash
-python3 -m venv .venv
-source .venv/bin/activate
-```
-
----
-
-## 9. Installation des dépendances
-
-Installez les dépendances depuis `requirements.txt` :
-
-```bash
-pip install -r requirements.txt
-```
-
-Le fichier recense les bibliothèques principales du projet :
-
-- Flask
-- flask-cors
-- PySide6
-- requests
-- pytest
-- pyinstaller
-
----
-
-## 10. Lancement du backend
-
-Le backend doit être démarré **avant** le frontend.
+Open **two terminals** using that environment. Start the backend first:
 
 ```bash
 python server.py
 ```
 
-Le serveur Flask écoute localement sur :
-
-```text
-http://127.0.0.1:5000
-```
-
----
-
-## 11. Lancement du frontend
-
-Dans un second terminal, après le démarrage du serveur :
+In the second terminal:
 
 ```bash
 python -m front.Main
 ```
 
-Le frontend PySide6 s'ouvre et peut alors envoyer les requêtes au backend.
+The backend listens at `http://127.0.0.1:5000` and exposes `POST /run-algorithm`. The client uses it to request calculations. The local backend in `server.py` enables Flask debug mode; **do not expose it to the Internet**.
 
----
+**Windows PowerShell activation:** `.venv\Scripts\Activate.ps1`
 
-## 12. Utilisation avec les exécutables
+**Linux/macOS activation:** `source .venv/bin/activate`
 
-Le projet contient déjà deux exécutables générés dans `dist/` :
+### How to explore
 
-- `GraphAlgoPro_Server.exe`
-- `GraphAlgoPro_Front.exe`
+Create nodes and edges in the graph editor, choose appropriate direction/weights/capacities, then select an algorithm. The UI can show the graph and structured results. For example, try Dijkstra with non-negative weighted edges or Welsh–Powell on an undirected graph.
 
-### Ordre de lancement
-
-Le lancement doit se faire dans cet ordre :
-
-1. `GraphAlgoPro_Server.exe`
-2. `GraphAlgoPro_Front.exe`
-
-### Exemple PowerShell
-
-```powershell
-.\dist\GraphAlgoPro_Server.exe
-```
-
-Puis, dans un second terminal :
-
-```powershell
-.\dist\GraphAlgoPro_Front.exe
-```
-
-Le serveur doit être actif avant l'ouverture du frontend, exactement comme en mode Python.
-
----
-
-## 13. Exemple d'utilisation rapide
-
-### En mode développement
-
-Terminal 1 :
-
-```bash
-python server.py
-```
-
-Terminal 2 :
-
-```bash
-python -m front.Main
-```
-
-### Ensuite
-
-1. Créez quelques sommets.
-2. Ajoutez des arêtes ou des arcs.
-3. Renseignez la source et la destination si nécessaire.
-4. Cliquez sur un algorithme.
-5. Consultez la fenêtre de résultat.
-
-Vous pouvez par exemple :
-
-- tester Dijkstra sur un graphe pondéré
-- tester Kruskal ou Prim sur un graphe non orienté
-- tester Welsh-Powell pour la coloration
-- tester Ford-Fulkerson sur un réseau avec capacités
-
----
-
-## 14. Tests avec pytest
-
-Pour exécuter l'ensemble des tests du projet :
-
-```bash
-pytest -q tests/
-```
-
-Ou avec Python :
+## Testing
 
 ```bash
 python -m pytest -q tests/
 ```
 
-Les tests sont organisés en deux grands ensembles :
+The repository includes tests for shortest paths, trees, connectivity, coloring, flow, Eulerian paths, and graph behavior. **Test results are not claimed here:** the full suite must be run in a compatible local environment before reporting passes or coverage.
 
-- `tests/algorithms/` pour les algorithmes
-- `tests/core/` pour les composants centraux
+## UI evidence
 
----
+The repository currently has **no committed authentic screenshots** of the editor or result view. A useful follow-up is to capture a representative graph and an algorithm result from a real running instance; generated or mock screenshots must not be presented as execution evidence.
 
-## 15. Communication frontend / backend
+## Engineering decisions and limitations
 
-Le frontend communique avec le backend via une requête HTTP locale :
+- **Why Flask + PySide6?** The desktop graph editor is separated from the algorithm execution service using a simple JSON/HTTP interface.
+- **Why separate algorithm modules?** Each family can evolve and be tested independently.
+- **Why tests?** Incorrect graph-algorithm behavior may be hard to notice from a drawing alone; focused test cases help detect regressions.
+- **Known limitations:** no hosted demo, no verified installer published in this repository, no documented automated CI results, and potential UI/API integration edge cases. The source tree should be validated against target Python/Qt versions.
 
-```text
-POST http://127.0.0.1:5000/run-algorithm
-```
+## Credits
 
-### Schéma simplifié
-
-```text
-Frontend PySide6
-    ↓
-server.py
-    ↓
-app/services/graph_service.py
-    ↓
-algorithme demandé
-    ↓
-résultat JSON
-    ↓
-ResultWindow.py
-```
-
-Le serveur traduit les noms d'algorithmes de l'interface, exécute le calcul et renvoie un résultat exploitable par le frontend.
-
----
-
-## 16. Nettoyage / fichiers ignorés
-
-Pour garder un dépôt propre, il est recommandé d'ignorer ou de nettoyer régulièrement :
-
-- `.venv/`
-- `.pytest_cache/`
-- `__pycache__/`
-- `*.pyc`
-- `build/`
-
-Le dossier `dist/` contient les exécutables générés.
-Selon votre mode de livraison, vous pouvez :
-
-- le conserver pour distribuer les `.exe`
-- ou l'exclure du dépôt source si vous ne versionnez pas les binaires
-
----
-
-## 17. Statut du projet
-
-**Statut actuel : projet fonctionnel en local, avec interface graphique, serveur backend, jeux de tests et packaging Windows disponible.**
-
-Le projet est adapté :
-
-- à une démonstration académique
-- à un livrable universitaire
-- à un dépôt GitHub de présentation technique
-
----
-
-## 18. Auteurs / équipe
-
-Projet réalisé par l'équipe **GrafixLab**.
-
-Répartition générale du travail :
-
-- conception et intégration de la plateforme
-- développement du backend algorithmique
-- développement du frontend PySide6
-- validation par les tests
-- packaging et documentation
-
----
-
-## 19. Lancement recommandé
-
-Pour éviter toute erreur d'exécution :
-
-1. démarrez toujours le **serveur** en premier
-2. lancez ensuite le **frontend**
-3. appliquez le même ordre pour les exécutables : **serveur puis frontend**
-
-Commande locale recommandée :
-
-```bash
-python server.py
-python -m front.Main
-```
+Created as a **GrafixLab team** academic project. The repository does not establish a reliable individual contribution breakdown; credits should be updated only with verified team agreement.
