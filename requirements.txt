@@ -1,6 +1,8 @@
-Flask        → serveur backend
-flask-cors   → communication frontend/backend si nécessaire
-PySide6      → interface graphique
-requests     → le front envoie des requêtes au serveur
-pytest       → tests
-pyinstaller  → création des exécutables
+# GraphAlgo Pro runtime and development dependencies
+# Each installable package must be a separate pip requirements entry.
+Flask
+flask-cors
+PySide6
+requests
+pytest
+pyinstaller
