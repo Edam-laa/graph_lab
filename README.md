@@ -72,7 +72,7 @@ tests/
   core/                   Graph and result-window tests
 server.py                 Local Flask HTTP entry point
 main.py                   JSON-based algorithm entry point
-requirements.txt          Dependency list (currently needs syntax cleanup)
+requirements.txt          pip-compatible dependency list
 ```
 
 ## Run locally — source version
@@ -94,13 +94,13 @@ Activate the environment:
 
 Or, on Linux/macOS, use `source .venv/bin/activate`.
 
-**Dependency note:** the current [`requirements.txt`](requirements.txt) contains human-readable descriptions using arrow symbols on the same lines as package names. It is **not valid pip requirements syntax**. Until that file is fixed, use:
+**Dependencies:** the [`requirements.txt`](requirements.txt) syntax has been corrected; it now contains one pip package per line. Install the declared dependencies with:
 
 ```bash
-python -m pip install Flask PySide6 requests pytest
+python -m pip install -r requirements.txt
 ```
 
-Optional packages listed in the original file include `flask-cors` and `pyinstaller`, which are not required by the basic launch commands below.
+The project includes `PySide6` and `pyinstaller`; Qt system libraries, interpreter/package compatibility and available displays still need to be checked for the target operating system.
 
 In **terminal 1**, run the API:
 
@@ -126,7 +126,7 @@ After installing the dependencies above:
 python -m pytest -q tests/
 ```
 
-**Validation status:** the available GitHub Actions runs on a separate portfolio-review branch did **not** establish a passing suite (one failed on a missing Qt system dependency; a later run was cancelled). Do not infer passing tests or coverage from the presence of test files. A validated environment and CI result are outstanding.
+**Validation status:** a full test-suite pass remains unverified. The earlier GitHub Actions runs on a separate portfolio-review branch did **not** establish a passing suite. In addition, `tests/core/test_result_window.py` calls `app.exec()`, which may block an unattended pytest run. Execute tests in a suitable Qt environment and fix the interactive test before claiming CI success.
 
 ### Screenshots and demo
 
@@ -138,7 +138,7 @@ The repository does **not** currently include an authentic editor screenshot or 
 - **Data contracts:** JSON graph data and result schemas allow the desktop interface and calculation engine to evolve separately, while creating input-validation obligations.
 - **Algorithm correctness:** edge cases such as negative weights, disconnected graphs, invalid endpoints and capacities require explicit testing.
 - **Local HTTP boundary:** useful for modularity, but introduces two-process startup, communication and error-handling requirements compared with a monolithic Qt app.
-- **Current limitations:** no verified packaged binary in the repo, invalid requirements syntax, incomplete CI evidence, no genuine UI screenshots, and possible UI/API edge cases.
+- **Current limitations:** no verified packaged binary in the repo, unverified dependency installation, incomplete CI evidence, no genuine UI screenshots, and possible UI/API edge cases.
 
 ## Contributors
 
